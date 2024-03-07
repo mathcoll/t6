@@ -506,10 +506,21 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 						if (!dataMap.has(time)) {
 							dataMap.set(time, { values: [], labels: [], flow_ids: [] });
 						}
+						datapoint.meta			= (typeof datapoint.meta!=="undefined" && datapoint.meta!==null)?getJson(datapoint.meta):{ categories: ["oov"] };
+						const category_id		= datapoint.meta.categories[0];
+						const category			= categories.findOne({id: category_id});
+						const labelName			= category?category.name:"oov";
+						const oneHotEncodedLbl	= oneHotEncode(t6Model.labels.indexOf(labelName), t6Model.labels);
+
 						dataMap.get(time).values.push(parseInt(datapoint.value));
-						t6console.debug("dataMap values.push", parseInt(datapoint.value));
-						dataMap.get(time).labels.push(datapoint.label);
-						dataMap.get(time).flow_ids.push(t6Model.flow_ids.indexOf(datapoint.flow_id));
+						dataMap.get(time).labels.push(oneHotEncodedLbl);
+						if(t6Model.flow_ids.length>1) {
+							const oneHotEncodedFid	= oneHotEncode(t6Model.flow_ids.indexOf(datapoint.flow_id), t6Model.flow_ids);
+							dataMap.get(time).flow_ids.push(oneHotEncodedFid);
+						} else {
+							dataMap.get(time).flow_ids.push([t6Model.flow_ids.indexOf(datapoint.flow_id)]);
+						}
+						//t6console.debug("dataMap values.push", parseInt(datapoint.value));
 						//t6console.log("LABEL:", datapoint.label);
 					});
 					/*
@@ -658,7 +669,7 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 				//where = "meta!='' AND valueInteger>-1 AND";
 			} else if(t6Model.strategy==="forecast") {
 			}
-			let gp_time = `GROUP BY time(10m) fill(previous)`;
+			let gp_time = `GROUP BY time(1m) fill(previous)`;
 			let lim = limit!==null?`LIMIT ${limit} OFFSET ${offset}`:"";
 			if(flow.time_to_live!==null) {
 				queryTs.push(`SELECT time, LAST(${fieldvalue}) as value, LAST(meta) as meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ${gp_time} ${lim}`);
@@ -688,12 +699,13 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 			flowData.map((row, i) => {
 				const f_id = t6Model.flow_ids[i];
 				row.map((datapoint) => {
-					datapoint.meta			= (typeof datapoint.meta!=="undefined" && datapoint.meta!==null)?JSON.parse(datapoint.meta):{ categories: ["oov"] };
+					datapoint.meta			= (typeof datapoint.meta!=="undefined" && datapoint.meta!==null)?getJson(datapoint.meta):{ categories: ["oov"] };
 					const category_id		= datapoint.meta.categories[0];
 					const category			= categories.findOne({id: category_id});
 					const labelName			= category?category.name:"oov";
 					const oneHotEncodedLbl	= oneHotEncode(t6Model.labels.indexOf(labelName), t6Model.labels);
 					datapoint.label			= oneHotEncodedLbl;
+					datapoint.value			= datapoint.value;
 					if(t6Model.flow_ids.length>1) {
 						const oneHotEncodedFid	= oneHotEncode(t6Model.flow_ids.indexOf(f_id), t6Model.flow_ids);
 						datapoint.flow_id		= oneHotEncodedFid;
@@ -704,10 +716,12 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 					//t6console.debug("TRAINING: oneHotEncodedFid", t6Model.flow_ids.indexOf(f_id), datapoint.flow_id);
 				});
 			});
+			//t6console.debug("flowData", flowData);
 	
 			// Flattening all Flows datapoints together
 			const flattenedData = flowData.flat();
 			flattenedData.sort((a, b) => new Date(a.time) - new Date(b.time));
+			//t6console.debug("flattenedData", flattenedData);
 
 			const dataMap = new Map();
 			flattenedData.map((datapoint) => {
@@ -720,6 +734,9 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 				dataMap.get(time).flow_ids.push(datapoint.flow_id);
 			});
 
+			//t6console.debug([...dataMap.entries()]);
+			//t6console.debug([...dataMap.keys()]);
+			//t6console.debug([...dataMap.values()]);
 			t6machinelearning.loadDataSets_v2(dataMap, t6Model)
 			.then((dataset) => {
 				const valuesTensor	= dataset.valuesTensor;

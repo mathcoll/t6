@@ -256,18 +256,25 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 	return await new Promise((resolve) => {
 		//return tf.tidy(() => {
+			const splitToArray = (inputData, splitStr=" ") => {
+				t6console.debug("splitToArray data:", inputData);
+				return typeof inputData!=="undefined"?inputData.split(splitStr):0;
+			};
 			// Prepare arrays for the aggregated data
 			//const times		= Array.from(dataMap.keys());
-			const times		= Array.from(dataMap.keys()).map(time => time);
-			const values	= Array.from(dataMap.values()).map(data => data.values);
-			const flow_ids	= Array.from(dataMap.values()).map(data => data.flow_ids).flat();
-			const labels	= Array.from(dataMap.values()).map(data => data.labels).flat();
+			const times		= Array.from(dataMap.keys()).map((time) => time);
+			const values	= Array.from(dataMap.values()).map((data) => data.values);
+			const flow_ids	= Array.from(dataMap.values()).map((data) => data.flow_ids).flat();
+			const labels	= Array.from(dataMap.values()).map((data) => data.labels).flat();
+			//t6console.debug("values data:", values);
+			//t6console.debug("flow_ids data:", flow_ids);
+			//t6console.debug("labels data:", labels);
 
 			// Convert arrays to tensors
 			const timeTensor	= tf.tensor2d(times.map((time) => [time]), [times.length, 1]); // TODO : might adjust according to number of features ?
 			const valuesTensor	= tf.tensor2d(values.map((value) => value));
-			const flowsTensor	= tf.tensor2d(flow_ids);
-			const labelsTensor	= tf.tensor2d(labels);
+			const flowsTensor	= tf.tensor2d(flow_ids.map((flow_id) => flow_id));
+			const labelsTensor	= tf.tensor2d(labels.map((label) => label));
 
 			// Concatenate tensors along axis 1
 			const inputTensor = tf.concat([timeTensor, valuesTensor, flowsTensor, labelsTensor], 1);

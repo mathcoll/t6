@@ -68,3 +68,5 @@ decisionrules/node_modules
 /jsonapitest-results.json
 ./bin/send_notification.sh
 .vscode/t6-workspace.code-workspace
+.vscode/launch.json
+.vscode/tasks.json
