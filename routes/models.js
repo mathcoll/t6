@@ -696,6 +696,7 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 				};
 			});
 			//t6console.log("Min and max values for each flow from queryTs:", minMaxValues);
+			let classCounts = {};
 			flowData.map((row, i) => {
 				const f_id = t6Model.flow_ids[i];
 				row.map((datapoint) => {
@@ -712,41 +713,61 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 					} else {
 						datapoint.flow_id		= [t6Model.flow_ids.indexOf(f_id)];
 					}
+					if (labelName!=="oov") {
+						// Do not count oov, because it it used as minorityClass
+						classCounts[labelName] = typeof classCounts[labelName]==="undefined"?0:classCounts[labelName]+1;
+					}
 					//t6console.debug("TRAINING: oneHotEncodedLbl", labelName, t6Model.labels.indexOf(labelName), oneHotEncodedLbl);
 					//t6console.debug("TRAINING: oneHotEncodedFid", t6Model.flow_ids.indexOf(f_id), datapoint.flow_id);
 				});
 			});
-			//t6console.debug("flowData", flowData);
+			const minorityClass = Math.min(...Object.entries(classCounts).map((cls) => cls[1]));
 	
 			// Flattening all Flows datapoints together
 			const flattenedData = flowData.flat();
 			flattenedData.sort((a, b) => new Date(a.time) - new Date(b.time));
-			//t6console.debug("flattenedData", flattenedData);
 
 			const dataMap = new Map();
+			let balancedDatapointsCount = {};
 			flattenedData.map((datapoint) => {
 				const time = parseInt(moment(datapoint.time).format("x"), 10);
-				if (!dataMap.has(time)) {
-					dataMap.set(time, { values: [], labels: [], flow_ids: [] });
+				balancedDatapointsCount[datapoint.label] = typeof balancedDatapointsCount[datapoint.label]!=="undefined"?balancedDatapointsCount[datapoint.label]:0;
+				// Balance dataset : based on the minorityClass !!! // TODO
+				if( balancedDatapointsCount[datapoint.label]<minorityClass ) {
+					if (!dataMap.has(time)) {
+						dataMap.set(time, { values: [], labels: [], flow_ids: [] });
+					}
+					dataMap.get(time).values.push(datapoint.value);
+					dataMap.get(time).labels.push(datapoint.label);
+					dataMap.get(time).flow_ids.push(datapoint.flow_id);
 				}
-				dataMap.get(time).values.push(datapoint.value);
-				dataMap.get(time).labels.push(datapoint.label);
-				dataMap.get(time).flow_ids.push(datapoint.flow_id);
+				balancedDatapointsCount[datapoint.label]++;
 			});
+
+			t6Model.balancedDatapointsCount	= balancedDatapointsCount;
+			t6Model.minorityClass			= minorityClass;
+			t6Model.training_balance		= t6Model.labels.map((labelName) => { return balancedDatapointsCount[oneHotEncode(t6Model.labels.indexOf(labelName), t6Model.labels)] });
+			t6Model.data_length				= [...dataMap.entries()].length;
+
+			t6console.debug("flattenedData length", flattenedData.length);
+			t6console.debug("dataMap entries length", t6Model.data_length);
+			t6console.debug("dataMap keys length", [...dataMap.keys()].length);
+			t6console.debug("dataMap values length", [...dataMap.values()].length);
+			t6console.debug("balancedDatapointsCount", balancedDatapointsCount);
 
 			//t6console.debug([...dataMap.entries()]);
 			//t6console.debug([...dataMap.keys()]);
 			//t6console.debug([...dataMap.values()]);
 			t6machinelearning.loadDataSets_v2(dataMap, t6Model)
 			.then((dataset) => {
-				const valuesTensor	= dataset.valuesTensor;
-				const flowsTensor	= dataset.flowsTensor;
-				const labelsTensor	= dataset.labelsTensor;
-				const inputTensor	= dataset.inputTensor;
-				const featuresTensor= dataset.featuresTensor;
-				const inputShape	= [1, inputTensor.shape[1]];
-				//const outputShape = [1, valuesTensor.shape[1]];
-				const outputShape	= labelsTensor.shape[1];
+				let valuesTensor	= dataset.valuesTensor;
+				let flowsTensor	= dataset.flowsTensor;
+				let labelsTensor	= dataset.labelsTensor;
+				let inputTensor	= dataset.inputTensor;
+				let featuresTensor= dataset.featuresTensor;
+				let inputShape	= [1, inputTensor.shape[1]];
+				//let outputShape = [1, valuesTensor.shape[1]];
+				let outputShape	= labelsTensor.shape[1];
 				t6machinelearning.buildModel(inputShape, outputShape)
 				.then((tfModel) => {
 					tfModel.summary();
@@ -756,7 +777,7 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 					const evaluateSize					= totalSize - trainSize;
 					const batchSize						= valuesTensor.shape[0]; // Get the number of data points
 					const numFeatures					= inputTensor.shape[1]; // Get the number of features
-					const timeSteps						= 1; // Assuming each data point represents a single time step
+					const timeSteps						= 1; // TODO
 					const reshapedInput					= inputTensor.reshape([totalSize, timeSteps, numFeatures]);
 					const reshapedLabels				= labelsTensor.reshape([totalSize, timeSteps, labelsTensor.shape[1]]);
 					const [inputXTrain, inputXEvaluate]	= tf.split(reshapedInput, [trainSize, evaluateSize]);
@@ -791,7 +812,7 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 								//t6console.debug("evaluate: accuracy", t6Model.history.evaluation.accuracy);
 								let user = users.findOne({"id": req.user.id });
 								if (user && typeof user.pushSubscription !== "undefined" ) {
-									let payload = `{"type": "message", "title": "Model is trained", "body": "- Features[Con]: ${t6Model.continuous_features?.length}\\n- Features[Cat]: ${t6Model.categorical_features?.length}\\n- Label(s): ${t6Model.labels?.length}\\n- Flow(s): ${t6Model.flow_ids?.length}\\n- Total dataset: ${totalSize}\\n- Train dataset: ${trainSize} (${(1-t6Model.validation_split)*100}%)\\n- Evaluate dataset: ${evaluateSize} (${t6Model.validation_split*100}%)\\n- Evaluate loss: ${evaluate.loss}\\n- Evaluate accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
+									let payload = `{"type": "message", "title": "Model is trained", "body": "- Features[Con]: ${t6Model.continuous_features?.length}\\n- Features[Cat]: ${t6Model.categorical_features?.length}\\n- Label(s): ${t6Model.labels?.length}\\n- Flow(s): ${t6Model.flow_ids?.length}\\n- Total dataset: ${totalSize}\\n- Train dataset: ${trainSize} (${(1-t6Model.validation_split)*100}%)\\n- Balance limit *: ${t6Model.minorityClass}\\n- Evaluate dataset *: ${evaluateSize} (${t6Model.validation_split*100}%)\\n- Evaluate loss: ${evaluate.loss}\\n- Evaluate accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
 									let result = t6notifications.sendPush(user, payload);
 									if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
 										t6console.debug("pushSubscription", pushSubscription);

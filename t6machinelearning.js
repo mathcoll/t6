@@ -21,19 +21,22 @@ t6machinelearning.init = async function(model) {
 		continuousFeatsMaxs = [];
 		categoricalFeats = [];
 		t6console.debug("================== t6machinelearning.init =================");
-		t6console.debug("strategy", typeof t6Model.strategy!=="undefined"?t6Model.strategy:"classification");
-		t6console.debug("Normalize", t6Model.normalize);
-		t6console.debug("splitToArray", t6Model.splitToArray);
-		t6console.debug("shuffle", t6Model.shuffle);
-		t6console.debug("labels", t6Model.labels);
-		t6console.debug("labelsCount", t6Model.labels.length);
-		t6console.debug("batch_size", t6Model.batch_size);
-		t6console.debug("data_length", t6Model.data_length);
-		t6console.debug("min", t6Model.min);
-		t6console.debug("max", t6Model.max);
-		t6console.debug("Compile optimizer", typeof t6Model.compile?.optimizer!=="undefined"?t6Model.compile?.optimizer:"adam");
-		t6console.debug("Compile loss", typeof t6Model.compile?.loss!=="undefined"?t6Model.compile?.loss:"binaryCrossentropy");
-		t6console.debug("Compile metrics", typeof t6Model.compile?.metrics!=="undefined"?t6Model.compile?.metrics:["accuracy"]);
+		t6console.debug("INIT Model strategy", typeof t6Model.strategy!=="undefined"?t6Model.strategy:"classification");
+		t6console.debug("INIT Model Normalize", t6Model.normalize);
+		t6console.debug("INIT Model splitToArray", t6Model.splitToArray);
+		t6console.debug("INIT Model shuffle", t6Model.shuffle);
+		t6console.debug("INIT Model labels", t6Model.labels);
+		t6console.debug("INIT Model labelsCount", t6Model.labels.length);
+		t6console.debug("INIT Model batch_size", t6Model.batch_size);
+		t6console.debug("INIT Model data_length", t6Model.data_length);
+		t6console.debug("INIT Model min", t6Model.min);
+		t6console.debug("INIT Model max", t6Model.max);
+		t6console.debug("INIT Model minorityClass", t6Model.minorityClass);
+		t6console.debug("INIT Model training_balance:", t6Model.training_balance);
+		t6console.debug("INIT Model balancedDatapointsCount", t6Model.balancedDatapointsCount);
+		t6console.debug("INIT Model Compile optimizer", typeof t6Model.compile?.optimizer!=="undefined"?t6Model.compile?.optimizer:"adam");
+		t6console.debug("INIT Model Compile loss", typeof t6Model.compile?.loss!=="undefined"?t6Model.compile?.loss:"binaryCrossentropy");
+		t6console.debug("INIT Model Compile metrics", typeof t6Model.compile?.metrics!=="undefined"?t6Model.compile?.metrics:["accuracy"]);
 		t6console.debug("===========================================================");
 		resolve(t6Model);
 	});
@@ -64,9 +67,6 @@ t6machinelearning.addCategorical = function(featureName, classes) {
 }
 
 t6machinelearning.buildModel = async function(inputShape, outputShape) {
-	t6console.debug("buildModel inputShape", inputShape);
-	t6console.debug("buildModel outputShape", outputShape);
-	t6console.debug("buildModel t6Model.strategy", t6Model.strategy);
 	return await new Promise((resolve) => {
 		const model = tf.sequential();
 		if(t6Model.strategy==="classification") {
@@ -74,7 +74,7 @@ t6machinelearning.buildModel = async function(inputShape, outputShape) {
 				inputShape: inputShape,
 				//batchInputShape: inputShape,
 				units: 1,
-				activation: "sigmoid" // sigmoid | relu
+				activation: "relu" // sigmoid | relu
 			}));
 			model.add(tf.layers.dense({
 				units: outputShape,
@@ -254,21 +254,16 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 };
 
 t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
-	return await new Promise((resolve) => {
-		//return tf.tidy(() => {
-			const splitToArray = (inputData, splitStr=" ") => {
-				t6console.debug("splitToArray data:", inputData);
-				return typeof inputData!=="undefined"?inputData.split(splitStr):0;
-			};
+	//return await new Promise((resolve) => {
+		return tf.tidy(() => {
+			t6machinelearning.init(t6Model);
+			let batchSize = t6Model.batch_size;
+
 			// Prepare arrays for the aggregated data
-			//const times		= Array.from(dataMap.keys());
-			const times		= Array.from(dataMap.keys()).map((time) => time);
-			const values	= Array.from(dataMap.values()).map((data) => data.values);
-			const flow_ids	= Array.from(dataMap.values()).map((data) => data.flow_ids).flat();
-			const labels	= Array.from(dataMap.values()).map((data) => data.labels).flat();
-			//t6console.debug("values data:", values);
-			//t6console.debug("flow_ids data:", flow_ids);
-			//t6console.debug("labels data:", labels);
+			const times			= Array.from(dataMap.keys()).map((time) => time);
+			const values		= Array.from(dataMap.values()).map((data) => data.values);
+			const flow_ids		= Array.from(dataMap.values()).map((data) => data.flow_ids).flat();
+			const labels		= Array.from(dataMap.values()).map((data) => data.labels).flat();
 
 			// Convert arrays to tensors
 			const timeTensor	= tf.tensor2d(times.map((time) => [time]), [times.length, 1]); // TODO : might adjust according to number of features ?
@@ -280,66 +275,12 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 			const inputTensor = tf.concat([timeTensor, valuesTensor, flowsTensor, labelsTensor], 1);
 			const mergedArray = inputTensor.arraySync();
 			//t6console.debug("mergedArray data:", mergedArray);
-			
-			//labels.map((l) => {
-				//t6console.log("LABEL", l);
-			//});
+
 			let featuresTensor = mergedArray;
 			if(t6Model.shuffle===true) {
 				tf.util.shuffle(inputTensor);
 			}
-			//featuresTensor.map((feat) => {
-			//	if (t6Model.split_to_array === true) {
-			//	}
-			//});
 
-			/*
-				t6Model.training_balance = {};
-				if(t6Model.labels.indexOf("oov")===-1) { t6Model.labels.push("oov"); }
-				t6Model.training_balance["oov"] = 0;
-				let data = mergedArray.map((m) => {
-					let label = m;
-					let category_id = t6Model.labels[label];
-					t6console.log("category_id", m.length, m.pop(), label, category_id);
-					if(category_id!==null && category_id!=="oov") {
-						m.label = categories.findOne({id: category_id}).name;
-						if(m.label && t6Model.labels.indexOf(m.label)===-1) {
-							t6Model.labels.push(m.label);
-							t6console.debug("category found and added", category_id, t6Model.labels.indexOf(m.label));
-						}
-						if(m.label && typeof t6Model.training_balance[m.label]!=="undefined") {
-							t6Model.training_balance[m.label]++;
-						} else {
-							t6Model.training_balance[m.label] = 1;
-						}
-					} else {
-						m.label = "oov";
-						if(typeof t6Model.training_balance[m.label]!=="undefined") {
-							t6Model.training_balance[m.label]++;
-						} else {
-							t6Model.training_balance[m.label] = 1;
-						}
-					}
-					return m;
-				});
-			*/
-			
-			//t6console.debug("t6Model", t6Model);
-			// GET BALANCED DATA
-			// get random values until it reach balance_limit on each labels
-			/*
-			let iData = [];
-			t6Model.labels.map( (label) => {
-				const label_name = label;
-				const dataLabel = featuresTensor.filter((f) => f.label===label_name)	// get only the current label
-					.sort(() => Math.random() - 0.5)						// shuffle the results with the current label
-					.slice(0, t6Model.datasets.training.balance_limit);		// take only requested limit values
-				t6Model.training_balance[label] = dataLabel.length;
-				iData = iData.concat(dataLabel);
-			});
-			t6Model.data_length = iData.length;
-			*/
-			t6machinelearning.init(t6Model);
 			if (t6Model.continuous_features?.length > 0) {
 				t6Model.continuous_features.map((cName) => {
 					t6Model.flow_ids.map((f_id) => {
@@ -359,21 +300,33 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 				});
 			}
 
-			//t6console.debug("times", times);
-			//t6console.debug("values", values);
-			//t6console.debug("flow_ids", flow_ids);
-			//t6console.debug("labels", labels);
-			//t6console.debug("timeTensor data:", timeTensor.arraySync());
-			//t6console.debug("valuesTensor data:", valuesTensor.arraySync());
-			//t6console.debug("flowsTensor data:", flowsTensor.arraySync());
-			//t6console.debug("labelsTensor data:", labelsTensor.arraySync());
-			//t6console.debug("featuresTensor data:", featuresTensor);
-			// For a single Flow it should looks like: [[ 1709155549184, -1, 0, 0 ], [ 1708966281216, 1, 0, 1 ], ... ]
-			//											  timestamp normalized?Value flowId LabelIndex
+			//t6console.debug("LOADING DS times", times);
+			//t6console.debug("LOADING DS values", values);
+			//t6console.debug("LOADING DS flow_ids", flow_ids);
+			//t6console.debug("LOADING DS labels", labels);
 
-			resolve({valuesTensor, flowsTensor, labelsTensor, inputTensor, featuresTensor});
-		//});
-	});
+			//t6console.debug("LOADING DS timeTensor data:", timeTensor.arraySync());
+			//t6console.debug("LOADING DS valuesTensor data:", valuesTensor.arraySync());
+			//t6console.debug("LOADING DS flowsTensor data:", flowsTensor.arraySync());
+			//t6console.debug("LOADING DS labelsTensor data:", labelsTensor.arraySync());
+			//t6console.debug("LOADING DS featuresTensor data:", featuresTensor);
+
+			t6console.debug("LOADING DS batchSize:", batchSize);
+			t6console.debug("LOADING DS times.length:", times.length);
+			t6console.debug("LOADING DS values.length:", values.length);
+			t6console.debug("LOADING DS flow_ids.length:", flow_ids.length);
+			t6console.debug("LOADING DS labels.length:", labels.length);
+
+			t6console.debug("LOADING DS timeTensor dtype:", timeTensor.dtype);
+			t6console.debug("LOADING DS valuesTensor dtype:", valuesTensor.dtype);
+			t6console.debug("LOADING DS flowsTensor dtype:", flowsTensor.dtype);
+			t6console.debug("LOADING DS labelsTensor dtype:", labelsTensor.dtype);
+			t6console.debug("LOADING DS inputTensor dtype:", inputTensor.dtype);
+
+			//resolve({valuesTensor, flowsTensor, balancedInputTensor, balancedLabelsTensor, shuffledData});
+			return {valuesTensor, flowsTensor, labelsTensor, inputTensor, featuresTensor};
+		}); // END OF tf.tidy(
+	//});
 };
 
 t6machinelearning.trainModelDs = async function(model, dataset, options) {
