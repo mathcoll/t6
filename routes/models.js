@@ -208,6 +208,11 @@ router.get("/?(:model_id([0-9a-z\-]+))/download/:file(weights\.bin|model\.json)/
  * @apiBody {String} datasets.testing[duration] Not implemented yet !
  * @apiBody {Integer} datasets.training.limit Number of Datapoints to retrieve for each Flows
  * @apiBody {String="adagrad" "adadelta" "adamax" "rmsprop" "momentum" "sgd" "adam"} compile.optimizer=adam Training optimizer
+ * @apiBody {Object[]} layers  
+ * @apiBody {String=input,output,hidden} layers.type 
+ * @apiBody {Integer} layers.units 
+ * @apiBody {String=relu, softmax} layers.activation Activation function in the dense layer
+ * @apiBody {Object} compile  
  * @apiBody {Number} compile.learningrate=0.001 Learning Rate
  * @apiBody {String="categoricalCrossentropy" "meanSquaredError" "binaryCrossentropy"} compile.loss=binaryCrossentropy Training loss function
  * @apiBody {String[]} compile.metrics="['accuracy']" Training metrics
@@ -256,6 +261,7 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 					item.batch_size		= typeof req.body.batch_size!=="undefined"?req.body.batch_size:100;
 					item.epochs			= typeof req.body.epochs!=="undefined"?req.body.epochs:100;
 					item.validation_split	= typeof req.body.validation_split!=="undefined"?req.body.validation_split:item.validation_split;
+					item.layers			= typeof req.body.layers!=="undefined"?req.body.layers:item.layers;
 					item.datasets	= {
 						"training": {
 							"start": typeof req.body.datasets.training.start!=="undefined"?req.body.datasets.training.start:item.datasets.training.start,
@@ -281,7 +287,6 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 				});
 				if ( typeof result !== "undefined" ) {
 					db_models.save();
-					
 					res.header("Location", "/v"+version+"/models/"+model_id);
 					res.status(200).send({ "code": 200, message: "Successfully updated", model: new ModelSerializer(result).serialize() });
 				} else {
@@ -330,6 +335,10 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
  * @apiBody {String} datasets.testing[duration] Not implemented yet !
  * @apiBody {Integer} datasets.training.limit Number of Datapoints to retrieve for each Flows
  * @apiBody {String="adagrad" "adadelta" "adamax" "rmsprop" "momentum" "sgd" "adam"} compile.optimizer=adam Training optimizer
+ * @apiBody {Object[]} layers  
+ * @apiBody {String=input,output,hidden} layers.type 
+ * @apiBody {Integer} layers.units 
+ * @apiBody {String=relu, softmax} layers.activation Activation function in the dense layer
  * @apiBody {Number} compile.learningrate=0.001 Learning Rate
  * @apiBody {String="categoricalCrossentropy" "meanSquaredError" "binaryCrossentropy"} compile.loss=binaryCrossentropy Training loss function
  * @apiBody {String[]} compile.metrics="['accuracy']" Training metrics
@@ -366,6 +375,7 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				current_status: "READY",
 				current_status_last_update: moment().format(logDateFormat),
 				training_balance:	{},
+				layers: 	typeof req.body.layers!=="undefined"?req.body.layers:[ { "type": "input", "units": 1, "activation": "relu" }, { "type": "output", "activation": "softmax" }],
 				datasets: {
 					training: {
 						start: typeof req.body.datasets.training.start!=="undefined"?req.body.datasets.training.start:new Date(),
@@ -669,7 +679,7 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 				//where = "meta!='' AND valueInteger>-1 AND";
 			} else if(t6Model.strategy==="forecast") {
 			}
-			let gp_time = `GROUP BY time(1m) fill(previous)`;
+			let gp_time = `GROUP BY time(10s) fill(previous)`;
 			let lim = limit!==null?`LIMIT ${limit} OFFSET ${offset}`:"";
 			if(flow.time_to_live!==null) {
 				queryTs.push(`SELECT time, LAST(${fieldvalue}) as value, LAST(meta) as meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ${gp_time} ${lim}`);
@@ -706,7 +716,14 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 					const labelName			= category?category.name:"oov";
 					const oneHotEncodedLbl	= oneHotEncode(t6Model.labels.indexOf(labelName), t6Model.labels);
 					datapoint.label			= oneHotEncodedLbl;
-					datapoint.value			= datapoint.value;
+					if (t6Model.normalize) {
+						let normalizedValue;
+						normalizedValue = normalize(datapoint.value, t6Model.min[f_id], t6Model.max[f_id]);
+						//t6console.debug("TRAINING: dataMap normalize value", datapoint.value, f_id, t6Model.min[f_id], t6Model.max[f_id], normalizedValue);
+						datapoint.value			= !isNaN(normalizedValue)?normalizedValue:datapoint.value;
+					} else {
+						datapoint.value			= datapoint.value;
+					}
 					if(t6Model.flow_ids.length>1) {
 						const oneHotEncodedFid	= oneHotEncode(t6Model.flow_ids.indexOf(f_id), t6Model.flow_ids);
 						datapoint.flow_id		= oneHotEncodedFid;
@@ -849,23 +866,9 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 			// TODO : loadDataSets_v2 is not using tidy ... so we should dispose tensors
 		})
 		.then(() => {
-			res.status(202).send(new ModelSerializer({
-				current_status: t6Model.current_status,
-				current_status_last_update: t6Model.current_status_last_update,
-				process: "asynchroneous",
-				notification: "push-notification",
-				id: model_id,
-				limit: limit,
-				validation_split: validation_split,
-				//train_length: trainXs.length,
-				//valid_length: xValidSize,
-				continuous_features: t6Model.continuous_features,
-				categorical_features: t6Model.categorical_features,
-				categorical_features_classes: t6Model.categorical_features_classes,
-				training_balance: t6Model.training_balance,
-				flow_ids: t6Model.flow_ids,
-				labels: t6Model.labels
-			}).serialize());
+			t6Model.process						= "asynchroneous";
+			t6Model.notification				= "push-notification";
+			res.status(202).send(new ModelSerializer(t6Model).serialize());
 			db_models.save(); // saving the status
 		})
 		.catch((error) => {

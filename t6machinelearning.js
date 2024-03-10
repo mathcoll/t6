@@ -66,20 +66,35 @@ t6machinelearning.addCategorical = function(featureName, classes) {
 	return true;
 }
 
+t6machinelearning.addLayersToModel = async function(model, inputShape, outputShape) {
+	const mdls = t6Model.layers.map(async (layer) => {
+		if (layer.type==="input") {
+			layer.inputShape = inputShape;
+			//t6console.debug("buildModel adding input layer", layer);
+			await model.add( tf.layers.dense(layer) );
+		}
+		if (layer.type==="hidden") {
+			layer.inputShape = inputShape;
+			//t6console.debug("buildModel adding hidden layer", layer);
+			await model.add( tf.layers.dense(layer) );
+		}
+		if (layer.type==="output") {
+			layer.inputShape = inputShape;
+			layer.units = outputShape;
+			//t6console.debug("buildModel adding output layer", layer);
+			await model.add( tf.layers.dense(layer) );
+		}
+	});
+	return mdls;
+}
+
 t6machinelearning.buildModel = async function(inputShape, outputShape) {
 	return await new Promise((resolve) => {
 		const model = tf.sequential();
+		//t6console.debug("t6Model.layers BEFORE", t6Model.layers);
 		if(t6Model.strategy==="classification") {
-			model.add(tf.layers.dense({
-				inputShape: inputShape,
-				//batchInputShape: inputShape,
-				units: 1,
-				activation: "relu" // sigmoid | relu
-			}));
-			model.add(tf.layers.dense({
-				units: outputShape,
-				activation: "softmax" // sigmoid | softmax
-			}));
+			let mdls = t6machinelearning.addLayersToModel(model, inputShape, outputShape);
+
 		} else if(t6Model.strategy==="forecast") {
 			const input_layer_neurons = 100;
 			const rnn_input_layer_features = 2; // TODO : if it's the feature it should be dynamic (10)
@@ -117,6 +132,7 @@ t6machinelearning.buildModel = async function(inputShape, outputShape) {
 			}));
 			model.add(tf.layers.dense({ units: output_layer_neurons, inputShape: [output_layer_shape] }));
 		}
+		//t6console.debug("t6Model.layers AFTER", t6Model.layers);
 
 		let optimizer;
 		let learningrate = typeof t6Model.compile.learningrate?t6Model.compile.learningrate:0.001;
@@ -188,7 +204,7 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 						if (t6Model.normalize === true) {
 							const min = continuousFeatsMins[f][r.flow_id];
 							const max = continuousFeatsMaxs[f][r.flow_id];
-							return featureValues[f].push(normalize(r[f], min, max)); // normalize // TODO: ADDING TWICE because value is on both flows
+							return featureValues[f].push(normalize(r[f], min, max));
 						} else if (t6Model.splitToArray === true) {
 							return featureValues[f].push(splitToArray(r[f]));
 						} else {
