@@ -945,37 +945,83 @@ router.get("/:model_id([0-9a-z\-]+)/explain/training?", expressJwt({secret: jwts
 				res.status(412).send(new ErrorSerializer({"id": 14187, "code": 412, "message": "Model not yet trained: Precondition Failed"}).serialize());
 			} else {
 				const d3nInstance = new D3Node();
-				let width = 400, height = 200;
+				let width = 500, height = 300, margin = 50;
 				let svg = d3nInstance.createSVG(width, height);
 				const epochs = [...t6Model.history.training.accuracy.map((a, i) => { return i; })]; // TODO : should be a simplier way
 				const accuracy = t6Model.history.training.accuracy;
 				const loss = t6Model.history.training.loss;
+				const minAcc = Math.min(...t6Model.history.training.accuracy.map((a) => a));
+				const maxAcc = Math.max(...t6Model.history.training.accuracy.map((a) => a));
+				const minLoss = Math.min(...t6Model.history.training.loss.map((l) => l));
+				const maxLoss = Math.max(...t6Model.history.training.loss.map((l) => l));
 
 				// Create scales for x and y axes
-				const xScale = d3nInstance.d3.scaleLinear().domain([0, epochs.length - 1]).range([0, width]);
-				const yAccuracyScale = d3nInstance.d3.scaleLinear().domain([0, 1]).range([height, 0]);
-				const yLossScale = d3nInstance.d3.scaleLinear().domain([0, 100]).range([height, 0]);
+				const xScale = d3nInstance.d3.scaleLinear().domain([0, epochs.length - 1]).range([margin, width-margin]);
+				const yAccuracyScale = d3nInstance.d3.scaleLinear().domain([minAcc, maxAcc]).range([height-margin, margin]);
+				const yLossScale = d3nInstance.d3.scaleLinear().domain([minLoss, maxLoss]).range([height-margin, margin]);
 
 				// Create line generators for accuracy and loss
 				const accuracyLine = d3nInstance.d3.line().x((d, i) => xScale(epochs[i])).y(d => yAccuracyScale(d));
-				const lossLine = d3nInstance.d3.line().x((d, i) => xScale(epochs[i])).y(d => yAccuracyScale(d));
+				const lossLine = d3nInstance.d3.line().x((d, i) => xScale(epochs[i])).y(d => yLossScale(d));
 
 				// Append accuracy line to the SVG
-				svg.append('path')
-					.datum(accuracy)
-					.attr('fill', 'none')
-					.attr('stroke', 'green')
-					.attr('stroke-width', 2)
-					.attr('d', accuracyLine);
+				svg.append('path').datum(accuracy).attr('fill', 'none').attr('stroke', 'blue').attr('stroke-width', 2).attr('d', accuracyLine);
 
 				// Append loss line to the SVG
-				svg.append('path')
-					.datum(loss)
-					.attr('fill', 'none')
-					.attr('stroke', 'red')
-					.attr('stroke-width', 2)
-					.attr('d', lossLine);
-				res.setHeader("content-type", "image/svg+xml");
+				svg.append('path').datum(loss).attr('fill', 'none').attr('stroke', 'red').attr('stroke-width', 2).attr('d', lossLine);
+
+				// Add x-axis
+				svg.append('g').attr('transform', `translate(0, ${height - margin})`).call(d3nInstance.d3.axisBottom(xScale));
+
+				// Add y-axis for Accuracy
+				svg.append('g')
+					.attr('transform', `translate(${margin}, 0)`)
+					.call(d3nInstance.d3.axisLeft(yAccuracyScale))
+					.append('text')
+					.attr('fill', '#000')
+					.attr('transform', 'rotate(-90)')
+					.attr('y', 10)
+					.attr('dy', '0em')
+					.attr('text-anchor', 'end')
+					.text('Accuracy');
+
+				// Add y-axis for Loss
+				svg.append('g')
+					.attr('transform', `translate(${width - margin}, 0)`)
+					.call(d3nInstance.d3.axisRight(yLossScale))
+					.append('text')
+					.attr('fill', '#000')
+					.attr('transform', 'rotate(-90)')
+					.attr('y', 20)
+					.attr('dy', '0em')
+					.attr('text-anchor', 'end')
+					.text('Loss');
+
+				// Add legend for accuracy
+				svg.append('rect')
+					.attr('x', margin)
+					.attr('y',  height-(margin/2))
+					.attr('width', 10)
+					.attr('height',  10)
+					.attr('fill', 'blue');
+				svg.append('text')
+					.attr('x', margin+15)
+					.attr('y', height-15)
+					.text('Accuracy');
+
+				// Add legend for loss
+				svg.append('rect')
+					.attr('x', (width/2) - 45)
+					.attr('y',  height-(margin/2))
+					.attr('width', 10)
+					.attr('height', 10)
+					.attr('fill', 'red');
+				svg.append('text')
+					.attr('x', (width/2) - 30)
+					.attr('y', height-15)
+					.text('Loss');
+
+					res.setHeader("content-type", "image/svg+xml");
 				res.status(200).send(d3nInstance.svgString());
 			}
 		} else {
