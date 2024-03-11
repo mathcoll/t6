@@ -910,5 +910,81 @@ router.post("/:model_id([0-9a-z\-]+)/upload/?", upload.array("files[]", 10), exp
 	}
 });
 
+/**
+ * @api {get} /models/:model_id/explain/training Explain a Trained Model with a graph
+ * @apiName Explain a Trained Model with a graph
+ * @apiGroup 14. Models
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [model_id] The model Id you'd like to graph training
+ * 
+ * @apiSuccess {Svg} Svg image file
+ * 
+ * @apiUse 200
+ * @apiUse 401
+ * @apiUse 412
+ */
+router.get("/:model_id([0-9a-z\-]+)/explain/training?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	let model_id = req.params.model_id;
+	let user_id = req.user.id;
+	let inputData = Array.isArray(req.body)===false?[req.body]:req.body;
+	if (!req.body || !inputData) {
+		return res.status(412).send(new ErrorSerializer({ "id": 14186, "code": 412, "message": "Precondition Failed" }).serialize());
+	}
+	if (model_id) {
+		let query = {
+			"$and": [
+					{ "id": model_id },
+					{ "user_id": req.user.id },
+				]
+			};
+		let t6Model = models.findOne( query );
+		if ( t6Model ) {
+			if (t6Model.current_status!=="TRAINED") {
+				res.status(412).send(new ErrorSerializer({"id": 14187, "code": 412, "message": "Model not yet trained: Precondition Failed"}).serialize());
+			} else {
+				const d3nInstance = new D3Node();
+				let width = 400, height = 200;
+				let svg = d3nInstance.createSVG(width, height);
+				const epochs = [...t6Model.history.training.accuracy.map((a, i) => { return i; })]; // TODO : should be a simplier way
+				const accuracy = t6Model.history.training.accuracy;
+				const loss = t6Model.history.training.loss;
+
+				// Create scales for x and y axes
+				const xScale = d3nInstance.d3.scaleLinear().domain([0, epochs.length - 1]).range([0, width]);
+				const yAccuracyScale = d3nInstance.d3.scaleLinear().domain([0, 1]).range([height, 0]);
+				const yLossScale = d3nInstance.d3.scaleLinear().domain([0, 100]).range([height, 0]);
+
+				// Create line generators for accuracy and loss
+				const accuracyLine = d3nInstance.d3.line().x((d, i) => xScale(epochs[i])).y(d => yAccuracyScale(d));
+				const lossLine = d3nInstance.d3.line().x((d, i) => xScale(epochs[i])).y(d => yAccuracyScale(d));
+
+				// Append accuracy line to the SVG
+				svg.append('path')
+					.datum(accuracy)
+					.attr('fill', 'none')
+					.attr('stroke', 'green')
+					.attr('stroke-width', 2)
+					.attr('d', accuracyLine);
+
+				// Append loss line to the SVG
+				svg.append('path')
+					.datum(loss)
+					.attr('fill', 'none')
+					.attr('stroke', 'red')
+					.attr('stroke-width', 2)
+					.attr('d', lossLine);
+				res.setHeader("content-type", "image/svg+xml");
+				res.status(200).send(d3nInstance.svgString());
+			}
+		} else {
+			res.status(401).send(new ErrorSerializer({"id": 14273, "code": 401, "message": "Forbidden"}).serialize());
+		}
+	} else {
+		return res.status(412).send(new ErrorSerializer({ "id": 14188, "code": 412, "message": "Precondition Failed" }).serialize());
+	}
+});
+
 t6console.log(`Route ${path.basename(__filename)} loaded`.padEnd(59));
 module.exports = router;
