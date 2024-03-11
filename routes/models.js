@@ -679,7 +679,7 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 				//where = "meta!='' AND valueInteger>-1 AND";
 			} else if(t6Model.strategy==="forecast") {
 			}
-			let gp_time = `GROUP BY time(10s) fill(previous)`;
+			let gp_time = `GROUP BY time(60m) fill(previous)`;
 			let lim = limit!==null?`LIMIT ${limit} OFFSET ${offset}`:"";
 			if(flow.time_to_live!==null) {
 				queryTs.push(`SELECT time, LAST(${fieldvalue}) as value, LAST(meta) as meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ${gp_time} ${lim}`);
@@ -868,6 +868,7 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 		.then(() => {
 			t6Model.process						= "asynchroneous";
 			t6Model.notification				= "push-notification";
+			t6Model.history				= {};
 			res.status(202).send(new ModelSerializer(t6Model).serialize());
 			db_models.save(); // saving the status
 		})

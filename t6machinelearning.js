@@ -288,7 +288,12 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 			const labelsTensor	= tf.tensor2d(labels.map((label) => label));
 
 			// Concatenate tensors along axis 1
-			const inputTensor = tf.concat([timeTensor, valuesTensor, flowsTensor, labelsTensor], 1);
+			let inputTensor;
+			if (t6Model.continuous_features.indexOf("time") > -1) {
+				inputTensor = tf.concat([timeTensor, valuesTensor, flowsTensor, labelsTensor], 1);
+			} else {
+				inputTensor = tf.concat([valuesTensor, flowsTensor, labelsTensor], 1);
+			}
 			const mergedArray = inputTensor.arraySync();
 			//t6console.debug("mergedArray data:", mergedArray);
 
