@@ -918,6 +918,9 @@ router.post("/:model_id([0-9a-z\-]+)/upload/?", upload.array("files[]", 10), exp
  * 
  * @apiUse Auth
  * @apiParam {uuid-v4} [model_id] The model Id you'd like to graph training
+ * @apiQuery {Integer} [width] output width of SVG chart
+ * @apiQuery {Integer} [height] output height of SVG chart
+ * @apiQuery {Integer} [margin] margin on SVG chart
  * 
  * @apiSuccess {Svg} Svg image file
  * 
@@ -927,6 +930,9 @@ router.post("/:model_id([0-9a-z\-]+)/upload/?", upload.array("files[]", 10), exp
  */
 router.get("/:model_id([0-9a-z\-]+)/explain/training?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	let model_id = req.params.model_id;
+	let width = typeof parseInt(req.query.width, 10)!=="undefined"?parseInt(req.query.width, 10):500;
+	let height = typeof parseInt(req.query.height, 10)!=="undefined"?parseInt(req.query.height, 10):200;
+	let margin = typeof parseInt(req.query.margin, 10)!=="undefined"?parseInt(req.query.margin, 10):20;
 	let user_id = req.user.id;
 	let inputData = Array.isArray(req.body)===false?[req.body]:req.body;
 	if (!req.body || !inputData) {
@@ -945,7 +951,6 @@ router.get("/:model_id([0-9a-z\-]+)/explain/training?", expressJwt({secret: jwts
 				res.status(412).send(new ErrorSerializer({"id": 14187, "code": 412, "message": "Model not yet trained: Precondition Failed"}).serialize());
 			} else {
 				const d3nInstance = new D3Node();
-				let width = 500, height = 300, margin = 50;
 				let svg = d3nInstance.createSVG(width, height);
 				const epochs = [...t6Model.history.training.accuracy.map((a, i) => { return i; })]; // TODO : should be a simplier way
 				const accuracy = t6Model.history.training.accuracy;
