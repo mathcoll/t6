@@ -274,33 +274,66 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 		return tf.tidy(() => {
 			t6machinelearning.init(t6Model);
 			let batchSize = t6Model.batch_size;
+			t6console.debug("loadDataSets_v2 1", dataMap.size);
 
 			// Prepare arrays for the aggregated data
 			const times			= Array.from(dataMap.keys()).map((time) => time);
 			const values		= Array.from(dataMap.values()).map((data) => data.values);
 			const flow_ids		= Array.from(dataMap.values()).map((data) => data.flow_ids).flat();
 			const labels		= Array.from(dataMap.values()).map((data) => data.labels).flat();
+/*
+			t6console.debug("loadDataSets_v2 2 dataMap.size", dataMap.size);
+			t6console.debug("loadDataSets_v2 2 time.length", times.length);
+			t6console.debug("loadDataSets_v2 2 values.length", values.length);
+			t6console.debug("loadDataSets_v2 2 flow_ids.length", flow_ids.length);
+			t6console.debug("loadDataSets_v2 2 labels.length", labels.length);
+			t6console.debug("");
 
+			times.map((time) => {
+				t6console.debug("loadDataSets_v2 2 time", time);
+			});
+			values.map((value) => {
+				t6console.debug("loadDataSets_v2 2 value", value);
+			});
+			flow_ids.map((flow) => {
+				t6console.debug("loadDataSets_v2 2 flow", flow);
+			});
+			labels.map((label) => {
+				t6console.debug("loadDataSets_v2 2 label", label);
+			});
+*/
 			// Convert arrays to tensors
 			const timeTensor	= tf.tensor2d(times.map((time) => [time]), [times.length, 1]); // TODO : might adjust according to number of features ?
 			const valuesTensor	= tf.tensor2d(values.map((value) => value));
 			const flowsTensor	= tf.tensor2d(flow_ids.map((flow_id) => flow_id));
 			const labelsTensor	= tf.tensor2d(labels.map((label) => label));
+			t6console.debug("loadDataSets_v2 3 dataMap", dataMap.size);
+			t6console.debug("loadDataSets_v2 3 timeTensor", timeTensor.size);
+			t6console.debug("loadDataSets_v2 3 valuesTensor", valuesTensor.size);
+			t6console.debug("loadDataSets_v2 3 flowsTensor", flowsTensor.size);
+			t6console.debug("loadDataSets_v2 3 labelsTensor", labelsTensor.size);
 
 			// Concatenate tensors along axis 1
 			let inputTensor;
 			if (t6Model.continuous_features.indexOf("time") > -1) {
 				inputTensor = tf.concat([timeTensor, valuesTensor, flowsTensor, labelsTensor], 1);
 			} else {
+				t6console.debug("loadDataSets_v2 3.5", [valuesTensor.size, flowsTensor.size, labelsTensor.size]);
+				t6console.debug("loadDataSets_v2 valuesTensor", valuesTensor);
+				t6console.debug("loadDataSets_v2 flowsTensor", flowsTensor);
+				t6console.debug("loadDataSets_v2 labelsTensor", labelsTensor);
 				inputTensor = tf.concat([valuesTensor, flowsTensor, labelsTensor], 1);
+				t6console.debug("loadDataSets_v2 AFTER CONCAT");
 			}
 			const mergedArray = inputTensor.arraySync();
 			//t6console.debug("mergedArray data:", mergedArray);
+			t6console.debug("loadDataSets_v2 4", dataMap.size);
 
 			let featuresTensor = mergedArray;
 			if(t6Model.shuffle===true) {
 				tf.util.shuffle(inputTensor);
 			}
+			t6console.debug("loadDataSets_v2 5", dataMap.size);
 
 			if (t6Model.continuous_features?.length > 0) {
 				t6Model.continuous_features.map((cName) => {
@@ -309,6 +342,7 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 					});
 				});
 			}
+			t6console.debug("loadDataSets_v2 6", dataMap.size);
 			if (t6Model.categorical_features?.length > 0) {
 				t6Model.categorical_features.map((cName) => {
 					let cClasses = (t6Model.categorical_features_classes.filter((f) => f.name===cName)).map((m) => m.values)[0];
@@ -320,6 +354,7 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 					}
 				});
 			}
+			t6console.debug("loadDataSets_v2 7", dataMap.size);
 
 			//t6console.debug("LOADING DS times", times);
 			//t6console.debug("LOADING DS values", values);

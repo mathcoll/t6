@@ -641,6 +641,8 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 		}
 		// get data from each flows
 		t6Model.current_status = "TRAINING";
+		t6Model.min = typeof t6Model.min!=="undefined"?t6Model.min:{}
+		t6Model.max = typeof t6Model.max!=="undefined"?t6Model.max:{}
 		t6Model.current_status_last_update	= moment().format(logDateFormat);
 		let queryTs = [];
 		t6Model.flow_ids.map(async (flow_id) => {
@@ -742,17 +744,21 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 
 			const dataMap = new Map();
 			let balancedDatapointsCount = {};
-			flattenedData.map((datapoint) => {
+			flattenedData.map((datapoint, i) => {
 				const time = parseInt(moment(datapoint.time).format("x"), 10);
 				balancedDatapointsCount[datapoint.label] = typeof balancedDatapointsCount[datapoint.label]!=="undefined"?balancedDatapointsCount[datapoint.label]:0;
 				// Balance dataset : based on the minorityClass !!! // TODO
 				if( balancedDatapointsCount[datapoint.label]<minorityClass ) {
-					if (!dataMap.has(time)) {
-						dataMap.set(time, { values: [], labels: [], flow_ids: [] });
+					if(datapoint.value) {
+						if (!dataMap.has(time)) {
+							dataMap.set(time, { values: [], labels: [], flow_ids: [] });
+						}
+						dataMap.get(time).values.push(datapoint.value);
+						dataMap.get(time).labels.push(datapoint.label);
+						dataMap.get(time).flow_ids.push(datapoint.flow_id);
+					} else {
+						t6console.debug("flattenedData", i, datapoint);
 					}
-					dataMap.get(time).values.push(datapoint.value);
-					dataMap.get(time).labels.push(datapoint.label);
-					dataMap.get(time).flow_ids.push(datapoint.flow_id);
 				}
 				balancedDatapointsCount[datapoint.label]++;
 			});
@@ -824,9 +830,12 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 								//t6console.debug("evaluate: loss", t6Model.history.evaluation.loss);
 								//t6console.debug("evaluate: accuracy", t6Model.history.evaluation.accuracy);
 								let user = users.findOne({"id": req.user.id });
-								if (user && typeof user.pushSubscription !== "undefined" ) {
+								if (user && typeof user.pushSubscription!=="undefined" && typeof user.pushSubscription.endpoint!=="undefined" ) {
 									let payload = `{"type": "message", "title": "Model is trained", "body": "- Features[Con]: ${t6Model.continuous_features?.length}\\n- Features[Cat]: ${t6Model.categorical_features?.length}\\n- Label(s): ${t6Model.labels?.length}\\n- Flow(s): ${t6Model.flow_ids?.length}\\n- Total dataset: ${totalSize}\\n- Train dataset: ${trainSize} (${(1-t6Model.validation_split)*100}%)\\n- Balance limit *: ${t6Model.minorityClass}\\n- Evaluate dataset *: ${evaluateSize} (${t6Model.validation_split*100}%)\\n- Evaluate loss: ${evaluate.loss}\\n- Evaluate accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
 									let result = t6notifications.sendPush(user, payload);
+									result.catch((error) => {
+										t6console.debug("pushSubscription error", error);
+									});
 									if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
 										t6console.debug("pushSubscription", pushSubscription);
 										t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
@@ -859,7 +868,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				//res.status(200).send(result);
 				// TODO : END Training Here
 			}); // END loadDataSets_v2
-			// TODO : loadDataSets_v2 is not using tidy ... so we should dispose tensors
+			// TODO : loadDataSets_v2 is using tidy but not a promise ... so we should dispose tensors
 		})
 		.then(() => {
 			t6Model.process						= "asynchroneous";
@@ -1026,7 +1035,7 @@ router.get("/:model_id([0-9a-z\-]+)/explain/training?", expressJwt({secret: jwts
 					.attr('y', height-15)
 					.text('Loss');
 
-					res.setHeader("content-type", "image/svg+xml");
+				res.setHeader("content-type", "image/svg+xml");
 				res.status(200).send(d3nInstance.svgString());
 			}
 		} else {
@@ -1034,6 +1043,90 @@ router.get("/:model_id([0-9a-z\-]+)/explain/training?", expressJwt({secret: jwts
 		}
 	} else {
 		return res.status(412).send(new ErrorSerializer({ "id": 14188, "code": 412, "message": "Precondition Failed" }).serialize());
+	}
+});
+
+/**
+ * @api {get} /models/:model_id/explain/model Draw deeplearning model
+ * @apiName Draw deeplearning model
+ * @apiGroup 14. Models
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [model_id] The model Id you'd like to graph training
+ * @apiQuery {Integer} [width] output width of SVG chart
+ * @apiQuery {Integer} [height] output height of SVG chart
+ * @apiQuery {Integer} [margin] margin on SVG chart
+ * 
+ * @apiSuccess {Svg} Svg image file
+ * 
+ * @apiUse 200
+ * @apiUse 401
+ * @apiUse 412
+ */
+router.get("/:model_id([0-9a-z\-]+)/explain/model?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	let model_id = req.params.model_id;
+	let margin = typeof parseInt(req.query.margin, 10)!=="undefined"?parseInt(req.query.margin, 10):20;
+	let width = (typeof parseInt(req.query.width, 10)!=="undefined"?parseInt(req.query.width, 10):500) + margin;
+	let height = (typeof parseInt(req.query.height, 10)!=="undefined"?parseInt(req.query.height, 10):200) + margin;
+	let user_id = req.user.id;
+	let inputData = Array.isArray(req.body)===false?[req.body]:req.body;
+	if (!req.body || !inputData) {
+		return res.status(412).send(new ErrorSerializer({ "id": 14186, "code": 412, "message": "Precondition Failed" }).serialize());
+	}
+	if (model_id) {
+		let query = { "$and": [ { "id": model_id }, { "user_id": req.user.id }, ] };
+		let t6Model = models.findOne(query);
+		if (t6Model) {
+			const d3nInstance = new D3Node();
+			let svg = d3nInstance.createSVG(width, height).append('g').attr('transform', `translate(${margin}, ${margin})`);
+		
+			// Draw arrows between layers
+			const layerWidth = width / t6Model.layers.length;
+			const y = height / 2;
+			const radius = 30;
+			const unitSpacing = (radius*5/2);
+		
+			// Draw circles for layers
+			t6Model.layers.forEach((layer, index) => {
+				layer.units = typeof layer.units!=="undefined"?layer.units:1;
+				const x = index * layerWidth/2;
+					const yOffset = unitSpacing * (layer.units - 1) / 2;
+					for (let i = 0; i < layer.units; i++) {
+						const cx = x;
+						const cy = (height / 2) - yOffset + i * unitSpacing;
+						svg.append('circle')
+							.attr('cx', cx)
+							.attr('cy', cy)
+							.attr('r', radius)
+							.attr('fill', '#ccc');
+			
+						svg.append('text')
+							.attr('x', cx)
+							.attr('y', cy)
+							.attr('text-anchor', 'middle')
+							.attr('dominant-baseline', 'middle')
+							.text(layer.type);
+						/*
+						// Draw line from input to hidden layer
+						svg.append('line')
+							.attr('x1', 2*radius+margin)
+							.attr('y1', y)
+							.attr('x2', cx-radius)
+							.attr('y2', cy)
+							.attr('stroke', '#000')
+							.attr('stroke-width', '2');
+						*/
+					}
+			});
+		
+			res.setHeader("content-type", "image/svg+xml");
+			res.status(200).send(d3nInstance.svgString());
+		} else {
+			res.status(401).send(new ErrorSerializer({ "id": 14274, "code": 401, "message": "Forbidden" }).serialize());
+		}
+	} else {
+		return res.status(412).send(new ErrorSerializer({ "id": 14190, "code": 412, "message": "Precondition Failed" }).serialize());
 	}
 });
 
