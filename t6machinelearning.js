@@ -91,7 +91,7 @@ t6machinelearning.addLayersToModel = async function(model, inputShape, outputSha
 
 t6machinelearning.buildModel = async function(inputShape, outputShape) {
 	return await new Promise((resolve) => {
-		model = tf.sequential();
+		const model = tf.sequential();
 		//t6console.debug("t6Model.layers BEFORE", t6Model.layers);
 		if(t6Model.strategy==="classification") {
 			let mdls = t6machinelearning.addLayersToModel(model, inputShape, outputShape);
