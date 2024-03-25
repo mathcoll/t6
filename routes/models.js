@@ -893,6 +893,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 									t6Model.current_status_last_update	= moment().format(logDateFormat);
 									db_models.save(); // saving the status
 								});
+								t6machinelearning.dispose(tfModel);
 							});
 						} else {
 							t6console.debug("Missing Validating data", evaluateSize);

@@ -91,7 +91,7 @@ t6machinelearning.addLayersToModel = async function(model, inputShape, outputSha
 
 t6machinelearning.buildModel = async function(inputShape, outputShape) {
 	return await new Promise((resolve) => {
-		const model = tf.sequential();
+		model = tf.sequential();
 		//t6console.debug("t6Model.layers BEFORE", t6Model.layers);
 		if(t6Model.strategy==="classification") {
 			let mdls = t6machinelearning.addLayersToModel(model, inputShape, outputShape);
@@ -393,6 +393,10 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 			return {valuesTensor, flowsTensor, labelsTensor, inputTensor, featuresTensor};
 		}); // END OF tf.tidy(
 	//});
+};
+
+t6machinelearning.dispose = function(model) {
+	model.dispose();
 };
 
 t6machinelearning.trainModelDs = async function(model, dataset, options) {
