@@ -15,11 +15,19 @@ function ModelSerializer(model) {
 			},
 			dataLinks : {
 				self : function(model) {
-					if ( typeof model.id!=="undefined" ) {
-						return sprintf("%s/v%s/models/%s", baseUrl_https, version, model.id);
-					} else {
-						return null;
-					}
+					return typeof model.id!=="undefined"?sprintf("%s/v%s/models/%s", baseUrl_https, version, model.id):null;
+				},
+				train : function(model) {
+					return typeof model.id!=="undefined"?sprintf("%s/v%s/models/%s/train", baseUrl_https, version, model.id):null;
+				},
+				predict : function(model) {
+					return typeof model.id!=="undefined"?sprintf("%s/v%s/models/%s/predict", baseUrl_https, version, model.id):null;
+				},
+				"explain-training" : function(model) {
+					return typeof model.id!=="undefined"?sprintf("%s/v%s/models/%s/explain/training", baseUrl_https, version, model.id):null;
+				},
+				"explain-model" : function(model) {
+					return typeof model.id!=="undefined"?sprintf("%s/v%s/models/%s/explain/model", baseUrl_https, version, model.id):null;
 				},
 			},
 			objects: {

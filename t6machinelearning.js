@@ -68,31 +68,35 @@ t6machinelearning.addCategorical = function(featureName, classes) {
 }
 
 t6machinelearning.addLayersToModel = async function(model, inputShape, outputShape) {
-	const mdls = t6Model.layers.map(async (layer) => {
-		if (layer.type==="input") {
-			layer.inputShape = inputShape;
-			t6console.debug("buildModel adding input layer", layer);
-			await model.add( tf.layers.dense(layer) );
-		}
-		if (layer.type==="hidden") {
-			layer.inputShape = inputShape;
-			t6console.debug("buildModel adding hidden layer", layer);
-			await model.add( tf.layers.dense(layer) );
-		}
-		if (layer.type==="output") {
-			layer.inputShape = inputShape;
-			layer.units = outputShape;
-			t6console.debug("buildModel adding output layer", layer);
-			await model.add( tf.layers.dense(layer) );
-		}
+	return await new Promise((resolve) => {
+		const mdls = t6Model.layers.map(async (layer) => {
+			if (layer.type==="input") {
+				layer.inputShape = inputShape;
+				t6console.debug("buildModel adding input layer", layer);
+				await model.add( tf.layers.dense(layer) );
+			}
+			if (layer.type==="hidden") {
+				layer.inputShape = inputShape;
+				t6console.debug("buildModel adding hidden layer", layer);
+				await model.add( tf.layers.dense(layer) );
+			}
+			if (layer.type==="output") {
+				layer.inputShape = inputShape;
+				layer.units = outputShape;
+				t6console.debug("buildModel adding output layer", layer);
+				await model.add( tf.layers.dense(layer) );
+			}
+		});
+		t6console.debug("t6Model.layers ENDING");
+		//return mdls;
+		resolve(mdls);
 	});
-	return mdls;
 }
 
 t6machinelearning.buildModel = async function(inputShape, outputShape) {
 	return await new Promise((resolve) => {
 		const model = tf.sequential();
-		//t6console.debug("t6Model.layers BEFORE", t6Model.layers);
+		t6console.debug("t6Model.layers BEFORE");
 		if(t6Model.strategy==="classification") {
 			let mdls = t6machinelearning.addLayersToModel(model, inputShape, outputShape);
 
@@ -133,7 +137,7 @@ t6machinelearning.buildModel = async function(inputShape, outputShape) {
 			}));
 			model.add(tf.layers.dense({ units: output_layer_neurons, inputShape: [output_layer_shape] }));
 		}
-		//t6console.debug("t6Model.layers AFTER", t6Model.layers);
+		t6console.debug("t6Model.layers AFTER", model);
 
 		let optimizer;
 		let learningrate = typeof t6Model.compile.learningrate?t6Model.compile.learningrate:0.001;
@@ -161,6 +165,7 @@ t6machinelearning.buildModel = async function(inputShape, outputShape) {
 				optimizer = tf.train.adam(learningrate);
 				break;
 		}
+		t6console.debug("MODEL compiling:");
 		model.compile({
 			optimizer: optimizer,
 			loss: typeof t6Model.compile.loss!=="undefined"?t6Model.compile.loss:"binaryCrossentropy",
@@ -283,22 +288,22 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 			const labels		= Array.from(dataMap.values()).map((data) => data.labels); //.flat();
 			t6console.debug("loadDataSets_v2 2 dataMap.size", dataMap.size);
 
-			t6console.debug("loadDataSets_v2 2 time.length", times.length);
-			times.map((time, i) => {
-				t6console.debug("loadDataSets_v2 2 time", i+1, time);
-			});
-			t6console.debug("loadDataSets_v2 2 values.length", values.length);
-			values.map((value, i) => {
-				t6console.debug("loadDataSets_v2 2 value", i+1, value);
-			});
-			t6console.debug("loadDataSets_v2 2 flow_ids.length", flow_ids.length);
-			flow_ids.map((flow, i) => {
-				t6console.debug("loadDataSets_v2 2 flow", i+1, flow);
-			});
-			t6console.debug("loadDataSets_v2 2 labels.length", labels.length);
-			labels.map((label, i) => {
-				t6console.debug("loadDataSets_v2 2 label", i+1, label);
-			});
+			// t6console.debug("loadDataSets_v2 2 time.length", times.length);
+			// times.map((time, i) => {
+			// 	t6console.debug("loadDataSets_v2 2 time", i+1, time);
+			// });
+			// t6console.debug("loadDataSets_v2 2 values.length", values.length);
+			// values.map((value, i) => {
+			// 	t6console.debug("loadDataSets_v2 2 value", i+1, value);
+			// });
+			// t6console.debug("loadDataSets_v2 2 flow_ids.length", flow_ids.length);
+			// flow_ids.map((flow, i) => {
+			// 	t6console.debug("loadDataSets_v2 2 flow", i+1, flow);
+			// });
+			// t6console.debug("loadDataSets_v2 2 labels.length", labels.length);
+			// labels.map((label, i) => {
+			// 	t6console.debug("loadDataSets_v2 2 label", i+1, label);
+			// });
 
 			// Convert arrays to tensor
 			const timeTensor	= tf.tensor2d(times.map((time) => [time]));									// BUG ???? tensor2d ?????
@@ -317,23 +322,45 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 			const labelsTensor	= tf.squeeze( tf.tensor(labels.map((label) => label)) );
 			t6console.debug("loadDataSets_v2 3 labelsTensor.size", labelsTensor.size);
 			t6console.debug("loadDataSets_v2 3 labelsTensor.shape initial", labelsTensor.shape);
-			const reshapedLabelsTensor = labelsTensor.reshape([times.length, t6Model.flow_ids.length * t6Model.labels.length]);
-			t6console.debug("loadDataSets_v2 3 reshapedLabelsTensor.shape reshaped", reshapedLabelsTensor.shape);
 
 			let components = [];
+			if (t6Model.continuous_features.indexOf("value") > -1) {
+				if (t6Model.predictionInProgress) {
+					let reshapedInputData = values.map(value => [[value[0], value[1]]]);
+					reshapedInputData = reshapedInputData.map(data => {
+						let paddedData = data.map(value => [...value, 0, 0, 0, 0, 0, 0]); // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+						return paddedData;
+					});
+					components.push(reshapedInputData);
+					t6console.debug("loadDataSets_v2 Added reshaped values");
+				} else {
+					components.push(valuesTensor);
+					t6console.debug("loadDataSets_v2 Added values");
+				}
+			}
 			if (t6Model.continuous_features.indexOf("time") > -1) {
 				components.push(timeTensor);
-			} else if (t6Model.continuous_features.indexOf("flow") > -1) { // TODO : Should not be a continuous feature TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-				components.push(flowsTensor);
+				t6console.debug("loadDataSets_v2 Added times");
 			}
-			components.push(valuesTensor);
-			components.push(reshapedLabelsTensor);
+			if (t6Model.continuous_features.indexOf("flow") > -1) { // TODO : Should not be a continuous feature TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+				components.push(flowsTensor);
+				t6console.debug("loadDataSets_v2 Added flows");
+			}
+			if (t6Model.predictionInProgress) {
+			} else {
+				const reshapedLabelsTensor = labelsTensor.reshape([times.length, t6Model.flow_ids.length * t6Model.labels.length]);
+				t6console.debug("loadDataSets_v2 3 reshapedLabelsTensor.shape reshaped", reshapedLabelsTensor.shape);
+				components.push(reshapedLabelsTensor);
+				t6console.debug("loadDataSets_v2 Added reshaped Labels");
+			}
 			//t6console.debug("loadDataSets_v2 3.5", [valuesTensor.size, reshapedFlowsTensor.size, reshapedLabelsTensor.size]);
 			//t6console.debug("loadDataSets_v2 3.5", [valuesTensor.shape, reshapedFlowsTensor.shape, reshapedLabelsTensor.shape]);
 			//t6console.debug("loadDataSets_v2 3.5 valuesTensor", valuesTensor);
 			//t6console.debug("loadDataSets_v2 3.5 flowsTensor", flowsTensor);
 			//t6console.debug("loadDataSets_v2 3.5 labelsTensor", labelsTensor);
+			
 			//inputTensor = tf.concat([valuesTensor, reshapedFlowsTensor, reshapedLabelsTensor], 1);
+			t6console.debug("loadDataSets_v2 components", components.map((c) => {return c.shape;}));
 			let inputTensor = tf.concat(components, 1);
 
 			const mergedArray = inputTensor.arraySync();
@@ -382,7 +409,6 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 			t6console.debug("LOADING DS flow_ids.length:", flow_ids.length);
 			t6console.debug("LOADING DS labels.length:", labels.length);
 			t6console.debug("LOADING DS inputTensor.shape:", inputTensor.shape);
-
 			t6console.debug("LOADING DS timeTensor dtype:", timeTensor.dtype);
 			t6console.debug("LOADING DS valuesTensor dtype:", valuesTensor.dtype);
 			t6console.debug("LOADING DS flowsTensor dtype:", flowsTensor.dtype);
@@ -479,14 +505,10 @@ t6machinelearning.predict = async function(tfModel, inputDatasetX, options={}) {
 	return new Promise((resolve) => {
 		let prediction;
 		t6console.debug("ML PREDICTION strategy", t6Model.strategy);
-		if(t6Model.strategy==="classification") {
-			prediction = tfModel.predict(inputDatasetX, options);
-		} else if(t6Model.strategy==="forecast") {
-			prediction = tfModel.predict(tf.tensor(inputDatasetX), options); // TODO using tensor ????
-		}
+		prediction = tfModel.predict(inputDatasetX, options);
 		const argMaxIndex = tf.argMax(prediction, 1).dataSync()[0];
 		t6console.debug("ML PREDICTION argMaxIndex", argMaxIndex);
-		t6console.debug("ML PREDICTION:"); // I should not have [ [[1],]] but [ [[1, 0],]] ????
+		t6console.debug("ML PREDICTION:");
 		prediction.print();
 		resolve(prediction);
 	});

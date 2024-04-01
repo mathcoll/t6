@@ -3,6 +3,7 @@ var express = require("express");
 var router = express.Router();
 var ModelSerializer = require("../serializers/model");
 var ErrorSerializer = require("../serializers/error");
+const { exists } = require("fs-extra");
 const options = {
 	epochs: 0,
 	validationData: null,
@@ -64,6 +65,51 @@ const findNearestDatapoints = (timestamp, dataArrays) => {
 		closestLabels.push(closestLabel);
 	}
 	return {closestValues, closestFlows, closestLabels};
+}
+function preprocessInputData(rows, t6Model) {
+	let mergedRows = [];
+	const flowData = [];
+	let balancedDatapointsCount = {};
+	let classCounts = {};
+	// Iterate over each array of rows
+	//Object.keys(rows).forEach((rowArray, index) => {
+	//rows.forEach((rowArray, index) => {
+	for(let index=0; index<Object.keys(rows).length; index++) {
+		let rowArray = Object.values(rows)[index];
+		let flowId = t6Model.flow_ids[index];
+		t6console.debug("preprocessInputData -> rows", rows);
+		t6console.debug("preprocessInputData -> rowArray", rowArray);
+		t6console.debug("preprocessInputData -> flowId", flowId);
+		// Count classes
+		const updatedRows = rowArray.map((datapoint) => {
+			t6console.debug("preprocessInputData -> rowArray -> datapoint", datapoint);
+			const oneHotEncodedFid	= t6Model.flow_ids.length>1?oneHotEncode(index, t6Model.flow_ids):t6Model.flow_ids.indexOf(datapoint.flow_id);
+			datapoint.flow_id		= oneHotEncodedFid; //t6Model.flow_ids[index]; // Add flow_id from t6Model
+			datapoint.meta			= (typeof datapoint.meta!=="undefined" && datapoint.meta!==null)?getJson(datapoint.meta):{ categories: ["oov"] };
+			const category_id		= datapoint.meta.categories[0];
+			const category			= categories.findOne({id: category_id});
+			const labelName			= category?category.name:"oov";
+			const oneHotEncodedLbl	= oneHotEncode(t6Model.labels.indexOf(labelName), t6Model.labels);
+			datapoint.label			= oneHotEncodedLbl;
+			//t6console.debug("datapoint.label", labelName, datapoint.label);
+			balancedDatapointsCount[datapoint.label] = typeof balancedDatapointsCount[datapoint.label]!=="undefined"?balancedDatapointsCount[datapoint.label]+1:1;
+			if (labelName!=="oov") {
+				// Do not count oov, because it is used as minorityClass
+				classCounts[labelName] = typeof classCounts[labelName]!=="undefined"?classCounts[labelName]+1:1;
+			}
+			//t6console.debug("datapoint", datapoint);
+			return datapoint;
+		});
+		// Add the updated rows to the mergedRows array
+		mergedRows.push(updatedRows);
+		flowData[flowId] = mergedRows[index];
+	//});
+	}
+	const minorityClass = Math.min(...Object.entries(classCounts).map((cls) => cls[1]));
+	t6Model.minorityClass			= minorityClass;
+	t6Model.balancedDatapointsCount	= balancedDatapointsCount;
+	t6Model.training_balance		= t6Model.labels.map((labelName) => { return balancedDatapointsCount[oneHotEncode(t6Model.labels.indexOf(labelName), t6Model.labels)] });
+	return {mergedRows, flowData, balancedDatapointsCount, minorityClass};
 }
 
 /**
@@ -453,13 +499,13 @@ router.delete("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret,
 });
 
 /**
- * @api {get} /models/:model_id/predict Predict over a Model
- * @apiName Predict over a Model
+ * @api {get} /models/:model_id/predict Predict using a Model
+ * @apiName Predict using a Model
  * @apiGroup 14. Models
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {uuid-v4} [model_id] The model Id you'd like to edit
+ * @apiParam {uuid-v4} [model_id] The model Id you'd like to use for prediction
  * 
  * @apiUse 200
  * @apiUse 401
@@ -481,127 +527,82 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 			};
 		let t6Model = models.findOne( query );
 		if ( t6Model ) {
-			const path = `${mlModels.models_user_dir}/${req.user.id}/${t6Model.id}`;
-			if (!fs.existsSync(path)) {
-				res.status(412).send(new ErrorSerializer({"id": 14186, "code": 412, "message": "Model not yet trained: Precondition Failed"}).serialize());
+			if (t6Model.current_status!=="TRAINED") {
+				return res.status(412).send(new ErrorSerializer({ "id": 14186, "code": 412, "message": "Precondition Failed" }).serialize());
 			} else {
-				t6machinelearning.loadLayersModel(`file:///${path}/model.json`, t6Model)
-				.then((tfModel) => {
-					tfModel.summary();
-					//inputData.map((m) => m.flow_id=t6Model.flow_ids.indexOf(m.flow_id));
-					inputData.map((m) => {
-						let category_id = (m.meta!==null && typeof m.meta!=="undefined" && typeof m.meta.categories!=="undefined") ? (m.meta.categories[0]) : null;
-						m.label = (category_id!==null && typeof category_id!=="undefined" && category_id!=="") ? categories.findOne({ id: category_id }).name : 0;
-						if (t6Model.normalize === true && m.flow_id) {
-							const min = t6Model.min[m.flow_id];
-							const max = t6Model.max[m.flow_id];
-							t6console.debug("inputData value before normalize", min, "<=", m.value, "<=", max);
-							m.value = normalize(parseFloat(m.value), min, max);
-							t6console.debug("inputData value after normalize", m.value);
-						}
-						return m;
-					});
-					//t6console.debug("inputData 2", inputData);
-					/*
-					if (t6Model.continuous_features?.length > 0) {
-						t6Model.continuous_features.map((cName) => {
-							t6Model.flow_ids.map((f_id) => {
-								t6machinelearning.addContinuous(cName, f_id, t6Model.min[f_id], t6Model.max[f_id]);
-							})
-						});
-					}
-					if (t6Model.categorical_features?.length > 0) {
-						t6Model.categorical_features.map((cName) => {
-							let cClasses = (t6Model.categorical_features_classes.filter((f) => f.name===cName)).map((m) => m.values)[0];
-							cClasses = (Array.isArray(cClasses)===true)?cClasses:[];
-							if(cName === "flow_id") {
-								t6machinelearning.addCategorical(cName, t6Model.flow_ids);
-							} else {
-								t6machinelearning.addCategorical(cName, cClasses);
-							}
-						});
-					}
-					*/
-					const dataMap = new Map();
-					inputData.map((datapoint) => {
-						const time = parseInt(moment(typeof datapoint.time!=="undefined"?datapoint:datapoint.timestamp).format("x"), 10);
-						if (!dataMap.has(time)) {
-							dataMap.set(time, { values: [], labels: [], flow_ids: [] });
-						}
-						datapoint.meta			= (typeof datapoint.meta!=="undefined" && datapoint.meta!==null)?getJson(datapoint.meta):{ categories: ["oov"] };
-						const category_id		= datapoint.meta.categories[0];
-						const category			= categories.findOne({id: category_id});
-						const labelName			= category?category.name:"oov";
-						const oneHotEncodedLbl	= oneHotEncode(t6Model.labels.indexOf(labelName), t6Model.labels);
+				const path = `${mlModels.models_user_dir}/${req.user.id}/${t6Model.id}`;
+				if (!fs.existsSync(path)) {
+					res.status(412).send(new ErrorSerializer({"id": 14187, "code": 412, "message": "Model not yet trained: Precondition Failed"}).serialize());
+				} else {
+					t6machinelearning.loadLayersModel(`file:///${path}/model.json`, t6Model).then((tfModel) => {
+						tfModel.summary();
 
-						dataMap.get(time).values.push(parseInt(datapoint.value));
-						dataMap.get(time).labels.push(oneHotEncodedLbl);
-						if(t6Model.flow_ids.length>1) {
-							const oneHotEncodedFid	= oneHotEncode(t6Model.flow_ids.indexOf(datapoint.flow_id), t6Model.flow_ids);
-							dataMap.get(time).flow_ids.push(oneHotEncodedFid);
-						} else {
-							dataMap.get(time).flow_ids.push([t6Model.flow_ids.indexOf(datapoint.flow_id)]);
-						}
-						//t6console.debug("dataMap values.push", parseInt(datapoint.value));
-						//t6console.log("LABEL:", datapoint.label);
-					});
-					/*
-					dataMap.forEach((d) => {
-						t6console.debug("values:", d.values);
-						t6console.debug("labels:", d.labels);
-						t6console.debug("flow_ids:", d.flow_ids);
-					});
-					*/
-					t6machinelearning.loadDataSets_v2(dataMap, t6Model)
-					.then((dataset) => {
-						const valuesTensor	= dataset.valuesTensor;
-						const flowsTensor	= dataset.flowsTensor;
-						const labelsTensor	= dataset.labelsTensor;
-						const inputTensor	= dataset.inputTensor;
-						const featuresTensor= dataset.featuresTensor;
-						const inputShape	= [1, inputTensor.shape[1]];
-						//const outputShape = [1, valuesTensor.shape[1]];
-						const outputShape	= labelsTensor.shape[1];
-						
-						const totalSize						= inputTensor.shape[0];
-						const trainSize						= Math.floor(totalSize * (1 - t6Model.validation_split));
-						const evaluateSize					= totalSize - trainSize;
-						const batchSize						= valuesTensor.shape[0]; // Get the number of data points
-						const numFeatures					= inputTensor.shape[1]; // Get the number of features
-						const timeSteps						= 1; // Assuming each data point represents a single time step
-						const reshapedInput					= inputTensor.reshape([totalSize, timeSteps, numFeatures]);
-						t6console.debug("ML MODEL LOADED with inputShape", inputShape);
-						t6console.debug("ML MODEL LOADED with outputShape", outputShape);
-						t6console.debug("ML MODEL LOADED with t6Model.validation_split", t6Model.validation_split);
-						t6console.debug("ML DATASET totalSize", totalSize);
-						t6console.debug("ML DATASET evaluateSize", evaluateSize);
-						t6console.debug("ML DATASET trainSize", trainSize);
-						t6console.debug("ML DATASET batchSize", batchSize);
-						t6console.debug("ML DATASET timeSteps", timeSteps);
-						t6console.debug("ML DATASET numFeatures", numFeatures);
-						
-						options.epochs			= t6Model.epochs;
-						t6machinelearning.predict(tfModel, reshapedInput).then((prediction) => {
-							let p = [];
-							let arr = Array.from(prediction.dataSync()); // TODO: multiple predictions ?
-							arr.map((score, i) => {
-								t6console.error("Model predict LABEL:", (t6Model.labels)[i], score.toFixed(4));
-								p.push({ label: (t6Model.labels)[i], prediction: parseFloat(score.toFixed(4)) });
-							});
-							//t6console.debug("prediction", prediction, arr);
-							const bestMatchPrediction = Math.max(...arr);
-							const bestMatchIndex = arr.indexOf(bestMatchPrediction);
-							res.status(200).send({ "code": 200, value: inputData[0].value, labels: t6Model.labels, predictions: p, bestMatchIndex: bestMatchIndex, bestMatchPrediction: parseFloat(bestMatchPrediction.toFixed(4)), bestMatchLabel: (t6Model.labels)[bestMatchIndex] }); // TODO: missing serializer
-							t6events.addStat("t6App", "ML Prediction", user_id, user_id, {"user_id": user_id, "model_path": path+t6Model.id});
-						}).catch(function(err) {
-							t6console.error("Model predict ERROR", err);
+						let predictData = [];
+						t6Model.flow_ids.map((flow_id) => {
+							predictData[flow_id] = [];
 						});
-					})
-					.catch((error) => {
-						t6console.error("Model predict ERROR", error);
-						res.status(412).send(new ErrorSerializer({ "id": 14187, "code": 412, "message": "Precondition Failed", error: error }).serialize());
+						inputData.map((point) => {
+							(predictData[point.flow_id]).push(point);
+							//t6console.debug("pushing point to  ---->", point.flow_id, (predictData[point.flow_id]).length);
+						});
+						//t6console.debug("predictData stringify ---->", JSON.stringify(predictData));
+						//t6console.debug("predictData ---->", predictData["6d844fbf-29c0-4a41-8c6a-0e9f3336cea3"]);
+
+						let {mergedRows, flowData, balancedDatapointsCount, minorityClass} = preprocessInputData(predictData, t6Model);
+						const dataMap = new Map();
+						const currTime = new Date();
+						t6console.debug("mergedRows", mergedRows);
+						mergedRows.map((r) => {
+							const date = moment( typeof r.time!=="undefined"?r.time:(typeof r.timestamp!=="undefined"?r.timestamp:currTime) ).format("x");
+							//t6console.debug("Date from array", r.time, date);
+							const {closestValues, closestFlows, closestLabels} = findNearestDatapoints(date, Object.values(flowData));
+							dataMap.set(date, { values: closestValues, flow_ids: closestFlows, labels: closestLabels });
+							t6console.debug("closestValues", closestValues);
+							t6console.debug("closestFlows", closestFlows);
+							t6console.debug("closestLabels", closestLabels);
+						});
+						t6Model.data_length = [...dataMap.entries()].length;
+
+						t6Model.predictionInProgress = true;
+						t6machinelearning.loadDataSets_v2(dataMap, t6Model).then((dataset) => {
+							let valuesTensor	= dataset.valuesTensor;
+							let flowsTensor		= dataset.flowsTensor;
+							let labelsTensor	= dataset.labelsTensor;
+							let inputTensor		= dataset.inputTensor;
+							let featuresTensor	= dataset.featuresTensor;
+							let inputShape		= [1, inputTensor.shape[1]];
+							let outputShape;
+							if (t6Model.flow_ids.length>1) { // TODO : might be a better code ? TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+								outputShape		= labelsTensor.shape[1] * labelsTensor.shape[2]; // shape : [7, 2, 3] 2 flows of 3 classes
+							} else {
+								outputShape		= labelsTensor.shape[1]; // shape : [7, 3] only 1 flow of 3 classes
+							}
+							const numFeatures	= inputTensor.shape[2]; // Get the number of features
+							t6console.error("Model predict before reshape:", inputTensor, labelsTensor, [t6Model.data_length, 1, numFeatures]);
+							const reshapedInput	= inputTensor.reshape([t6Model.data_length, 1, numFeatures]);
+							t6console.error("Model predict after reshape:", numFeatures);
+							t6machinelearning.predict(tfModel, reshapedInput).then((prediction) => {
+								let p = [];
+								let arr = Array.from(prediction.dataSync()); // TODO: multiple predictions ?
+								arr.map((score, i) => {
+									t6console.error("Model predict LABEL:", (t6Model.labels)[i], score.toFixed(4));
+									p.push({ label: (t6Model.labels)[i], prediction: parseFloat(score.toFixed(4)) });
+								});
+								//t6console.debug("prediction", prediction, arr);
+								const bestMatchPrediction = Math.max(...arr);
+								const bestMatchIndex = arr.indexOf(bestMatchPrediction);
+								res.status(200).send({ "code": 200, value: inputData[0].value, labels: t6Model.labels, predictions: p, bestMatchIndex: bestMatchIndex, bestMatchPrediction: parseFloat(bestMatchPrediction.toFixed(4)), bestMatchLabel: (t6Model.labels)[bestMatchIndex] }); // TODO: missing serializer
+								t6events.addStat("t6App", "ML Prediction", user_id, user_id, {"user_id": user_id, "model_path": path+t6Model.id});
+							}).catch(function(error) {
+								t6console.error("Model predict ERROR", error);
+								res.status(412).send(new ErrorSerializer({ "id": 14187, "code": 412, "message": "Precondition Failed", error: error }).serialize());
+							});
+						}).catch((error) => {
+							t6console.error("Model loadDataSets ERROR", error);
+							res.status(412).send(new ErrorSerializer({ "id": 14189, "code": 412, "message": "Precondition Failed", error: error }).serialize());
+						});
 					});
-				});
+				}
 			}
 		} else {
 			res.status(401).send(new ErrorSerializer({"id": 14272, "code": 401, "message": "Forbidden"}).serialize());
@@ -626,25 +627,31 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
  * @apiUse 412
  */
 router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	let model_id = req.params.model_id;
-	let user_id = req.user.id;
+	const model_id		= req.params.model_id;
+	const user_id		= req.user.id;
 	if ( model_id ) {
-		let query = {
-			"$and": [
-					{ "id": model_id },
-					{ "user_id": user_id },
-				]
-			};
+		let query = { "$and": [ { "id": model_id }, { "user_id": user_id }, ] };
 		let t6Model = models.findOne( query );
-		let limit = t6Model.datasets.training.limit;
-		let validation_split = typeof t6Model.validation_split!=="undefined"?t6Model.validation_split:60;
-		let offset = 0;
-		if (str2bool(req.query.force)!==true && t6Model.current_status==="TRAINING") {
-			res.status(409).send(new ErrorSerializer({"id": 14056, "code": 409, "message": "Conflict, Training already in progress. Please use force query parameter to start a new training or wait."}).serialize());
+		if (!t6Model) {
+			res.status(412).send(new ErrorSerializer({"id": 14058, "code": 412, "message": "Precondition Failed: undefined model"}).serialize());
 			return;
 		}
 		if (t6Model.datasets.training.limit <= t6Model.batch_size) {
 			res.status(412).send(new ErrorSerializer({"id": 14057, "code": 412, "message": "Precondition Failed: batch size must be less than the training length"}).serialize());
+			return;
+		}
+		if (str2bool(req.query.force)!==true && t6Model.current_status==="TRAINING") {
+			res.status(409).send(new ErrorSerializer({"id": 14056, "code": 409, "message": "Conflict, Training already in progress. Please use force query parameter to start a new training or wait."}).serialize());
+			return;
+		}
+		let limit				= typeof t6Model.datasets.training.limit!=="undefined"?t6Model.datasets.training.limit:100;
+		let validation_split	= typeof t6Model.validation_split!=="undefined"?t6Model.validation_split:60;
+		const startDate			= typeof t6Model.datasets.training.start!=="undefined"?moment(t6Model.datasets.training.start):moment().startOf("day");
+		const endDate			= typeof t6Model.datasets.training.end!=="undefined"?moment(t6Model.datasets.training.end):moment().endOf("day");
+		const timeWindow		= typeof t6Model.window_time_frame!=="undefined"?t6Model.window_time_frame:"60m";
+		let offset				= 0;
+		if (startDate.isAfter(endDate)) {
+			res.status(412).send(new ErrorSerializer({"id": 14059, "code": 412, "message": "Precondition Failed: invalid dates."}).serialize());
 			return;
 		}
 		// get data from each flows
@@ -653,7 +660,6 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 		t6Model.max = typeof t6Model.max!=="undefined"?t6Model.max:{}
 		t6Model.current_status_last_update	= moment().format(logDateFormat);
 		let queryTs = [];
-		let dataFromFlows = [];
 		t6Model.flow_ids.map(async (flow_id) => {
 			let flow = flows.findOne({id: flow_id});
 			let retention = flow?.retention;
@@ -686,7 +692,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			t6Model.strategy = typeof t6Model.strategy!=="undefined"?t6Model.strategy:"classification";
 			let window = Math.round((flow.time_to_live!==undefined && flow.time_to_live!==null)?flow.time_to_live/60:60);
 			let where = "";
-			let gp_time = `GROUP BY time(${typeof t6Model.window_time_frame!=="undefined"?t6Model.window_time_frame:"60m"}) fill(previous)`;
+			let gp_time = `GROUP BY time(${typeof t6Model.window_time_frame!=="undefined"?t6Model.window_time_frame:`${window}m`}) fill(previous)`;
 			let lim = limit!==null?`LIMIT ${limit} OFFSET ${offset}`:"";
 			if(flow.time_to_live!==null) {
 				queryTs.push(`SELECT time, LAST(${fieldvalue}) as value, LAST(meta) as meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ${gp_time} ${lim}`);
@@ -695,40 +701,28 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			}
 		});
 		t6console.log("queryTs:", queryTs);
-		executeAllQueries(queryTs)
-		.then((rows) => {
-			// Initialize an empty array to store the merged rows
-			const mergedRows = [];
-			let balancedDatapointsCount = {};
-			let classCounts = {};
-			// Iterate over each array of rows
-			rows.forEach((rowArray, index) => {
-				// Count classes
-				const updatedRows = rowArray.map((datapoint) => {
-					const oneHotEncodedFid	= t6Model.flow_ids.length>1?oneHotEncode(index, t6Model.flow_ids):t6Model.flow_ids.indexOf(datapoint.flow_id);
-					datapoint.flow_id		= oneHotEncodedFid; //t6Model.flow_ids[index]; // Add flow_id from t6Model
-					datapoint.meta			= (typeof datapoint.meta!=="undefined" && datapoint.meta!==null)?getJson(datapoint.meta):{ categories: ["oov"] };
-					const category_id		= datapoint.meta.categories[0];
-					const category			= categories.findOne({id: category_id});
-					const labelName			= category?category.name:"oov";
-					const oneHotEncodedLbl	= oneHotEncode(t6Model.labels.indexOf(labelName), t6Model.labels);
-					datapoint.label			= oneHotEncodedLbl;
-					//t6console.debug("datapoint.label", labelName, datapoint.label);
-					balancedDatapointsCount[datapoint.label] = typeof balancedDatapointsCount[datapoint.label]!=="undefined"?balancedDatapointsCount[datapoint.label]+1:1;
-					if (labelName!=="oov") {
-						// Do not count oov, because it is used as minorityClass
-						classCounts[labelName] = typeof classCounts[labelName]!=="undefined"?classCounts[labelName]+1:1;
-					}
-					return datapoint;
-				});
-				// Add the updated rows to the mergedRows array
-				mergedRows.push(updatedRows);
-			});
-			//t6console.debug("balancedDatapointsCount", balancedDatapointsCount);
-			const minorityClass = Math.min(...Object.entries(classCounts).map((cls) => cls[1]));
+		executeAllQueries(queryTs).then((rows) => {
+			const dateArray = [];
+			let currentDate = startDate.clone();
+			let duration;
+			switch(timeWindow.slice(-1)) {
+				case "Y": duration = moment.duration({"years" : timeWindow.substring(0, timeWindow.length - 1)}); break;
+				case "Q": duration = moment.duration({"quarters" : timeWindow.substring(0, timeWindow.length - 1)}); break;
+				case "M": duration = moment.duration({"months" : timeWindow.substring(0, timeWindow.length - 1)}); break;
+				case "w": duration = moment.duration({"weeks" : timeWindow.substring(0, timeWindow.length - 1)}); break;
+				case "d": duration = moment.duration({"days" : timeWindow.substring(0, timeWindow.length - 1)}); break;
+				case "h": duration = moment.duration({"hours" : timeWindow.substring(0, timeWindow.length - 1)}); break;
+				case "m": duration = moment.duration({"minutes" : timeWindow.substring(0, timeWindow.length - 1)}); break;
+				case "s": duration = moment.duration({"seconds" : timeWindow.substring(0, timeWindow.length - 1)}); break;
+			}
+			while (currentDate.isBefore(endDate) ) {
+				dateArray.push(currentDate.add(duration).format("x"));
+			}
 
-			// Calculate min and max values for each flow specified in queryTs
+			t6console.debug("ML MODEL rows rows rows", rows);
+			let {mergedRows, flowData, balancedDatapointsCount, minorityClass} = preprocessInputData(rows, t6Model);
 			const minMaxValues = queryTs.map((query, index) => {
+				// Calculate min and max values for each flow specified in queryTs
 				const r = rows[index];
 				const min = Math.min(...r.map((m) => m.value));
 				const max = Math.max(...r.map((m) => m.value));
@@ -742,89 +736,71 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 					max: max
 				};
 			});
-			//t6console.debug("Min and max values for each flow from queryTs:", minMaxValues);
-
-			//t6console.debug(mergedRows);
-			const flowData = [];
-			t6Model.flow_ids.forEach((flowId, index) => {
-				flowData[flowId] = mergedRows[index];
+			const dataMap = new Map();
+			dateArray.map((date) => {
+				const {closestValues, closestFlows, closestLabels} = findNearestDatapoints(date, Object.values(flowData));
+				dataMap.set(date, { values: closestValues, flow_ids: closestFlows, labels: closestLabels });
+				//t6console.debug("Date from array", date, {closestValues, closestFlows, closestLabels});
 			});
+			t6Model.data_length = [...dataMap.entries()].length;
 
-			const startDate = moment(t6Model.datasets.training.start);
-			const endDate = moment(t6Model.datasets.training.end); // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-			const timeWindow = typeof t6Model.window_time_frame!=="undefined"?t6Model.window_time_frame:"60m";
-			let duration;
-			switch(timeWindow.slice(-1)) {
-				case "Y": duration = moment.duration({"years" : timeWindow.substring(0, timeWindow.length - 1)}); break;
-				case "Q": duration = moment.duration({"quarters" : timeWindow.substring(0, timeWindow.length - 1)}); break;
-				case "M": duration = moment.duration({"months" : timeWindow.substring(0, timeWindow.length - 1)}); break;
-				case "w": duration = moment.duration({"weeks" : timeWindow.substring(0, timeWindow.length - 1)}); break;
-				case "d": duration = moment.duration({"days" : timeWindow.substring(0, timeWindow.length - 1)}); break;
-				case "h": duration = moment.duration({"hours" : timeWindow.substring(0, timeWindow.length - 1)}); break;
-				case "m": duration = moment.duration({"minutes" : timeWindow.substring(0, timeWindow.length - 1)}); break;
-				case "s": duration = moment.duration({"seconds" : timeWindow.substring(0, timeWindow.length - 1)}); break;
-			}
+			/*
 			t6console.debug("ML defining time window array from:");
 			t6console.debug("- startDate:", startDate);
 			t6console.debug("- endDate:", endDate);
 			t6console.debug("- timeWindow:", timeWindow);
-			const dateArray = [];
-			let currentDate = startDate.clone();
-			while (currentDate.isBefore(endDate) ) {
-				dateArray.push(currentDate.add(duration).format("x"));
-			}
-			//t6console.debug("dateArray:", dateArray);
-			const dataMap = new Map();
-			dateArray.map((date) => {
-				const {closestValues, closestFlows, closestLabels} = findNearestDatapoints(date, Object.values(flowData));
-				//t6console.debug("Date from array", date, {closestValues, closestFlows, closestLabels});
-				dataMap.set(date, { values: closestValues, flow_ids: closestFlows, labels: closestLabels });
-			});
-			//t6console.debug(dataMap);
+			t6console.debug("- dateArray.length:", dateArray.length);
+			t6console.debug("ML dataMap:");
+			t6console.debug("- dataMap entries length", t6Model.data_length);
+			t6console.debug("- dataMap keys length", [...dataMap.keys()].length);
+			t6console.debug("- dataMap values length", [...dataMap.values()].length);
+			t6console.debug([...dataMap.entries()]);
+			t6console.debug([...dataMap.keys()]);
+			t6console.debug([...dataMap.values()]);
+			*/
 
-			t6Model.balancedDatapointsCount	= balancedDatapointsCount;
-			t6Model.minorityClass			= minorityClass;
-			t6Model.training_balance		= t6Model.labels.map((labelName) => { return balancedDatapointsCount[oneHotEncode(t6Model.labels.indexOf(labelName), t6Model.labels)] });
-			t6Model.data_length				= [...dataMap.entries()].length;
-
-			//t6console.debug("flattenedData length", flattenedData.length);
-			t6console.debug("dataMap entries length", t6Model.data_length);
-			t6console.debug("dataMap keys length", [...dataMap.keys()].length);
-			t6console.debug("dataMap values length", [...dataMap.values()].length);
-			t6console.debug("balancedDatapointsCount", balancedDatapointsCount);
-
-			//t6console.debug([...dataMap.entries()]);
-			//t6console.debug([...dataMap.keys()]);
-			//t6console.debug([...dataMap.values()]);
-			t6machinelearning.loadDataSets_v2(dataMap, t6Model)
-			.then((dataset) => {
+			t6machinelearning.loadDataSets_v2(dataMap, t6Model).then((dataset) => {
 				let valuesTensor	= dataset.valuesTensor;
 				let flowsTensor		= dataset.flowsTensor;
 				let labelsTensor	= dataset.labelsTensor;
 				let inputTensor		= dataset.inputTensor;
 				let featuresTensor	= dataset.featuresTensor;
-				//let inputShape		=  inputTensor.shape[1];
-				let inputShape		= [1, inputTensor.shape[1]];
-				//let outputShape 	= [1, valuesTensor.shape[1]];
+				let inputShape		= [1, inputTensor.shape[2]];
 				let outputShape;
 				if (t6Model.flow_ids.length>1) { // TODO : might be a better code ? TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
 					outputShape		= labelsTensor.shape[1] * labelsTensor.shape[2]; // shape : [7, 2, 3] 2 flows of 3 classes
 				} else {
 					outputShape		= labelsTensor.shape[1]; // shape : [7, 3] only 1 flow of 3 classes
 				}
-				t6machinelearning.buildModel(inputShape, outputShape)
-				.then((tfModel) => {
+				t6console.debug("ML MODEL BUILDING with inputShape", inputShape, inputTensor.shape);
+				t6console.debug("ML MODEL BUILDING with inputShape", outputShape);
+				t6machinelearning.buildModel(inputShape, outputShape).then((tfModel) => {
 					tfModel.summary();
 					t6console.debug("ML MODEL BUILT with inputShape", inputShape);
 					t6console.debug("ML MODEL BUILT with outputShape", outputShape);
 
+					t6console.debug("inputTensor");
+					t6console.debug(inputTensor.dataSync());
+
 					options.epochs = t6Model.epochs;
-					const timeSteps						= 1; // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-					const totalSize						= inputTensor.shape[0];
-					const batchSize						= inputTensor.shape[0]; // Get the number of data points
-					const trainSize						= Math.floor(totalSize * (1 - t6Model.validation_split));
-					const evaluateSize					= totalSize - trainSize;
-					const numFeatures					= inputTensor.shape[1]; // Get the number of features
+					const timeSteps									= 1; // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+					const totalSize									= inputTensor.shape[0];
+					const batchSize									= inputTensor.shape[0]; // Get the number of data points
+					const trainSize									= Math.floor(totalSize * (1 - t6Model.validation_split));
+					const evaluateSize								= totalSize - trainSize;
+					const numFeatures								= inputTensor.shape[2]; // Get the number of features
+
+					t6console.debug("[batchSize, timeSteps, numFeatures]", [batchSize, timeSteps, numFeatures], inputTensor.shape);
+
+					const reshapedInput								= inputTensor.reshape([batchSize, timeSteps, numFeatures]);
+					const reshapedLabels							= labelsTensor.reshape([batchSize, timeSteps, outputShape]);
+					const [inputXTrain, inputXEvaluate]				= tf.split(reshapedInput, [trainSize, evaluateSize]);
+					const [inputLabelsTrain, inputLabelsEvaluate]	= tf.split(reshapedLabels, [trainSize, evaluateSize]);
+
+					t6console.debug("inputXTrain");
+					t6console.debug(inputXTrain.dataSync());
+					t6console.debug("inputLabelsTrain");
+					t6console.debug(inputLabelsTrain.dataSync());
 
 					t6console.debug("ML DATASET totalSize", totalSize);
 					t6console.debug("ML DATASET evaluateSize", evaluateSize);
@@ -832,32 +808,19 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 					t6console.debug("ML DATASET batchSize", batchSize);
 					t6console.debug("ML DATASET timeSteps", timeSteps);
 					t6console.debug("ML DATASET numFeatures", numFeatures);
-
-					const reshapedInput					= inputTensor.reshape([batchSize, timeSteps, numFeatures]);
 					t6console.debug("ML DATASET reshapedInput.shape", reshapedInput.shape);
-
-					const reshapedLabels				= labelsTensor.reshape([batchSize, timeSteps, outputShape]);
 					t6console.debug("ML DATASET reshapedLabels.shape", reshapedLabels.shape);
-
-					const [inputXTrain, inputXEvaluate]			= tf.split(reshapedInput, [trainSize, evaluateSize]);
 					t6console.debug("ML DATASET inputXTrain.shape", inputXTrain.shape);
 					t6console.debug("ML DATASET inputXEvaluate.shape", inputXEvaluate.shape);
-
-					const [inputLabelsTrain, inputLabelsEvaluate]	= tf.split(reshapedLabels, [trainSize, evaluateSize]);
 					t6console.debug("ML DATASET inputLabelsTrain.shape", inputLabelsTrain.shape);
 					t6console.debug("ML DATASET inputLabelsEvaluate.shape", inputLabelsEvaluate.shape);
 
 					t6console.debug("ML READY TO BE TRAINED !!!");
-					t6machinelearning.trainModel(tfModel, inputXTrain, inputLabelsTrain, options)
-					.then((trained) => {
+					t6machinelearning.trainModel(tfModel, inputXTrain, inputLabelsTrain, options).then((trained) => {
 						t6console.debug("ML TRAINED");
-						t6Model.history.training = {
-							loss	: trained.history.loss,
-							accuracy: trained.history.acc
-						};
+						t6Model.history.training = { loss: trained.history.loss, accuracy: trained.history.acc };
 						if(evaluateSize>0) {
-							t6machinelearning.evaluateModel(tfModel, inputXEvaluate, inputLabelsEvaluate)
-							.then((evaluate) => {
+							t6machinelearning.evaluateModel(tfModel, inputXEvaluate, inputLabelsEvaluate).then((evaluate) => {
 								t6Model.history.evaluation = {
 									loss	: evaluate.loss,
 									accuracy: evaluate.accuracy
@@ -866,7 +829,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 								//t6console.debug("trained: accuracy", t6Model.history.training.accuracy);
 								//t6console.debug("evaluate: loss", t6Model.history.evaluation.loss);
 								//t6console.debug("evaluate: accuracy", t6Model.history.evaluation.accuracy);
-								let user = users.findOne({"id": req.user.id });
+								let user = users.findOne({"id": user_id });
 								if (user && typeof user.pushSubscription!=="undefined" && typeof user.pushSubscription.endpoint!=="undefined" ) {
 									let payload = `{"type": "message", "title": "Model is trained", "body": "- Features[Con]: ${t6Model.continuous_features?.length}\\n- Features[Cat]: ${t6Model.categorical_features?.length}\\n- Label(s): ${t6Model.labels?.length}\\n- Flow(s): ${t6Model.flow_ids?.length}\\n- Total dataset: ${totalSize}\\n- Train dataset: ${trainSize} (${(1-t6Model.validation_split)*100}%)\\n- Balance limit *: ${t6Model.minorityClass}\\n- Evaluate dataset *: ${evaluateSize} (${t6Model.validation_split*100}%)\\n- Evaluate loss: ${evaluate.loss}\\n- Evaluate accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
 									let result = t6notifications.sendPush(user, payload);
@@ -883,7 +846,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 										t6console.debug("pushSubscription is now disabled on User", error);
 									}
 								}
-								const path = `${mlModels.models_user_dir}/${user.id}/`;
+								const path = `${mlModels.models_user_dir}/${user_id}/`;
 								if (!fs.existsSync(path)) { fs.mkdirSync(path); }
 								t6console.debug("Model saving to", path+t6Model.id);
 								t6events.addStat("t6App", "ML Trained Model saved", user_id, user_id, {"user_id": user_id, "model_path": path+t6Model.id});
@@ -891,7 +854,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 									t6console.debug("Model saved", saved);
 									t6Model.current_status = "TRAINED";
 									t6Model.current_status_last_update	= moment().format(logDateFormat);
-									db_models.save(); // saving the status
+									db_models.save(); // saving the status // BUG, what if evaluate size is == 0?
 								});
 								t6machinelearning.dispose(tfModel);
 							});
@@ -899,17 +862,17 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 							t6console.debug("Missing Validating data", evaluateSize);
 						}
 					}).catch((error) => {
-						t6console.error("ML Training Error:", error);
+						t6console.error("ML Train Error:", error);
 					});
 				}).catch((error) => {
-					t6console.error("ML Building Model Error:", error);
+					t6console.error("ML Build Model Error:", error);
 				});
 			}); // END loadDataSets_v2
 			// TODO : loadDataSets_v2 is using tidy but not a promise ... so we should dispose tensors
 		}).then(() => {
-			t6Model.process						= "asynchroneous";
-			t6Model.notification				= "push-notification";
-			t6Model.history				= {};
+			t6Model.process			= "asynchroneous";
+			t6Model.notification	= "push-notification";
+			t6Model.history			= {};
 			res.status(202).send(new ModelSerializer(t6Model).serialize());
 			db_models.save(); // saving the status
 		}).catch((error) => {
@@ -938,9 +901,9 @@ router.post("/:model_id([0-9a-z\-]+)/upload/?", upload.array("files[]", 10), exp
 	let user_id = req.user.id;
 	if (model_id) {
 		let modelFiles = req.files;
-		t6console.log("modelFiles", modelFiles);
+		t6console.debug("modelFiles", modelFiles);
 		modelFiles.map((f) => {
-			t6console.log("f", f);
+			t6console.debug("f", f);
 			let is = fs.createReadStream(f.path);
 			let os = fs.createWriteStream(`tmp/models/${user_id}/${model_id}/${f.originalname}`);
 			is.pipe(os);
