@@ -88,7 +88,7 @@ t6machinelearning.addLayersToModel = async function(model, inputShape, outputSha
 				await model.add( tf.layers.dense(layer) );
 			}
 		});
-		t6console.debug("t6Model.layers ENDING");
+		t6console.debug("buildModel ENDING");
 		//return mdls;
 		resolve(mdls);
 	});
@@ -319,47 +319,40 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 			t6console.debug("loadDataSets_v2 3 flowsTensor.shape", flowsTensor.shape);
 
 			const labelsTensor	= tf.tensor(labels.map((label) => label));
-			//const reshapedLabelsTensor = labelsTensor.reshape([times.length, t6Model.labels.length]);
-			const reshapedLabelsTensor = labelsTensor.reshape([times.length, t6Model.flow_ids.length * t6Model.labels.length]);
 			t6console.debug("loadDataSets_v2 3 labelsTensor.size", labelsTensor.size);
 			t6console.debug("loadDataSets_v2 3 labelsTensor.shape", labelsTensor.shape);
-			t6console.debug("loadDataSets_v2 3 reshapedLabelsTensor.size", reshapedLabelsTensor.size);
-			t6console.debug("loadDataSets_v2 3 reshapedLabelsTensor.shape", reshapedLabelsTensor.shape);
-
+			//const reshapedLabelsTensor = labelsTensor.reshape([times.length, t6Model.labels.length]);
+			let reshapedLabelsTensor;
+			if (!t6Model.predictionInProgress) {
+				reshapedLabelsTensor = labelsTensor.reshape([times.length, t6Model.flow_ids.length * t6Model.labels.length]);
+				t6console.debug("loadDataSets_v2 3 reshapedLabelsTensor.size", reshapedLabelsTensor.size);
+				t6console.debug("loadDataSets_v2 3 reshapedLabelsTensor.shape", reshapedLabelsTensor.shape);
+			}
 			let components = [];
 			if (t6Model.continuous_features.indexOf("value") > -1) {
-				if (t6Model.predictionInProgress) {
-					let reshapedInputData = values.map(value => [[value[0], value[1]]]);
-					reshapedInputData = reshapedInputData.map(data => {
-						let paddedData = data.map(value => [...value, 0, 0, 0, 0, 0, 0]); // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-						return paddedData;
-					});
-					components.push(reshapedInputData);
-					t6console.debug("loadDataSets_v2 Added reshaped values");
-				} else {
-					components.push(valuesTensor);
-					t6console.debug("loadDataSets_v2 Added values");
-				}
+				// if (t6Model.predictionInProgress) {
+				// 	let reshapedInputData = values.map(value => [[value[0], value[1]]]);
+				// 	reshapedInputData = reshapedInputData.map(data => {
+				// 		let paddedData = data.map(value => [...value, 0, 0, 0, 0, 0, 0]); // TODO TODO TODO TODO TODO TODO TODO
+				// 		return paddedData;
+				// 	});
+				// 	components.push(reshapedInputData);
+				// 	t6console.debug("loadDataSets_v2 Added reshaped values");
+				// } else {
+				// 	components.push(valuesTensor);
+				// 	t6console.debug("loadDataSets_v2 Added values");
+				// }
+				components.push(valuesTensor);
+				t6console.debug("loadDataSets_v2 Added values");
 			}
 			if (t6Model.continuous_features.indexOf("time") > -1) {
 				components.push(timeTensor);
 				t6console.debug("loadDataSets_v2 Added times");
 			}
-			if (t6Model.continuous_features.indexOf("flow") > -1) { // TODO : Should not be a continuous feature TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+			if (t6Model.continuous_features.indexOf("flow") > -1) { // TODO : Should not be a continuous feature TODO TODO TODO
 				components.push(flowsTensor);
 				t6console.debug("loadDataSets_v2 Added flows");
 			}
-			if (t6Model.predictionInProgress) {
-
-			} else {
-				//components.push(reshapedLabelsTensor);
-				//t6console.debug("loadDataSets_v2 Added reshaped Labels");
-			}
-			//t6console.debug("loadDataSets_v2 3.5", [valuesTensor.size, reshapedFlowsTensor.size, reshapedLabelsTensor.size]);
-			//t6console.debug("loadDataSets_v2 3.5", [valuesTensor.shape, reshapedFlowsTensor.shape, reshapedLabelsTensor.shape]);
-			//t6console.debug("loadDataSets_v2 3.5 valuesTensor", valuesTensor);
-			//t6console.debug("loadDataSets_v2 3.5 flowsTensor", flowsTensor);
-			//t6console.debug("loadDataSets_v2 3.5 labelsTensor", labelsTensor);
 			
 			t6console.debug("loadDataSets_v2 concatenating components as input", components.map((c) => {return c.shape;}));
 			let inputTensor = tf.concat(components, 1);
@@ -371,7 +364,6 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 			if(t6Model.shuffle===true) {
 				tf.util.shuffle(inputTensor);
 			}
-			//t6console.debug("loadDataSets_v2 4 featuresTensor", featuresTensor);
 
 			if (t6Model.continuous_features?.length > 0) {
 				t6Model.continuous_features.map((cName) => {
@@ -404,17 +396,32 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 			//t6console.debug("LOADING DS featuresTensor data:", featuresTensor);
 
 			t6console.debug("LOADING DS batchSize:", batchSize);
-
 			t6console.debug("LOADING DS times.length:", times.length);
 			t6console.debug("LOADING DS values.length:", values.length);
 			t6console.debug("LOADING DS flow_ids.length:", flow_ids.length);
 			t6console.debug("LOADING DS labels.length:", labels.length);
+			t6console.debug("");
+			t6console.debug("LOADING DS timeTensor.size:", timeTensor.size);
+			t6console.debug("LOADING DS valuesTensor.size:", valuesTensor.size);
+			t6console.debug("LOADING DS flowsTensor.size:", flowsTensor.size);
+			t6console.debug("LOADING DS labelsTensor.size:", labelsTensor.size);
+			t6console.debug("LOADING DS reshapedLabelsTensor.size:", reshapedLabelsTensor?.size);
+			t6console.debug("LOADING DS inputTensor.size:", inputTensor.size);
+			t6console.debug("");
+			t6console.debug("LOADING DS timeTensor.shape:", timeTensor.shape);
+			t6console.debug("LOADING DS valuesTensor.shape:", valuesTensor.shape);
+			t6console.debug("LOADING DS flowsTensor.shape:", flowsTensor.shape);
+			t6console.debug("LOADING DS labelsTensor.shape:", labelsTensor.shape);
+			t6console.debug("LOADING DS reshapedLabelsTensor.shape:", reshapedLabelsTensor?.shape);
 			t6console.debug("LOADING DS inputTensor.shape:", inputTensor.shape);
-			t6console.debug("LOADING DS timeTensor dtype:", timeTensor.dtype);
-			t6console.debug("LOADING DS valuesTensor dtype:", valuesTensor.dtype);
-			t6console.debug("LOADING DS flowsTensor dtype:", flowsTensor.dtype);
-			t6console.debug("LOADING DS labelsTensor dtype:", labelsTensor.dtype);
-			t6console.debug("LOADING DS inputTensor dtype:", inputTensor.dtype);
+			t6console.debug("");
+			t6console.debug("LOADING DS timeTensor.dtype:", timeTensor.dtype);
+			t6console.debug("LOADING DS valuesTensor.dtype:", valuesTensor.dtype);
+			t6console.debug("LOADING DS flowsTensor.dtype:", flowsTensor.dtype);
+			t6console.debug("LOADING DS labelsTensor.dtype:", labelsTensor.dtype);
+			t6console.debug("LOADING DS reshapedLabelsTensor.dtype:", reshapedLabelsTensor?.dtype);
+			t6console.debug("LOADING DS inputTensor.dtype:", inputTensor.dtype);
+			t6console.debug("");
 
 			//resolve({valuesTensor, flowsTensor, balancedInputTensor, balancedLabelsTensor, shuffledData});
 			return {valuesTensor, flowsTensor, labelsTensor: reshapedLabelsTensor, inputTensor, featuresTensor};

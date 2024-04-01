@@ -77,12 +77,12 @@ function preprocessInputData(rows, t6Model) {
 	for(let index=0; index<Object.keys(rows).length; index++) {
 		let rowArray = Object.values(rows)[index];
 		let flowId = t6Model.flow_ids[index];
-		t6console.debug("preprocessInputData -> rows", rows);
-		t6console.debug("preprocessInputData -> rowArray", rowArray);
-		t6console.debug("preprocessInputData -> flowId", flowId);
+		// t6console.debug("preprocessInputData -> rows", rows);
+		// t6console.debug("preprocessInputData -> rowArray", rowArray);
+		// t6console.debug("preprocessInputData -> flowId", flowId);
 		// Count classes
 		const updatedRows = rowArray.map((datapoint) => {
-			t6console.debug("preprocessInputData -> rowArray -> datapoint", datapoint);
+			//t6console.debug("preprocessInputData -> rowArray -> datapoint", datapoint);
 			const oneHotEncodedFid	= t6Model.flow_ids.length>1?oneHotEncode(index, t6Model.flow_ids):t6Model.flow_ids.indexOf(datapoint.flow_id);
 			datapoint.flow_id		= oneHotEncodedFid; //t6Model.flow_ids[index]; // Add flow_id from t6Model
 			datapoint.meta			= (typeof datapoint.meta!=="undefined" && datapoint.meta!==null)?getJson(datapoint.meta):{ categories: ["oov"] };
@@ -565,22 +565,24 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 
 						t6Model.predictionInProgress = true;
 						t6machinelearning.loadDataSets_v2(dataMap, t6Model).then((dataset) => {
+							let numFeatures;
+							let inputShape;
 							let valuesTensor	= dataset.valuesTensor;
 							let flowsTensor		= dataset.flowsTensor;
 							let labelsTensor	= dataset.labelsTensor;
 							let inputTensor		= dataset.inputTensor;
 							let featuresTensor	= dataset.featuresTensor;
-							let inputShape		= [1, inputTensor.shape[1]];
-							let outputShape;
-							if (t6Model.flow_ids.length>1) { // TODO : might be a better code ? TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-								outputShape		= labelsTensor.shape[1] * labelsTensor.shape[2]; // shape : [7, 2, 3] 2 flows of 3 classes
-							} else {
-								outputShape		= labelsTensor.shape[1]; // shape : [7, 3] only 1 flow of 3 classes
-							}
-							const numFeatures	= inputTensor.shape[2]; // Get the number of features
-							t6console.error("Model predict before reshape:", inputTensor, labelsTensor, [t6Model.data_length, 1, numFeatures]);
+							const timeSteps		= 1; // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+							const totalSize		= inputTensor.shape[0];
+							const batchSize		= inputTensor.shape[0]; // Get the number of data points
+							const trainSize		= Math.floor(totalSize * (1 - t6Model.validation_split));
+							const evaluateSize	= totalSize - trainSize;
+							numFeatures		= inputTensor.shape[1]; // Get the number of features
+							inputShape		= [timeSteps, numFeatures];
+			
+							t6console.debug("ML MODEL BUILDING with inputTensor.shape", inputTensor.shape);
+							t6console.debug("ML MODEL BUILDING with inputShape", inputShape);
 							const reshapedInput	= inputTensor.reshape([t6Model.data_length, 1, numFeatures]);
-							t6console.error("Model predict after reshape:", numFeatures);
 							t6machinelearning.predict(tfModel, reshapedInput).then((prediction) => {
 								let p = [];
 								let arr = Array.from(prediction.dataSync()); // TODO: multiple predictions ?
@@ -718,8 +720,6 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			while (currentDate.isBefore(endDate) ) {
 				dateArray.push(currentDate.add(duration).format("x"));
 			}
-
-			t6console.debug("ML MODEL rows rows rows", rows);
 			let {mergedRows, flowData, balancedDatapointsCount, minorityClass} = preprocessInputData(rows, t6Model);
 			const minMaxValues = queryTs.map((query, index) => {
 				// Calculate min and max values for each flow specified in queryTs
@@ -759,47 +759,59 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			t6console.debug([...dataMap.values()]);
 			*/
 
+			t6Model.predictionInProgress = false;
 			t6machinelearning.loadDataSets_v2(dataMap, t6Model).then((dataset) => {
+				let numFeatures;
+				let inputShape;
+				let outputShape;
 				let valuesTensor	= dataset.valuesTensor;
 				let flowsTensor		= dataset.flowsTensor;
 				let labelsTensor	= dataset.labelsTensor;
 				let inputTensor		= dataset.inputTensor;
 				let featuresTensor	= dataset.featuresTensor;
-				let inputShape		= [1, inputTensor.shape[2]];
-				let outputShape;
-				if (t6Model.flow_ids.length>1) { // TODO : might be a better code ? TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-					outputShape		= labelsTensor.shape[1] * labelsTensor.shape[2]; // shape : [7, 2, 3] 2 flows of 3 classes
-				} else {
-					outputShape		= labelsTensor.shape[1]; // shape : [7, 3] only 1 flow of 3 classes
-				}
-				t6console.debug("ML MODEL BUILDING with inputShape", inputShape, inputTensor.shape);
-				t6console.debug("ML MODEL BUILDING with inputShape", outputShape);
+				const timeSteps		= 1; // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+				const totalSize		= inputTensor.shape[0];
+				const batchSize		= inputTensor.shape[0]; // Get the number of data points
+				const trainSize		= Math.floor(totalSize * (1 - t6Model.validation_split));
+				const evaluateSize	= totalSize - trainSize;
+				// if (t6Model.flow_ids.length>1) { // TODO : might be a better code ? TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+				// 	numFeatures		= inputTensor.shape[1]; // Get the number of features
+				// 	outputShape		= labelsTensor.shape[1]; // labelsTensor.shape[1] * labelsTensor.shape[2]; // shape : [7, 2, 3] 2 flows of 3 classes
+				// 	inputShape		= [timeSteps, numFeatures];
+				// } else {
+				// 	numFeatures		= inputTensor.shape[1]; // Get the number of features
+				// 	outputShape		= labelsTensor.shape[1]; // shape : [7, 3] only 1 flow of 3 classes
+				// 	inputShape		= [timeSteps, numFeatures];
+				// }
+				numFeatures		= inputTensor.shape[1]; // Get the number of features
+				outputShape		= labelsTensor.shape[1];
+				inputShape		= [timeSteps, numFeatures];
+
+				t6console.debug("ML MODEL BUILDING with inputTensor.shape", inputTensor.shape);
+				t6console.debug("ML MODEL BUILDING with inputShape", inputShape);
+				t6console.debug("ML MODEL BUILDING with labelsTensor.shape", labelsTensor.shape);
+				t6console.debug("ML MODEL BUILDING with outputShape", outputShape);
 				t6machinelearning.buildModel(inputShape, outputShape).then((tfModel) => {
 					tfModel.summary();
+					options.epochs = t6Model.epochs;
+
 					t6console.debug("ML MODEL BUILT with inputShape", inputShape);
 					t6console.debug("ML MODEL BUILT with outputShape", outputShape);
 
-					t6console.debug("inputTensor");
-					t6console.debug(inputTensor.dataSync());
+					// t6console.debug("inputTensor");
+					// t6console.debug(inputTensor.dataSync());
+					// t6console.debug("inputTensor", inputTensor);
+					// t6console.debug("labelsTensor", labelsTensor);
 
-					options.epochs = t6Model.epochs;
-					const timeSteps									= 1; // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-					const totalSize									= inputTensor.shape[0];
-					const batchSize									= inputTensor.shape[0]; // Get the number of data points
-					const trainSize									= Math.floor(totalSize * (1 - t6Model.validation_split));
-					const evaluateSize								= totalSize - trainSize;
-					const numFeatures								= inputTensor.shape[2]; // Get the number of features
-
-					t6console.debug("[batchSize, timeSteps, numFeatures]", [batchSize, timeSteps, numFeatures], inputTensor.shape);
-
+					t6console.debug("[batchSize, timeSteps, numFeatures]", [batchSize, timeSteps, numFeatures]);
 					const reshapedInput								= inputTensor.reshape([batchSize, timeSteps, numFeatures]);
 					const reshapedLabels							= labelsTensor.reshape([batchSize, timeSteps, outputShape]);
 					const [inputXTrain, inputXEvaluate]				= tf.split(reshapedInput, [trainSize, evaluateSize]);
 					const [inputLabelsTrain, inputLabelsEvaluate]	= tf.split(reshapedLabels, [trainSize, evaluateSize]);
 
-					t6console.debug("inputXTrain");
+					t6console.debug("inputXTrain.dataSync()");
 					t6console.debug(inputXTrain.dataSync());
-					t6console.debug("inputLabelsTrain");
+					t6console.debug("inputLabelsTrain.dataSync()");
 					t6console.debug(inputLabelsTrain.dataSync());
 
 					t6console.debug("ML DATASET totalSize", totalSize);
