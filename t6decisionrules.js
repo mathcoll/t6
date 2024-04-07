@@ -369,6 +369,53 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 								}
 
 								(async () => {
+									/*
+									t6machinelearning.loadDataSets_v2(dataMap, t6Model)
+									.then((dataset) => {
+										const valuesTensor	= dataset.valuesTensor;
+										const flowsTensor	= dataset.flowsTensor;
+										const labelsTensor	= dataset.labelsTensor;
+										const inputTensor	= dataset.inputTensor;
+										const featuresTensor= dataset.featuresTensor;
+										const inputShape	= [1, inputTensor.shape[1]];
+										//const outputShape = [1, valuesTensor.shape[1]];
+										const outputShape	= labelsTensor.shape[1];
+										
+										const totalSize						= inputTensor.shape[0];
+										const trainSize						= Math.floor(totalSize * (1 - t6Model.validation_split));
+										const evaluateSize					= totalSize - trainSize;
+										const batchSize						= valuesTensor.shape[0]; // Get the number of data points
+										const numFeatures					= inputTensor.shape[1]; // Get the number of features
+										const timeSteps						= 1; // Assuming each data point represents a single time step
+										const reshapedInput					= inputTensor.reshape([totalSize, timeSteps, numFeatures]);
+										t6console.debug("ML MODEL LOADED with inputShape", inputShape);
+										t6console.debug("ML MODEL LOADED with outputShape", outputShape);
+										t6console.debug("ML MODEL LOADED with t6Model.validation_split", t6Model.validation_split);
+										t6console.debug("ML DATASET totalSize", totalSize);
+										t6console.debug("ML DATASET evaluateSize", evaluateSize);
+										t6console.debug("ML DATASET trainSize", trainSize);
+										t6console.debug("ML DATASET batchSize", batchSize);
+										t6console.debug("ML DATASET timeSteps", timeSteps);
+										t6console.debug("ML DATASET numFeatures", numFeatures);
+										
+										options.epochs			= t6Model.epochs;
+										t6machinelearning.predict(tfModel, reshapedInput).then((prediction) => {
+											let p = [];
+											let arr = Array.from(prediction.dataSync()); // TODO: multiple predictions ?
+											arr.map((score, i) => {
+												t6console.error("Model predict LABEL:", (t6Model.labels)[i], score.toFixed(4));
+												p.push({ label: (t6Model.labels)[i], prediction: parseFloat(score.toFixed(4)) });
+											});
+											//t6console.debug("prediction", prediction, arr);
+											const bestMatchPrediction = Math.max(...arr);
+											const bestMatchIndex = arr.indexOf(bestMatchPrediction);
+											res.status(200).send({ "code": 200, value: inputData[0].value, labels: t6Model.labels, predictions: p, bestMatchIndex: bestMatchIndex, bestMatchPrediction: parseFloat(bestMatchPrediction.toFixed(4)), bestMatchLabel: (t6Model.labels)[bestMatchIndex] }); // TODO: missing serializer
+											t6events.addStat("t6App", "ML Prediction", user_id, user_id, {"user_id": user_id, "model_path": path+t6Model.id});
+										}).catch(function(err) {
+											t6console.error("Model predict ERROR", err);
+										});
+									});
+									*/
 									let ds, pr;
 									const loadDS = await new Promise((resolve) => {
 										t6console.debug("CLASSIFY 1 loadDS");
