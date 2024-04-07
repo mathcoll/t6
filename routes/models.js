@@ -81,9 +81,11 @@ function preprocessInputData(rows, t6Model) {
 		// t6console.debug("preprocessInputData -> rows", rows);
 		// t6console.debug("preprocessInputData -> rowArray", rowArray);
 		// Count classes
+		const currTime = new Date();
 		const updatedRows = rowArray.map((datapoint) => {
 			//t6console.debug("preprocessInputData -> rowArray -> datapoint", datapoint);
 			datapoint.flow_id		= t6Model.flow_ids.length>1?oneHotEncode(index, t6Model.flow_ids):t6Model.flow_ids.indexOf(flowId);
+			datapoint.time			= moment( typeof datapoint.time!=="undefined"?datapoint.time:(typeof datapoint.timestamp!=="undefined"?datapoint.timestamp:currTime), ["YYYY-MM-DD", "YYYY-MM-DD HH:mm:ss", "DD.MM.YYYY", "DD.MM.YYYY HH:mm:ss", "x", "X"], true).format("x");
 			datapoint.meta			= (typeof datapoint.meta!=="undefined" && datapoint.meta!==null)?getJson(datapoint.meta):{ categories: ["oov"] };
 			const category_id		= datapoint.meta.categories[0];
 			const category			= categories.findOne({id: category_id});
@@ -548,22 +550,26 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 						});
 						inputData.map((point) => {
 							(predictData[point.flow_id]).push(point);
-							//t6console.debug("pushing point to  ---->", point.flow_id, (predictData[point.flow_id]).length);
+							// t6console.debug("pushing point ---->", (predictData[point.flow_id]).length, point);
 						});
 						//t6console.debug("predictData stringify ---->", JSON.stringify(predictData))
 
 						let {mergedRows, flowData, balancedDatapointsCount, minorityClass} = preprocessInputData(predictData, t6Model);
 						const dataMap = new Map();
 						const currTime = new Date();
-						t6console.debug("mergedRows", JSON.stringify(mergedRows));
-						mergedRows.map((r) => {
-							const date = moment( typeof r.time!=="undefined"?r.time:(typeof r.timestamp!=="undefined"?r.timestamp:currTime) ).format("x");
-							//t6console.debug("Date from array", r.time, date);
+						// t6console.debug("mergedRows[0]", mergedRows[0]);
+						// t6console.debug("mergedRows[0] stringify", JSON.stringify(mergedRows[0]));
+						// t6console.debug("mergedRows[0].length", mergedRows[0].length);
+						// t6console.debug("flowData", flowData["944664d2-0d94-418d-ba99-d036691bfd66"]);
+
+						mergedRows[0].map((r) => {
+							const date = moment( typeof r.time!=="undefined"?r.time:(typeof r.timestamp!=="undefined"?r.timestamp:currTime), ["YYYY-MM-DD", "YYYY-MM-DD HH:mm:ss", "DD.MM.YYYY", "DD.MM.YYYY HH:mm:ss", "x", "X"], true).format("x");
+							// t6console.debug("Date from array", date, Object.values(flowData));
 							const {closestValues, closestFlows, closestLabels} = findNearestDatapoints(date, Object.values(flowData));
 							dataMap.set(date, { values: closestValues, flow_ids: closestFlows, labels: closestLabels });
-							t6console.debug("closestValues", closestValues);
-							t6console.debug("closestFlows", closestFlows);
-							t6console.debug("closestLabels", closestLabels);
+							// t6console.debug("closestValues", closestValues);
+							// t6console.debug("closestFlows", closestFlows);
+							// t6console.debug("closestLabels", closestLabels);
 						});
 						t6Model.data_length = [...dataMap.entries()].length;
 
