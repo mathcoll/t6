@@ -54,7 +54,7 @@ const findNearestDatapoints = (timestamp, dataArrays) => {
 		for (let datapoint of dataArray) {
 			const timeDifference = Math.abs(timestamp - datapoint.time);
 			if (timeDifference < minTimeDifference) {
-				closestValue	= datapoint.value;
+				closestValue		= datapoint.value;
 				closestFlow			= datapoint.flow_id;
 				closestLabel		= datapoint.label;
 				minTimeDifference	= timeDifference;
@@ -116,7 +116,7 @@ function preprocessInputData(rows, t6Model) {
 	t6Model.minorityClass			= minorityClass;
 	t6Model.balancedDatapointsCount	= balancedDatapointsCount;
 	t6Model.training_balance		= t6Model.labels.map((labelName) => { return balancedDatapointsCount[oneHotEncode(t6Model.labels.indexOf(labelName), t6Model.labels)] });
-	return {mergedRows, flowData, balancedDatapointsCount, minorityClass};
+	return {mergedRows, flowData, balancedDatapointsCount, minorityClass, training_balance: t6Model.training_balance};
 }
 
 /**
@@ -554,7 +554,7 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 						});
 						//t6console.debug("predictData stringify ---->", JSON.stringify(predictData))
 
-						let {mergedRows, flowData, balancedDatapointsCount, minorityClass} = preprocessInputData(predictData, t6Model);
+						let {mergedRows, flowData, balancedDatapointsCount, minorityClass, training_balance} = preprocessInputData(predictData, t6Model);
 						const dataMap = new Map();
 						const currTime = new Date();
 						// t6console.debug("mergedRows[0]", mergedRows[0]);
@@ -572,6 +572,7 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 							// t6console.debug("closestLabels", closestLabels);
 						});
 						t6Model.data_length = [...dataMap.entries()].length;
+						t6Model.training_balance = training_balance;
 
 						t6Model.predictionInProgress = true;
 						t6machinelearning.loadDataSets_v2(dataMap, t6Model).then((dataset) => {
@@ -750,7 +751,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 					max: max
 				};
 			});
-			let {mergedRows, flowData, balancedDatapointsCount, minorityClass} = preprocessInputData(rows, t6Model);
+			let {mergedRows, flowData, balancedDatapointsCount, minorityClass, training_balance} = preprocessInputData(rows, t6Model);
 			const dataMap = new Map();
 			dateArray.map((date) => {
 				const {closestValues, closestFlows, closestLabels} = findNearestDatapoints(date, Object.values(flowData), t6Model);
@@ -758,6 +759,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				// t6console.debug("Date from array", date, {closestValues, closestFlows, closestLabels});
 			});
 			t6Model.data_length = [...dataMap.entries()].length;
+			t6Model.training_balance = training_balance;
 
 			// t6console.debug("ML defining time window array from:");
 			// t6console.debug("- startDate:", startDate);
