@@ -67,39 +67,51 @@ t6machinelearning.addCategorical = function(featureName, classes) {
 	return true;
 }
 
+t6machinelearning.getLayer = async function(l) {
+	return await new Promise((resolve) => {
+		let layer;
+		switch(l.mode) {
+			case "dropout":
+				l.rate = typeof l.rate!=="undefined"?l.rate:0.2;
+				layer = tf.layers.dropout(l);
+				break;
+			case "dense":
+			default:
+				l.mode = "dense";
+				layer = tf.layers.dense(l);
+				break;
+		}
+		t6console.debug("buildModel getLayer before RESOLVE", l.mode);
+		resolve(layer);
+	});
+}
+
 t6machinelearning.addLayersToModel = async function(model, inputShape, outputShape) {
 	return await new Promise((resolve) => {
-		// TODO : handle all types of layers ; not only fully connected like dense !
 		const mdls = t6Model.layers.map(async (layer) => {
+			t6console.debug("ML MODEL ADDING layer", layer.type, layer.mode, layer.units, layer.activation);
 			if (layer.type==="input") {
 				layer.inputShape = inputShape;
-				t6console.debug("buildModel adding input layer", layer);
-				await model.add( tf.layers.dense(layer) );
 			}
 			if (layer.type==="hidden") {
-				layer.inputShape = inputShape;
-				t6console.debug("buildModel adding hidden layer", layer);
-				await model.add( tf.layers.dense(layer) );
+				layer.units = typeof layer.units!=="undefined"?layer.units:1;
 			}
 			if (layer.type==="output") {
-				layer.inputShape = inputShape;
 				layer.units = outputShape;
-				t6console.debug("buildModel adding output layer", layer);
-				await model.add( tf.layers.dense(layer) );
 			}
+			// await model.add(tf.layers.dense(layer));
+			await model.add(await t6machinelearning.getLayer(layer));
 		});
-		t6console.debug("buildModel ENDING");
-		//return mdls;
+		t6console.debug("ML MODEL END adding layer");
 		resolve(mdls);
 	});
 }
 
 t6machinelearning.buildModel = async function(inputShape, outputShape) {
-	return await new Promise((resolve) => {
+	return await new Promise(async (resolve) => {
 		const model = tf.sequential();
-		// t6console.debug("t6Model.layers BEFORE");
 		if(t6Model.strategy==="classification") {
-			let mdls = t6machinelearning.addLayersToModel(model, inputShape, outputShape);
+			let mdls = await t6machinelearning.addLayersToModel(model, inputShape, outputShape);
 
 		} else if(t6Model.strategy==="forecast") {
 			// const input_layer_neurons = 100;
@@ -138,7 +150,6 @@ t6machinelearning.buildModel = async function(inputShape, outputShape) {
 			}));
 			model.add(tf.layers.dense({ units: output_layer_neurons, inputShape: [output_layer_shape] }));
 		}
-		//t6console.debug("t6Model.layers AFTER", model);
 
 		let optimizer;
 		let learningrate = typeof t6Model.compile.learningrate?t6Model.compile.learningrate:0.001;
@@ -166,13 +177,13 @@ t6machinelearning.buildModel = async function(inputShape, outputShape) {
 				optimizer = tf.train.adam(learningrate);
 				break;
 		}
-		t6console.debug("MODEL compiling:");
+		t6console.debug("ML MODEL COMPILING");
 		model.compile({
 			optimizer: optimizer,
 			loss: typeof t6Model.compile.loss!=="undefined"?t6Model.compile.loss:"binaryCrossentropy",
 			metrics: typeof t6Model.compile.metrics!=="undefined"?t6Model.compile.metrics:["accuracy"]
 		});
-		t6console.debug("MODEL weights:");
+		t6console.debug("ML MODEL weights:");
 		model.weights.forEach(w => {
 			t6console.debug(" ", w.name, w.shape);
 		});
@@ -325,6 +336,7 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 			let reshapedLabelsTensor;
 			if (!t6Model.predictionInProgress) {
 				reshapedLabelsTensor = labelsTensor.reshape([times.length, t6Model.flow_ids.length * t6Model.labels.length]);
+				//reshapedLabelsTensor = labelsTensor.reshape([times.length, t6Model.labels.length]);
 				t6console.debug("loadDataSets_v2 3 reshapedLabelsTensor.size", reshapedLabelsTensor.size);
 				t6console.debug("loadDataSets_v2 3 reshapedLabelsTensor.shape", reshapedLabelsTensor.shape);
 			}
@@ -354,14 +366,14 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 				t6console.debug("loadDataSets_v2 Added flows");
 			}
 			
-			t6console.debug("loadDataSets_v2 concatenating components as input", components.map((c) => {return c.shape;}));
+			t6console.debug("loadDataSets_v2 concatenating components", components.map((c) => {return c.shape;}));
 			let inputTensor = tf.concat(components, 1);
 
 			const mergedArray = inputTensor.arraySync();
-			//t6console.debug("mergedArray data:", mergedArray);
 
 			let featuresTensor = mergedArray;
 			if(t6Model.shuffle===true) {
+				t6console.debug("loadDataSets_v2 Shuffling data");
 				tf.util.shuffle(inputTensor);
 			}
 
@@ -384,44 +396,44 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 				});
 			}
 
-			//t6console.debug("LOADING DS times", times);
-			//t6console.debug("LOADING DS values", values);
-			//t6console.debug("LOADING DS flow_ids", flow_ids);
-			//t6console.debug("LOADING DS labels", labels);
+			// t6console.debug("LOADING DS times", times);
+			// t6console.debug("LOADING DS values", values);
+			// t6console.debug("LOADING DS flow_ids", flow_ids);
+			// t6console.debug("LOADING DS labels", labels);
 
-			//t6console.debug("LOADING DS timeTensor data:", timeTensor.arraySync());
-			//t6console.debug("LOADING DS valuesTensor data:", valuesTensor.arraySync());
-			//t6console.debug("LOADING DS flowsTensor data:", flowsTensor.arraySync());
-			//t6console.debug("LOADING DS labelsTensor data:", labelsTensor.arraySync());
-			//t6console.debug("LOADING DS featuresTensor data:", featuresTensor);
+			// t6console.debug("LOADING DS timeTensor data:", timeTensor.arraySync());
+			// t6console.debug("LOADING DS valuesTensor data:", valuesTensor.arraySync());
+			// t6console.debug("LOADING DS flowsTensor data:", flowsTensor.arraySync());
+			// t6console.debug("LOADING DS labelsTensor data:", labelsTensor.arraySync());
+			// t6console.debug("LOADING DS featuresTensor data:", featuresTensor);
 
-			t6console.debug("LOADING DS batchSize:", batchSize);
-			t6console.debug("LOADING DS times.length:", times.length);
-			t6console.debug("LOADING DS values.length:", values.length);
-			t6console.debug("LOADING DS flow_ids.length:", flow_ids.length);
-			t6console.debug("LOADING DS labels.length:", labels.length);
-			t6console.debug("");
-			t6console.debug("LOADING DS timeTensor.size:", timeTensor.size);
-			t6console.debug("LOADING DS valuesTensor.size:", valuesTensor.size);
-			t6console.debug("LOADING DS flowsTensor.size:", flowsTensor.size);
-			t6console.debug("LOADING DS labelsTensor.size:", labelsTensor.size);
-			t6console.debug("LOADING DS reshapedLabelsTensor.size:", reshapedLabelsTensor?.size);
-			t6console.debug("LOADING DS inputTensor.size:", inputTensor.size);
-			t6console.debug("");
-			t6console.debug("LOADING DS timeTensor.shape:", timeTensor.shape);
-			t6console.debug("LOADING DS valuesTensor.shape:", valuesTensor.shape);
-			t6console.debug("LOADING DS flowsTensor.shape:", flowsTensor.shape);
-			t6console.debug("LOADING DS labelsTensor.shape:", labelsTensor.shape);
-			t6console.debug("LOADING DS reshapedLabelsTensor.shape:", reshapedLabelsTensor?.shape);
-			t6console.debug("LOADING DS inputTensor.shape:", inputTensor.shape);
-			t6console.debug("");
-			t6console.debug("LOADING DS timeTensor.dtype:", timeTensor.dtype);
-			t6console.debug("LOADING DS valuesTensor.dtype:", valuesTensor.dtype);
-			t6console.debug("LOADING DS flowsTensor.dtype:", flowsTensor.dtype);
-			t6console.debug("LOADING DS labelsTensor.dtype:", labelsTensor.dtype);
-			t6console.debug("LOADING DS reshapedLabelsTensor.dtype:", reshapedLabelsTensor?.dtype);
-			t6console.debug("LOADING DS inputTensor.dtype:", inputTensor.dtype);
-			t6console.debug("");
+			// t6console.debug("LOADING DS batchSize:", batchSize);
+			// t6console.debug("LOADING DS times.length:", times.length);
+			// t6console.debug("LOADING DS values.length:", values.length);
+			// t6console.debug("LOADING DS flow_ids.length:", flow_ids.length);
+			// t6console.debug("LOADING DS labels.length:", labels.length);
+			// t6console.debug("");
+			// t6console.debug("LOADING DS timeTensor.size:", timeTensor.size);
+			// t6console.debug("LOADING DS valuesTensor.size:", valuesTensor.size);
+			// t6console.debug("LOADING DS flowsTensor.size:", flowsTensor.size);
+			// t6console.debug("LOADING DS labelsTensor.size:", labelsTensor.size);
+			// t6console.debug("LOADING DS reshapedLabelsTensor.size:", reshapedLabelsTensor?.size);
+			// t6console.debug("LOADING DS inputTensor.size:", inputTensor.size);
+			// t6console.debug("");
+			// t6console.debug("LOADING DS timeTensor.shape:", timeTensor.shape);
+			// t6console.debug("LOADING DS valuesTensor.shape:", valuesTensor.shape);
+			// t6console.debug("LOADING DS flowsTensor.shape:", flowsTensor.shape);
+			// t6console.debug("LOADING DS labelsTensor.shape:", labelsTensor.shape);
+			// t6console.debug("LOADING DS reshapedLabelsTensor.shape:", reshapedLabelsTensor?.shape);
+			// t6console.debug("LOADING DS inputTensor.shape:", inputTensor.shape);
+			// t6console.debug("");
+			// t6console.debug("LOADING DS timeTensor.dtype:", timeTensor.dtype);
+			// t6console.debug("LOADING DS valuesTensor.dtype:", valuesTensor.dtype);
+			// t6console.debug("LOADING DS flowsTensor.dtype:", flowsTensor.dtype);
+			// t6console.debug("LOADING DS labelsTensor.dtype:", labelsTensor.dtype);
+			// t6console.debug("LOADING DS reshapedLabelsTensor.dtype:", reshapedLabelsTensor?.dtype);
+			// t6console.debug("LOADING DS inputTensor.dtype:", inputTensor.dtype);
+			// t6console.debug("");
 
 			//resolve({valuesTensor, flowsTensor, balancedInputTensor, balancedLabelsTensor, shuffledData});
 			return {valuesTensor, flowsTensor, labelsTensor: reshapedLabelsTensor, inputTensor, featuresTensor};
@@ -512,12 +524,11 @@ t6machinelearning.getMetaGraphsFromSavedModel = async function(path) {
 t6machinelearning.predict = async function(tfModel, inputDatasetX, options={}) {
 	return new Promise((resolve) => {
 		let prediction;
-		t6console.debug("ML PREDICTION strategy", t6Model.strategy);
 		prediction = tfModel.predict(inputDatasetX, options);
 		const argMaxIndex = tf.argMax(prediction, 1).dataSync()[0];
-		t6console.debug("ML PREDICTION argMaxIndex", argMaxIndex);
-		t6console.debug("ML PREDICTION:");
-		prediction.print();
+		// t6console.debug("ML PREDICTION argMaxIndex", argMaxIndex);
+		// t6console.debug("ML PREDICTION:");
+		// prediction.print();
 		resolve(prediction);
 	});
 };
