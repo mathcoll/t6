@@ -246,7 +246,6 @@ router.get("/?(:model_id([0-9a-z\-]+))/download/:file(weights\.bin|model\.json)/
  * @apiBody {String=forecast,classification} [strategy=classification] Strategy
  * @apiBody {Boolean=true false} [normalize=true] Normalize boolean
  * @apiBody {String} [window_time_frame=60m] Window Time Frame (60 minutes by default)
- * @apiBody {Boolean=true false} [splitToArray=false] splitToArray boolean
  * @apiBody {Boolean=true false} [shuffle=false] shuffle boolean
  * @apiBody {Number} [validation_split=0.8] Ratio of subset data to use on validation during training
  * @apiBody {Integer} [batch_size=100]  Batch size during training
@@ -315,7 +314,6 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 					item.shuffle		= typeof req.body.shuffle!=="undefined"?req.body.shuffle:item.shuffle;
 					item.strategy		= typeof req.body.strategy!=="undefined"?req.body.strategy:item.strategy,
 					item.window_time_frame	= typeof req.body.window_time_frame!=="undefined"?req.body.window_time_frame:item.window_time_frame;
-					item.splitToArray	= typeof req.body.splitToArray!=="undefined"?req.body.splitToArray:item.splitToArray;
 					item.labels			= typeof req.body.labels!=="undefined"?req.body.labels:item.labels;
 					item.continuous_features	= typeof req.body.continuous_features!=="undefined"?req.body.continuous_features:item.continuous_features;
 					item.categorical_features	= typeof req.body.categorical_features!=="undefined"?req.body.categorical_features:item.categorical_features; // TODO depend on datatype
@@ -375,7 +373,6 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
  * @apiBody {String=forecast,classification} [strategy=classification] Strategy
  * @apiBody {Boolean=true false} [normalize=true] Normalize boolean
  * @apiBody {String} [window_time_frame=60m] Window Time Frame (60 minutes by default)
- * @apiBody {Boolean=true false} [splitToArray=false] splitToArray boolean
  * @apiBody {Boolean=true false} [shuffle=false] shuffle boolean
  * @apiBody {Number} [validation_split=0.8] Ratio of subset data to use on validation during training
  * @apiBody {Integer} [batch_size=100]  Batch size during training
@@ -428,7 +425,6 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				shuffle:	typeof req.body.shuffle!=="undefined"?req.body.shuffle:false,
 				strategy:	typeof req.body.strategy!=="undefined"?req.body.strategy:"classification",
 				window_time_frame:	typeof req.body.window_time_frame!=="undefined"?req.body.window_time_frame:"60m",
-				splitToArray:typeof req.body.splitToArray!=="undefined"?req.body.splitToArray:false,
 				labels:		typeof req.body.labels!=="undefined"?req.body.labels:["oov"],
 				continuous_features: typeof req.body.continuous_features!=="undefined"?req.body.continuous_features:["value"],
 				categorical_feature: typeof req.body.categorical_features!=="undefined"?req.body.categorical_features:[], // TODO depend on datatype
