@@ -65,25 +65,17 @@ const findNearestDatapoints = (timestamp, dataArrays) => {
 		closestLabels.push(closestLabel);
 	}
 	return {closestValues, closestFlows, closestLabels};
-}
+};
 function preprocessInputData(rows, t6Model) {
 	let mergedRows = [];
 	const flowData = [];
 	let balancedDatapointsCount = {};
 	let classCounts = {};
-	// Iterate over each array of rows
-	//Object.keys(rows).forEach((rowArray, index) => {
-	//rows.forEach((rowArray, index) => {
 	for(let index=0; index<Object.keys(rows).length; index++) {
 		let rowArray = Object.values(rows)[index];
 		let flowId = t6Model.flow_ids[index];
-		// t6console.debug("preprocessInputData -> flowId", flowId);
-		// t6console.debug("preprocessInputData -> rows", rows);
-		// t6console.debug("preprocessInputData -> rowArray", rowArray);
-		// Count classes
 		const currTime = new Date();
 		const updatedRows = rowArray.map((datapoint) => {
-			//t6console.debug("preprocessInputData -> rowArray -> datapoint", datapoint);
 			datapoint.flow_id		= t6Model.flow_ids.length>1?oneHotEncode(index, t6Model.flow_ids):t6Model.flow_ids.indexOf(flowId);
 			datapoint.time			= moment( typeof datapoint.time!=="undefined"?datapoint.time:(typeof datapoint.timestamp!=="undefined"?datapoint.timestamp:currTime), ["YYYY-MM-DD", "YYYY-MM-DD HH:mm:ss", "DD.MM.YYYY", "DD.MM.YYYY HH:mm:ss", "x", "X"], true).format("x");
 			datapoint.meta			= (typeof datapoint.meta!=="undefined" && datapoint.meta!==null)?getJson(datapoint.meta):{ categories: ["oov"] };
@@ -93,31 +85,26 @@ function preprocessInputData(rows, t6Model) {
 			const oneHotEncodedLbl	= oneHotEncode(t6Model.labels.indexOf(labelName), t6Model.labels);
 			datapoint.label			= oneHotEncodedLbl;
 			if(t6Model.normalize===true) {
-				// t6console.debug("findNearestDatapoints Normalize using", datapoint.value, flowId, t6Model.min[flowId], t6Model.max[flowId]);
 				datapoint.initialValue	= datapoint.value;
 				datapoint.value	= normalize(datapoint.value, t6Model.min[flowId], t6Model.max[flowId]);
 				// t6console.debug("Normalized to", datapoint.value);
 			}
-			//t6console.debug("datapoint.label", labelName, datapoint.label);
 			balancedDatapointsCount[datapoint.label] = typeof balancedDatapointsCount[datapoint.label]!=="undefined"?balancedDatapointsCount[datapoint.label]+1:1;
 			if (labelName!=="oov") {
 				// Do not count oov, because it is used as minorityClass
 				classCounts[labelName] = typeof classCounts[labelName]!=="undefined"?classCounts[labelName]+1:1;
 			}
-			// t6console.debug("datapoint", datapoint);
 			return datapoint;
 		});
-		// Add the updated rows to the mergedRows array
-		mergedRows.push(updatedRows);
+		mergedRows.push(updatedRows);// Add the updated rows to the mergedRows array
 		flowData[flowId] = mergedRows[index];
-	//});
 	}
 	const minorityClass = Math.min(...Object.entries(classCounts).map((cls) => cls[1]));
 	t6Model.minorityClass			= minorityClass;
 	t6Model.balancedDatapointsCount	= balancedDatapointsCount;
 	t6Model.training_balance		= t6Model.labels.map((labelName) => { return balancedDatapointsCount[oneHotEncode(t6Model.labels.indexOf(labelName), t6Model.labels)] });
 	return {mergedRows, flowData, balancedDatapointsCount, minorityClass, training_balance: t6Model.training_balance};
-}
+};
 
 /**
  * @api {get} /models/:model_id? Get Models
@@ -269,11 +256,12 @@ router.get("/?(:model_id([0-9a-z\-]+))/download/:file(weights\.bin|model\.json)/
  * @apiBody {String} datasets.testing[duration] Not implemented yet !
  * @apiBody {Integer} datasets.training.limit Number of Datapoints to retrieve for each Flows
  * @apiBody {String="adagrad" "adadelta" "adamax" "rmsprop" "momentum" "sgd" "adam"} compile.optimizer=adam Training optimizer
- * @apiBody {Object[]} layers  
- * @apiBody {String=input,output,hidden} layers.type 
- * @apiBody {Integer} layers.units 
- * @apiBody {String=relu, softmax} layers.activation Activation function in the dense layer
- * @apiBody {Object} compile  
+ * @apiBody {Object[]} layers Layers are the primary building block for constructing a Model. Each layer will typically perform some computation to transform its input to its output. Layers will automatically take care of creating and initializing the various internal variables/weights they need to function.
+ * @apiBody {String=input,hidden,output} layers.type 
+ * @apiBody {String=dense,dropout} layers.mode=dense 
+ * @apiBody {Integer} layers.units=1 
+ * @apiBody {String="elu" "hardSigmoid" "linear" "relu" "relu6" "selu" "sigmoid" "softmax" "softplus" "softsign" "tanh" "swish" "mish"} layers.activation Activation is the element-wise activation function passed as the activation argument.
+ * @apiBody {Number} layers.rate=0.2 Float between 0 and 1. Fraction of the input units to drop.
  * @apiBody {Number} compile.learningrate=0.001 Learning Rate
  * @apiBody {String="categoricalCrossentropy" "meanSquaredError" "binaryCrossentropy"} compile.loss=binaryCrossentropy Training loss function
  * @apiBody {String[]} compile.metrics="['accuracy']" Training metrics
@@ -396,10 +384,12 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
  * @apiBody {String} datasets.testing[duration] Not implemented yet !
  * @apiBody {Integer} datasets.training.limit Number of Datapoints to retrieve for each Flows
  * @apiBody {String="adagrad" "adadelta" "adamax" "rmsprop" "momentum" "sgd" "adam"} compile.optimizer=adam Training optimizer
- * @apiBody {Object[]} layers  
- * @apiBody {String=input,output,hidden} layers.type 
- * @apiBody {Integer} layers.units 
- * @apiBody {String=relu, softmax} layers.activation Activation function in the dense layer
+ * @apiBody {Object[]} layers Layers are the primary building block for constructing a Model. Each layer will typically perform some computation to transform its input to its output. Layers will automatically take care of creating and initializing the various internal variables/weights they need to function.
+ * @apiBody {String=input,hidden,output} layers.type 
+ * @apiBody {String=dense,dropout} layers.mode=dense 
+ * @apiBody {Integer} layers.units=1 
+ * @apiBody {String="elu" "hardSigmoid" "linear" "relu" "relu6" "selu" "sigmoid" "softmax" "softplus" "softsign" "tanh" "swish" "mish"} layers.activation Activation is the element-wise activation function passed as the activation argument.
+ * @apiBody {Number} layers.rate=0.2 Float between 0 and 1. Fraction of the input units to drop.
  * @apiBody {Number} compile.learningrate=0.001 Learning Rate
  * @apiBody {String="categoricalCrossentropy" "meanSquaredError" "binaryCrossentropy"} compile.loss=binaryCrossentropy Training loss function
  * @apiBody {String[]} compile.metrics="['accuracy']" Training metrics
@@ -548,24 +538,16 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 							(predictData[point.flow_id]).push(point);
 							// t6console.debug("pushing point ---->", (predictData[point.flow_id]).length, point);
 						});
-						//t6console.debug("predictData stringify ---->", JSON.stringify(predictData))
 
 						let {mergedRows, flowData, balancedDatapointsCount, minorityClass, training_balance} = preprocessInputData(predictData, t6Model);
 						const dataMap = new Map();
 						const currTime = new Date();
-						// t6console.debug("mergedRows[0]", mergedRows[0]);
-						// t6console.debug("mergedRows[0] stringify", JSON.stringify(mergedRows[0]));
-						// t6console.debug("mergedRows[0].length", mergedRows[0].length);
-						// t6console.debug("flowData", flowData["944664d2-0d94-418d-ba99-d036691bfd66"]);
 
 						mergedRows[0].map((r) => {
 							const date = moment( typeof r.time!=="undefined"?r.time:(typeof r.timestamp!=="undefined"?r.timestamp:currTime), ["YYYY-MM-DD", "YYYY-MM-DD HH:mm:ss", "DD.MM.YYYY", "DD.MM.YYYY HH:mm:ss", "x", "X"], true).format("x");
 							// t6console.debug("Date from array", date, Object.values(flowData));
 							const {closestValues, closestFlows, closestLabels} = findNearestDatapoints(date, Object.values(flowData));
 							dataMap.set(date, { values: closestValues, flow_ids: closestFlows, labels: closestLabels });
-							// t6console.debug("closestValues", closestValues);
-							// t6console.debug("closestFlows", closestFlows);
-							// t6console.debug("closestLabels", closestLabels);
 						});
 						t6Model.data_length = [...dataMap.entries()].length;
 						t6Model.training_balance = training_balance;
@@ -587,12 +569,9 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 
 							numFeatures			= inputTensor.shape[1]; // Get the number of features
 							inputShape			= numFeatures;
-			
+
 							t6console.debug("ML MODEL BUILDING with inputTensor.shape", inputTensor.shape);
 							t6console.debug("ML MODEL BUILDING with inputShape", inputShape);
-							// const reshapedInput	= inputTensor.reshape([t6Model.data_length, 1, numFeatures]);
-							// const reshapedInput	= inputTensor.reshape([t6Model.data_length, numFeatures]);
-							// t6console.debug("ML PREDICTING ON", inputTensor);
 							t6machinelearning.predict(tfModel, inputTensor).then((prediction) => {
 								let p = [];
 								let arr = Array.from(prediction.dataSync()); // TODO: multiple predictions ?
@@ -600,7 +579,6 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 									t6console.debug("Model prediction:", (t6Model.labels)[i], score.toFixed(4));
 									p.push({ label: (t6Model.labels)[i], prediction: parseFloat(score.toFixed(4)) });
 								});
-								//t6console.debug("prediction", prediction, arr);
 								const bestMatchPrediction = Math.max(...arr);
 								const bestMatchIndex = arr.indexOf(bestMatchPrediction);
 								res.status(200).send({ "code": 200, initialValue: inputData[0].initialValue, value: inputData[0].value, labels: t6Model.labels, predictions: p, bestMatchIndex: bestMatchIndex, bestMatchPrediction: parseFloat(bestMatchPrediction.toFixed(4)), bestMatchLabel: (t6Model.labels)[bestMatchIndex] }); // TODO: missing serializer
