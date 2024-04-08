@@ -936,10 +936,6 @@ router.get("/:model_id([0-9a-z\-]+)/explain/training?", expressJwt({secret: jwts
 	let height = typeof parseInt(req.query.height, 10)!=="undefined"?parseInt(req.query.height, 10):200;
 	let margin = typeof parseInt(req.query.margin, 10)!=="undefined"?parseInt(req.query.margin, 10):20;
 	let user_id = req.user.id;
-	let inputData = Array.isArray(req.body)===false?[req.body]:req.body;
-	if (!req.body || !inputData) {
-		return res.status(412).send(new ErrorSerializer({ "id": 14186, "code": 412, "message": "Precondition Failed" }).serialize());
-	}
 	if (model_id) {
 		let query = {
 			"$and": [
@@ -1063,10 +1059,6 @@ router.get("/:model_id([0-9a-z\-]+)/explain/model?", expressJwt({secret: jwtsett
 	let width = (typeof parseInt(req.query.width, 10)!=="undefined"?parseInt(req.query.width, 10):500) + margin;
 	let height = (typeof parseInt(req.query.height, 10)!=="undefined"?parseInt(req.query.height, 10):200) + margin;
 	let user_id = req.user.id;
-	let inputData = Array.isArray(req.body)===false?[req.body]:req.body;
-	if (!req.body || !inputData) {
-		return res.status(412).send(new ErrorSerializer({ "id": 14186, "code": 412, "message": "Precondition Failed" }).serialize());
-	}
 	if (model_id) {
 		let query = { "$and": [ { "id": model_id }, { "user_id": req.user.id }, ] };
 		let t6Model = models.findOne(query);
@@ -1077,8 +1069,15 @@ router.get("/:model_id([0-9a-z\-]+)/explain/model?", expressJwt({secret: jwtsett
 			// Draw arrows between layers
 			const layerWidth = width / t6Model.layers.length;
 			const y = height / 2;
-			const radius = 30;
+			const max_neuron_in_layer = Math.max(...(t6Model.layers).map((l) => typeof l.units!=="undefined"?l.units:1));
+			const minSpacing = 20;
+			const radius = (height - ((max_neuron_in_layer+1)*minSpacing))/(max_neuron_in_layer*2);
 			const unitSpacing = (radius*5/2);
+			t6console.debug("height", height);
+			t6console.debug("radius", radius);
+			t6console.debug("minSpacing", minSpacing);
+			t6console.debug("unitSpacing", unitSpacing);
+			t6console.debug("max_neuron_in_layer", max_neuron_in_layer);
 		
 			// Draw circles for layers
 			t6Model.layers.forEach((layer, index) => {
