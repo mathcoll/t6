@@ -266,7 +266,7 @@ router.get("/:story_id([0-9a-z\-]+)/metrics", expressJwt({secret: jwtsettings.se
 					} else {
 						rp = influxSettings.retentionPolicies.data[0];
 						t6console.debug("Defaulting Retention from setting (flow.retention is invalid)", flow.retention, rp);
-						res.status(412).send(new ErrorSerializer({"id": 18057, "code": 412, "message": "Precondition Failed"}).serialize());
+						res.status(412).send(new ErrorSerializer({"id": 18060, "code": 412, "message": "Precondition Failed"}).serialize());
 						return;
 					}
 				} else {
