@@ -1064,8 +1064,7 @@ router.get("/:model_id([0-9a-z\-]+)/explain/model?", expressJwt({secret: jwtsett
 		let t6Model = models.findOne(query);
 		if (t6Model) {
 			const d3nInstance = new D3Node();
-			let svg = d3nInstance.createSVG(width, height).append('g').attr('transform', `translate(${margin}, ${margin})`);
-		
+
 			// Draw arrows between layers
 			const layerWidth = width / t6Model.layers.length;
 			const y = height / 2;
@@ -1078,40 +1077,91 @@ router.get("/:model_id([0-9a-z\-]+)/explain/model?", expressJwt({secret: jwtsett
 			t6console.debug("minSpacing", minSpacing);
 			t6console.debug("unitSpacing", unitSpacing);
 			t6console.debug("max_neuron_in_layer", max_neuron_in_layer);
-		
-			// Draw circles for layers
-			t6Model.layers.forEach((layer, index) => {
+			let svg = d3nInstance.createSVG(width, height+2*margin).append('g').attr('transform', `translate(${margin}, ${margin})`);
+
+			// Draw circles and lines for layers
+			for (let i = 0; i < t6Model.layers.length; i++) {
+				const layer = t6Model.layers[i];
 				layer.units = typeof layer.units!=="undefined"?layer.units:1;
-				const x = index * layerWidth/2;
-					const yOffset = unitSpacing * (layer.units - 1) / 2;
-					for (let i = 0; i < layer.units; i++) {
-						const cx = x;
-						const cy = (height / 2) - yOffset + i * unitSpacing;
-						svg.append('circle')
-							.attr('cx', cx)
-							.attr('cy', cy)
-							.attr('r', radius)
-							.attr('fill', '#ccc');
-			
+				const mode = layer.mode;
+				const x = i * layerWidth/2;
+				const yOffset = unitSpacing * (layer.units - 1) / 2;
+				for (let j = 0; j < layer.units; j++) {
+					const cx = x;
+					const cy = (height / 2) - yOffset + j * unitSpacing;
+					svg.append('circle')
+						.attr('cx', cx)
+						.attr('cy', cy)
+						.attr('r', radius)
+						.attr('fill', '#ccc');
+
+					svg.append('text')
+						.attr('x', cx)
+						.attr('y', cy)
+						.attr('text-anchor', 'middle')
+						.attr('dominant-baseline', 'middle')
+						.text(layer.type.substring(0, 1).toUpperCase());
+
+					if(layer.type==="output") {
 						svg.append('text')
-							.attr('x', cx)
+							.attr('x', cx + unitSpacing)
 							.attr('y', cy)
-							.attr('text-anchor', 'middle')
+							.attr('text-anchor', 'left')
 							.attr('dominant-baseline', 'middle')
-							.text(layer.type);
-						/*
-						// Draw line from input to hidden layer
-						svg.append('line')
-							.attr('x1', 2*radius+margin)
-							.attr('y1', y)
-							.attr('x2', cx-radius)
-							.attr('y2', cy)
-							.attr('stroke', '#000')
-							.attr('stroke-width', '2');
-						*/
+							.text(t6Model.labels[j]);
 					}
-			});
-		
+					
+					if (i > 0) {
+						const prevLayerMode = (t6Model.layers[i - 1]).mode;
+						const prevLayer = t6Model.layers[i - 1];
+						const prevX = (i - 1) * layerWidth/2;
+						const prevYOffset = unitSpacing * (prevLayer.units - 1) / 2;
+						let color;
+						if (prevLayerMode === "dense") {
+							color = "#000";
+						} else if (prevLayerMode === "dropout") {
+							color = "#FF0000";
+						}
+						for (let k = 0; k < prevLayer.units; k++) {
+							const prevCx = prevX;
+							const prevCy = (height / 2) - prevYOffset + k * unitSpacing;
+							svg.append('line')
+								.attr('x1', prevCx + radius)
+								.attr('y1', prevCy)
+								.attr('x2', cx - radius)
+								.attr('y2', cy)
+								.attr('stroke', color)
+								.attr('stroke-width', '1')
+								.style("stroke-dasharray", (prevLayerMode === "dropout")?("3, 3"):("0, 0"));
+						}
+					}
+				}
+				if(layer.mode==="dropout") {
+					svg.append('text')
+						.attr('x', x)
+						.attr('y', margin)
+						.attr('text-anchor', 'middle')
+						.attr('dominant-baseline', 'middle')
+						.style("font-size", "12px")
+						.text(`${layer.units} ${layer.mode.charAt(0).toUpperCase() + layer.mode.slice(1)} ${typeof layer.rate!=="undefined"?layer.rate+"%":""}`);
+				} else {
+					svg.append('text')
+						.attr('x', x)
+						.attr('y', margin)
+						.attr('text-anchor', 'middle')
+						.attr('dominant-baseline', 'middle')
+						.style("font-size", "12px")
+						.text(`${layer.units} ${layer.type} units`);
+					svg.append('text')
+						.attr('x', x)
+						.attr('y', height-margin)
+						.attr('text-anchor', 'middle')
+						.attr('dominant-baseline', 'middle')
+						.style("font-size", "12px")
+						.text(`Ac. func. ${layer.activation}`);
+				}
+			}
+
 			res.setHeader("content-type", "image/svg+xml");
 			res.status(200).send(d3nInstance.svgString());
 		} else {
