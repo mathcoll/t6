@@ -70,3 +70,4 @@ decisionrules/node_modules
 .vscode/t6-workspace.code-workspace
 .vscode/launch.json
 .vscode/tasks.json
+.vscode/t6 IoT.code-profile
