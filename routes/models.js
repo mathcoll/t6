@@ -743,7 +743,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 					dateArray.push(currentDate.add(duration).format("x"));
 				}
 				const minMaxValues = queryTs.map((query, index) => {
-					t6console.debug("initializing minMaxValues query", rows, query, index);
+					t6console.debug("initializing minMaxValues index:", index);
 					// Calculate min and max values for each flow specified in queryTs
 					const r = rows[index];
 					const min = Math.min(...r.map((m) => m.value));
