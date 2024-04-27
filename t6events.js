@@ -61,6 +61,10 @@ t6events.addStat = function(where, what, who, client_id=null, params=undefined) 
 				"user_id": user_id,
 				"client_id": client_id,
 				"nonPersonalizedAds": true,
+				"consent": {
+					"ad_user_data": "DENIED",
+					"ad_personalization": "DENIED"
+				},
 				"events": [{
 					name: what.replace(/[^a-zA-Z]/g,"_"),
 					params: params,
