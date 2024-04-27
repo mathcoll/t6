@@ -300,8 +300,8 @@ let verifyPrerequisites = async function(resolve, reject) {
 	let object = this.object;
 	let chainOrder = this.chainOrder;
 	payload.prerequisite = 0;
-	if ( !payload.value ) {
-		t6console.warning("chain 5", "Error: verifyPrerequisites : no value.");
+	if ( (!payload.value || payload.value==="" || payload.value===null || typeof payload.value==="undefined") && payload.value!==0 ) {
+		t6console.warning("chain 5", "Error: verifyPrerequisites : no value.", payload.value);
 		payload.datapoint_logs.verifyPrerequisites = "err";
 		chainOrder.push("verifyPrerequisites");
 		//resolve("Error: verifyPrerequisites : no value.", payload, object, null, chainOrder);
