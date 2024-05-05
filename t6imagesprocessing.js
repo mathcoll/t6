@@ -4,14 +4,14 @@ require("@tensorflow/tfjs-node"); // optional
 const faceapi = require("@vladmandic/face-api");
 const { Canvas, Image } = require("canvas");
 faceapi.env.monkeyPatch({ Canvas, Image });
-faceapi.nets.ssdMobilenetv1.loadFromDisk(`${ip.models_dir}/weights`);
-faceapi.nets.tinyFaceDetector.loadFromDisk(`${ip.models_dir}/weights`);
-faceapi.nets.faceLandmark68Net.loadFromDisk(`${ip.models_dir}/weights`);
-faceapi.nets.ageGenderNet.loadFromDisk(`${ip.models_dir}/weights`);
-faceapi.nets.faceExpressionNet.loadFromDisk(`${ip.models_dir}/weights`);
 
 t6imagesprocessing.ageAndGenderRecognition = async function(img, dir, filename, ext, save=false) {
 	return new Promise((resolve, reject) => {
+		faceapi.nets.ssdMobilenetv1.loadFromDisk(`${ip.models_dir}/weights`);
+		faceapi.nets.tinyFaceDetector.loadFromDisk(`${ip.models_dir}/weights`);
+		faceapi.nets.faceLandmark68Net.loadFromDisk(`${ip.models_dir}/weights`);
+		faceapi.nets.ageGenderNet.loadFromDisk(`${ip.models_dir}/weights`);
+		faceapi.nets.faceExpressionNet.loadFromDisk(`${ip.models_dir}/weights`);
 		if(img instanceof Image || img instanceof Canvas) {
 			faceapi.detectAllFaces(img, new faceapi.TinyFaceDetectorOptions({inputSize: 512, scoreThreshold: 0.5}))
 			.withFaceLandmarks()
@@ -54,6 +54,11 @@ t6imagesprocessing.ageAndGenderRecognition = async function(img, dir, filename, 
 
 t6imagesprocessing.faceExpressionRecognition = async function(img, dir, filename, ext, save=false) {
 	return new Promise((resolve, reject) => {
+		faceapi.nets.ssdMobilenetv1.loadFromDisk(`${ip.models_dir}/weights`);
+		faceapi.nets.tinyFaceDetector.loadFromDisk(`${ip.models_dir}/weights`);
+		faceapi.nets.faceLandmark68Net.loadFromDisk(`${ip.models_dir}/weights`);
+		faceapi.nets.ageGenderNet.loadFromDisk(`${ip.models_dir}/weights`);
+		faceapi.nets.faceExpressionNet.loadFromDisk(`${ip.models_dir}/weights`);
 		if(img instanceof Image || img instanceof Canvas) {
 			faceapi.detectAllFaces(img, new faceapi.TinyFaceDetectorOptions())
 			.withFaceLandmarks()
