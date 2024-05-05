@@ -16,6 +16,41 @@ Types of changes
 
 ------------
 
+## 2024
+### Milestone 28 - 2024-05
+**Added**
+  - [x] Machine Learning single flow and multiple flows compilation, including training and prediction
+  - [x] New parameters added to customize layers on ML Models : type, mode, units, activation
+
+**Changed**
+  - [x] Machine Learning : Remove splitToArray from models resources
+  - [x] Machine Learning : window_time_frame can be set to fill datapoints according to time_frame
+
+### Milestone 27 - 2024-03
+**Added**
+  - [x] Adding Audit to main resources deletion
+  - [x] Adding routes to download model trained files as model.json and weights.bin
+  - [x] Adding and keeping the information about audio object compatibility on websocket metadata
+  - [x] Adding api-key and api-secrets to OTA endpoints
+  - [x] Adding `strategy` to model in order to define the strategy to be used in training/prediction
+  - [x] Adding `dead_notification`to Flows resources so that a process can send notification when sensors are not sending datapoints anymore
+  - [x] Adding `dead_notification_interval` to Flows resources to customize notification interval and avoid receiving multiple notifications
+  - [x] Adding `dead_notification_latest` to Flows resources on output serializer to get the latest notifcation date
+  - [x] Adding `dead_notification` GET api endpoint to list sensors not sending datapoints anymore
+  - [x] Adding `dead_notification` POST (Admin role required) api endpoint to send a push notification when sensors are not sending datapoints anymore
+  - [x] Adding `admin` routes to customize config on realtime (with non persistent values): smtp and loglevels
+  - [x] Adding route to Explain a Trained Model with a graph (svg)
+  
+**Fixed**
+  - [x] Fix OTA bug: mismatch on version number
+  - [x] Fix `goExternal` push notification type
+  - [x] Make sure the push notification token is removed from user database when receiving an error message
+
+**Changed**
+  - [x] Removing newsletter job from the list when spam is detected as hardbounce
+  - [x] Adding user_id to OTA latest-version endpoint
+  - [x] Update firebase to 10.7.1
+
 ## 2023
 ### Milestone 26 - 2023-08
 **Added**
