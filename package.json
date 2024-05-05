@@ -36,7 +36,7 @@
     "deliver": "./bin/deliver.sh -rbfs"
   },
   "dependencies": {
-    "@google-cloud/text-to-speech": "^4.2.1",
+    "@google-cloud/text-to-speech": "^5.2.0",
     "@influxdata/influxdb-client": "^1.33.2",
     "@tensorflow/tfjs-node": "^4.4.0",
     "@vladmandic/face-api": "^1.7.10",
@@ -67,7 +67,7 @@
     "express-http-proxy": "^1.6.3",
     "express-jwt": "^8.4.1",
     "express-session": "^1.17.3",
-    "firebase-admin": "^11.6.0",
+    "firebase-admin": "^12.1.0",
     "follow-redirects": "^1.15.6",
     "fs-extra": "^11.1.1",
     "geodist": "^0.2.1",
