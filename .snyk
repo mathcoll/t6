@@ -123,10 +123,10 @@ ignore:
   SNYK-JS-USERAGENT-174737:
     - useragent:
         reason: None given
-        expires: '2023-05-08T07:59:47.024Z'
+        expires: '2024-06-04T14:29:17.861Z'
     - device > useragent:
         reason: None given
-        expires: '2023-05-08T07:59:47.024Z'
+        expires: '2024-06-04T14:29:17.861Z'
   SNYK-JS-LODASH-567746:
     - geoip-lite > ip-address > lodash:
         reason: None given
@@ -166,11 +166,11 @@ ignore:
   SNYK-JS-MATHJS-1016401:
     - loess > mathjs:
         reason: None given
-        expires: '2023-05-08T07:59:47.024Z'
+        expires: '2024-06-04T14:29:17.860Z'
   SNYK-JS-SVG2PNG-567041:
     - d3node-barchart > d3node-output > svg2png:
         reason: None given
-        expires: '2023-05-08T07:59:47.024Z'
+        expires: '2024-06-04T14:29:17.861Z'
     - d3node-barchart > d3node-output > svg2png:
         reason: None given
         expires: '2022-11-28T08:59:35.638Z'
@@ -201,7 +201,7 @@ ignore:
   SNYK-JS-YARGSPARSER-560381:
     - d3node-barchart > d3node-output > svg2png > yargs > yargs-parser:
         reason: None given
-        expires: '2023-05-08T07:59:47.025Z'
+        expires: '2024-06-04T14:29:17.861Z'
     - nsp > yargs > yargs-parser:
         reason: None given
         expires: '2021-09-09T18:20:24.706Z'
@@ -341,6 +341,30 @@ ignore:
     - d3node-voronoi > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2023-05-08T07:59:47.025Z'
+    - d3node-barchart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2024-06-04T14:26:36.212Z'
+    - d3node-linechart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2024-06-04T14:26:36.212Z'
+    - d3node-piechart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2024-06-04T14:26:36.212Z'
+    - d3node-voronoi > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2024-06-04T14:26:36.212Z'
+    - d3node-barchart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2024-06-04T14:29:17.861Z'
+    - d3node-linechart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2024-06-04T14:29:17.861Z'
+    - d3node-piechart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2024-06-04T14:29:17.861Z'
+    - d3node-voronoi > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2024-06-04T14:29:17.861Z'
   SNYK-JS-Y18N-1021887:
     - d3node-barchart > d3node-output > svg2png > yargs > y18n:
         reason: None given
@@ -553,187 +577,187 @@ ignore:
   SNYK-JS-D3COLOR-1076592:
     - d3-node > d3 > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.017Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.017Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.017Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3-node > d3 > d3-scale-chromatic > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.017Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.017Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3-node > d3 > d3-scale-chromatic > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3node-barchart > d3-node > d3 > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3node-linechart > d3-node > d3 > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3node-piechart > d3-node > d3 > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3node-voronoi > d3-node > d3 > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3node-barchart > d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3node-linechart > d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3node-piechart > d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3node-voronoi > d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3node-barchart > d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.857Z'
     - d3node-linechart > d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-piechart > d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-voronoi > d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-barchart > d3-node > d3 > d3-scale > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.018Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-linechart > d3-node > d3 > d3-scale > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.019Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-piechart > d3-node > d3 > d3-scale > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.019Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-voronoi > d3-node > d3 > d3-scale > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.019Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-barchart > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.019Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-linechart > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.019Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-piechart > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.019Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-voronoi > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.019Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-barchart > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.019Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-linechart > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.019Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-piechart > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.019Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-voronoi > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.019Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-barchart > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.019Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-linechart > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.019Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-piechart > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-voronoi > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-barchart > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-linechart > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-piechart > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-voronoi > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-barchart > d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-linechart > d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-piechart > d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-voronoi > d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.858Z'
     - d3node-barchart > d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.859Z'
     - d3node-linechart > d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.859Z'
     - d3node-piechart > d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.859Z'
     - d3node-voronoi > d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.859Z'
     - d3node-barchart > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.859Z'
     - d3node-linechart > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.859Z'
     - d3node-piechart > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.860Z'
     - d3node-voronoi > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.860Z'
     - d3node-barchart > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.860Z'
     - d3node-linechart > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.860Z'
     - d3node-piechart > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.860Z'
     - d3node-voronoi > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-05-08T07:59:47.020Z'
+        expires: '2024-06-04T14:29:17.860Z'
   SNYK-JS-LOCUTUS-1090597:
     - cidr-js > locutus:
         reason: None given
@@ -769,7 +793,7 @@ ignore:
   SNYK-JS-NETMASK-1089716:
     - libnmap > netmask:
         reason: None given
-        expires: '2023-05-08T07:59:47.024Z'
+        expires: '2024-06-04T14:29:17.860Z'
   SNYK-JS-TAR-1536528:
     - npm > libnpmpack > pacote > tar:
         reason: None given
@@ -1530,10 +1554,40 @@ ignore:
     - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2023-05-08T07:59:47.017Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2024-06-04T14:26:36.208Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2024-06-04T14:26:36.208Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2024-06-04T14:26:36.208Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2024-06-04T14:26:36.208Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2024-06-04T14:26:36.208Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2024-06-04T14:29:17.856Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2024-06-04T14:29:17.856Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2024-06-04T14:29:17.856Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2024-06-04T14:29:17.856Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2024-06-04T14:29:17.857Z'
   SNYK-JS-RAMDA-1582370:
     - arduino-cli > ramda:
         reason: None given
-        expires: '2023-05-08T07:59:47.024Z'
+        expires: '2024-06-04T14:29:17.860Z'
   SNYK-JS-ASYNC-2441827:
     - geoip-lite > async:
         reason: None given
@@ -1743,22 +1797,22 @@ ignore:
   SNYK-JS-REQUEST-3361831:
     - request:
         reason: None given
-        expires: '2023-05-08T07:59:47.024Z'
+        expires: '2024-06-04T14:29:17.860Z'
     - d3node-barchart > d3-node > jsdom > request:
         reason: None given
-        expires: '2023-05-08T07:59:47.024Z'
+        expires: '2024-06-04T14:29:17.860Z'
     - d3node-linechart > d3-node > jsdom > request:
         reason: None given
-        expires: '2023-05-08T07:59:47.024Z'
+        expires: '2024-06-04T14:29:17.860Z'
     - d3node-piechart > d3-node > jsdom > request:
         reason: None given
-        expires: '2023-05-08T07:59:47.024Z'
+        expires: '2024-06-04T14:29:17.860Z'
     - d3node-voronoi > d3-node > jsdom > request:
         reason: None given
-        expires: '2023-05-08T07:59:47.024Z'
+        expires: '2024-06-04T14:29:17.860Z'
     - d3node-barchart > d3node-output > svg2png > phantomjs-prebuilt > request:
         reason: None given
-        expires: '2023-05-08T07:59:47.024Z'
+        expires: '2024-06-04T14:29:17.860Z'
   SNYK-JS-WORDWRAP-3149973:
     - jsdom > escodegen > optionator > word-wrap:
         reason: None given
@@ -1787,7 +1841,71 @@ ignore:
   SNYK-JS-XML2JS-5414874:
     - libnmap > xml2js:
         reason: None given
-        expires: '2023-05-08T07:59:47.025Z'
+        expires: '2024-06-04T14:29:17.861Z'
+  SNYK-JS-INFLIGHT-6095116:
+    - arduino-cli > yamljs > glob > inflight:
+        reason: None given
+        expires: '2024-06-04T14:29:17.860Z'
+    - geoip-lite > rimraf > glob > inflight:
+        reason: None given
+        expires: '2024-06-04T14:29:17.860Z'
+    - bcrypt > @mapbox/node-pre-gyp > rimraf > glob > inflight:
+        reason: None given
+        expires: '2024-06-04T14:29:17.860Z'
+    - canvas > @mapbox/node-pre-gyp > rimraf > glob > inflight:
+        reason: None given
+        expires: '2024-06-04T14:29:17.860Z'
+    - d3node-output > puppeteer > rimraf > glob > inflight:
+        reason: None given
+        expires: '2024-06-04T14:29:17.860Z'
+    - d3node-linechart > d3node-output > puppeteer > rimraf > glob > inflight:
+        reason: None given
+        expires: '2024-06-04T14:29:17.860Z'
+    - '@tensorflow/tfjs-node > rimraf > glob > inflight':
+        reason: None given
+        expires: '2024-06-04T14:39:23.003Z'
+    - '@tensorflow/tfjs-node > @mapbox/node-pre-gyp > rimraf > glob > inflight':
+        reason: None given
+        expires: '2024-06-04T14:39:23.003Z'
+  SNYK-JS-NETMASK-6056519:
+    - libnmap > netmask:
+        reason: None given
+        expires: '2024-06-04T14:29:17.860Z'
+  SNYK-JS-TOUGHCOOKIE-5672873:
+    - request > tough-cookie:
+        reason: None given
+        expires: '2024-06-04T14:29:17.861Z'
+    - d3node-barchart > d3-node > jsdom > tough-cookie:
+        reason: None given
+        expires: '2024-06-04T14:29:17.861Z'
+    - d3node-linechart > d3-node > jsdom > tough-cookie:
+        reason: None given
+        expires: '2024-06-04T14:29:17.861Z'
+    - d3node-piechart > d3-node > jsdom > tough-cookie:
+        reason: None given
+        expires: '2024-06-04T14:29:17.861Z'
+    - d3node-voronoi > d3-node > jsdom > tough-cookie:
+        reason: None given
+        expires: '2024-06-04T14:29:17.861Z'
+    - d3node-barchart > d3-node > jsdom > request > tough-cookie:
+        reason: None given
+        expires: '2024-06-04T14:29:17.861Z'
+    - d3node-linechart > d3-node > jsdom > request > tough-cookie:
+        reason: None given
+        expires: '2024-06-04T14:29:17.861Z'
+    - d3node-piechart > d3-node > jsdom > request > tough-cookie:
+        reason: None given
+        expires: '2024-06-04T14:29:17.861Z'
+    - d3node-voronoi > d3-node > jsdom > request > tough-cookie:
+        reason: None given
+        expires: '2024-06-04T14:29:17.861Z'
+    - d3node-barchart > d3node-output > svg2png > phantomjs-prebuilt > request > tough-cookie:
+        reason: None given
+        expires: '2024-06-04T14:29:17.861Z'
+  SNYK-JS-TAR-6476909:
+    - '@tensorflow/tfjs-node > tar':
+        reason: None given
+        expires: '2024-06-04T14:39:23.003Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':

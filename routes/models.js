@@ -27,12 +27,7 @@ const executeQuery = async (query) => {
 	return results;
 };
 const executeAllQueries = async (queries) => {
-	try {
-		return await Promise.all(queries.map((query) => executeQuery(query)));
-	} catch (error) {
-		t6console.error("Error executing queries:", error);
-		throw error;
-	}
+	return await Promise.all(queries.map((query) => executeQuery(query)));
 };
 const getQueries = async (user_id, flows, t6Model) => {
 	return new Promise(async (resolve, reject) => {

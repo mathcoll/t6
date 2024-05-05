@@ -20,12 +20,12 @@ jsonapitest \
 	$SCRIPT_DIR/../test/jobs.json \
 	$SCRIPT_DIR/../test/models.json \
 	$SCRIPT_DIR/../test/users.json \
-#	$SCRIPT_DIR/../test/audits.json \
 	$SCRIPT_DIR/../test/cleaning.json
+#	$SCRIPT_DIR/../test/audits.json \
 
 suite="$(jq -cr '.[0].suite' $SCRIPT_DIR/../jsonapitest-results.json)"
 errors="$(jq -cr '.[] | select(.errors != [])' $SCRIPT_DIR/../jsonapitest-results.json | wc -l)"
-errorList="$(jq -cr '.[] | select(.errors != []) | .test, .suite, .errors, .api_call.request.url, .api_call.request.headers' $SCRIPT_DIR/../jsonapitest-results.json)"
+errorList="$(jq -cr '.[] | select(.errors != []) | .test, .suite, .api_call.it, .test_description, .response.status, .response.body, .errors, .api_call.method, .api_call.request.url, .api_call.request.headers' $SCRIPT_DIR/../jsonapitest-results.json)"
 test="$(jq -cr '. | length' $SCRIPT_DIR/../jsonapitest-results.json)"
 echo ""
 echo "REPORT :"

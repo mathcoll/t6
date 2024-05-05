@@ -33,7 +33,8 @@
                                 "objects": [
                                     "{{saved.object_id}}"
                                 ],
-                                "unit": "String"
+                                "unit": "String",
+                                "data_type": "a394e18f-12bd-4c22-b9c3-74c387d1a8db"
                             },
                             "save": {
                                 "saved.flow_id_string": "body.flow.data.id"

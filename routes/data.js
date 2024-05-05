@@ -407,7 +407,7 @@ let verifyPrerequisites = async function(resolve, reject) {
 		t6console.debug("chain 5", "Retention", payload.retention);
 		//t6console.debug("chain 5", "current_flow", current_flow);
 		t6console.debug("chain 5", "Prerequisite Index=", payload.prerequisite, payload.prerequisite>0?"Something is required.":"All good.");
-		t6console.debug("chain 5", "payload", payload);
+		// t6console.debug("chain 5", "payload", payload);
 		if (payload.prerequisite <= 0) {
 			payload.datapoint_logs.verifyPrerequisites = true;
 			chainOrder.push("verifyPrerequisites");

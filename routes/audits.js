@@ -59,7 +59,7 @@ router.get("/:audit_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, a
 		where += sprintf(" AND \"where\"='%s'", environment);
 	}
 	if ( status ) {
-		where += sprintf(" AND status=%s", parseInt(status));
+		where += sprintf(" AND status=%s", parseInt(status, 62));
 	}
 	if ( what ) {
 		where += sprintf(" AND what=~/%s/", what);
