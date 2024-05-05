@@ -76,16 +76,25 @@ const getQueries = async (user_id, flows, t6Model) => {
 						andDates += `AND time<='${moment(t6Model.datasets.training.end).toISOString()}' `;
 					}
 					t6Model.strategy = typeof t6Model.strategy!=="undefined"?t6Model.strategy:"classification";
-					let window = Math.round((flow.time_to_live!==undefined && flow.time_to_live!==null)?flow.time_to_live/60:60);
-					let where = "";
-					let gp_time = `GROUP BY time(${typeof t6Model.window_time_frame!=="undefined"?t6Model.window_time_frame:`${window}m`}) fill(previous)`;
-					let lim = limit!==null?`LIMIT ${limit} OFFSET ${offset}`:"";
-					let curr_q;
+					let window		= "";
+					let where		= "";
+					let gp_time		= "";
+					let lim			= "";
+					let selectors	= "";
+					let curr_q		= "";
+					lim = limit!==null?`LIMIT ${limit} OFFSET ${offset}`:"";
+					if(typeof t6Model.window_time_frame!=="undefined") {
+						window = Math.round((flow.time_to_live!==undefined && flow.time_to_live!==null)?flow.time_to_live/60:60);
+						gp_time = `GROUP BY time(${typeof t6Model.window_time_frame!=="undefined"?t6Model.window_time_frame:`${window}m`}) fill(previous)`;
+						selectors = `time, LAST(${fieldvalue}) as value, LAST(meta) as meta`;
+					} else {
+						selectors = `time, ${fieldvalue} as value, meta as meta`;
+					}
 					if(flow.time_to_live!==null) {
-						curr_q = `SELECT time, LAST(${fieldvalue}) as value, LAST(meta) as meta FROM ${rp}.data WHERE ${where} user_id='${user_id}' ${andDates} AND flow_id='${flow_id}' ${gp_time} ${lim}`;
+						curr_q = `SELECT ${selectors} FROM ${rp}.data WHERE ${where} user_id='${user_id}' ${andDates} AND flow_id='${flow_id}' ${gp_time} ${lim}`;
 						// queryTs.push(curr_q);
 					} else {
-						curr_q = `SELECT time, ${fieldvalue} as value, meta as meta FROM ${rp}.data WHERE ${where} user_id='${user_id}' ${andDates} AND flow_id='${flow_id}' ${lim}`;
+						curr_q = `SELECT ${selectors} FROM ${rp}.data WHERE ${where} user_id='${user_id}' ${andDates} AND flow_id='${flow_id}' ${lim}`;
 						// queryTs.push(curr_q);
 					}
 					return curr_q;
@@ -295,7 +304,7 @@ router.get("/?(:model_id([0-9a-z\-]+))/download/:file(weights\.bin|model\.json)/
  * @apiBody {String} [retention=autogen] Data retention to look for
  * @apiBody {String=forecast,classification} [strategy=classification] Strategy
  * @apiBody {Boolean=true false} [normalize=true] Normalize boolean
- * @apiBody {String} [window_time_frame=60m] Window Time Frame (60 minutes by default)
+ * @apiBody {String} [window_time_frame] Window Time Frame, this parameter will fill datapoints according to time_frame
  * @apiBody {Boolean=true false} [shuffle=false] shuffle boolean
  * @apiBody {Number} [validation_split=0.8] Ratio of subset data to use on validation during training
  * @apiBody {Integer} [batch_size=100]  Batch size during training
@@ -364,7 +373,7 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 					item.normalize		= typeof req.body.normalize!=="undefined"?req.body.normalize:item.normalize;
 					item.shuffle		= typeof req.body.shuffle!=="undefined"?req.body.shuffle:item.shuffle;
 					item.strategy		= typeof req.body.strategy!=="undefined"?req.body.strategy:item.strategy,
-					item.window_time_frame	= typeof req.body.window_time_frame!=="undefined"?req.body.window_time_frame:item.window_time_frame;
+					item.window_time_frame	= req.body.window_time_frame!==null?req.body.window_time_frame:item.window_time_frame;
 					item.labels			= typeof req.body.labels!=="undefined"?req.body.labels:item.labels;
 					item.continuous_features	= typeof req.body.continuous_features!=="undefined"?req.body.continuous_features:item.continuous_features;
 					item.categorical_features	= typeof req.body.categorical_features!=="undefined"?req.body.categorical_features:item.categorical_features; // TODO depend on datatype
@@ -423,7 +432,7 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
  * @apiBody {String} [retention=autogen] Data retention to look for
  * @apiBody {String=forecast,classification} [strategy=classification] Strategy
  * @apiBody {Boolean=true false} [normalize=true] Normalize boolean
- * @apiBody {String} [window_time_frame=60m] Window Time Frame (60 minutes by default)
+ * @apiBody {String} [window_time_frame] Window Time Frame, this parameter will fill datapoints according to time_frame
  * @apiBody {Boolean=true false} [shuffle=false] shuffle boolean
  * @apiBody {Number} [validation_split=0.8] Ratio of subset data to use on validation during training
  * @apiBody {Integer} [batch_size=100]  Batch size during training
@@ -477,7 +486,7 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				normalize:	typeof req.body.normalize!=="undefined"?req.body.normalize:true,
 				shuffle:	typeof req.body.shuffle!=="undefined"?req.body.shuffle:false,
 				strategy:	typeof req.body.strategy!=="undefined"?req.body.strategy:"classification",
-				window_time_frame:	typeof req.body.window_time_frame!=="undefined"?req.body.window_time_frame:"60m",
+				window_time_frame:	req.body.window_time_frame,
 				labels:		typeof req.body.labels!=="undefined"?req.body.labels:["oov"],
 				continuous_features: typeof req.body.continuous_features!=="undefined"?req.body.continuous_features:["value"],
 				categorical_feature: typeof req.body.categorical_features!=="undefined"?req.body.categorical_features:[], // TODO depend on datatype
@@ -729,18 +738,25 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				const dateArray = [];
 				let currentDate = startDate.clone();
 				let duration;
-				switch(timeWindow.slice(-1)) {
-					case "Y": duration = moment.duration({"years" : timeWindow.substring(0, timeWindow.length - 1)}); break;
-					case "Q": duration = moment.duration({"quarters" : timeWindow.substring(0, timeWindow.length - 1)}); break;
-					case "M": duration = moment.duration({"months" : timeWindow.substring(0, timeWindow.length - 1)}); break;
-					case "w": duration = moment.duration({"weeks" : timeWindow.substring(0, timeWindow.length - 1)}); break;
-					case "d": duration = moment.duration({"days" : timeWindow.substring(0, timeWindow.length - 1)}); break;
-					case "h": duration = moment.duration({"hours" : timeWindow.substring(0, timeWindow.length - 1)}); break;
-					case "m": duration = moment.duration({"minutes" : timeWindow.substring(0, timeWindow.length - 1)}); break;
-					case "s": duration = moment.duration({"seconds" : timeWindow.substring(0, timeWindow.length - 1)}); break;
-				}
-				while (currentDate.isBefore(endDate) ) {
-					dateArray.push(currentDate.add(duration).format("x"));
+				if(typeof t6Model.window_time_frame==="undefined") {
+					executeAllQueriesResults.allRows[0].map((r) => {
+						// t6console.debug("r", r);
+						dateArray.push(moment(r.time).format("x"));
+					});
+				} else {
+					switch(timeWindow.slice(-1)) {
+						case "Y": duration = moment.duration({"years" : timeWindow.substring(0, timeWindow.length - 1)}); break;
+						case "Q": duration = moment.duration({"quarters" : timeWindow.substring(0, timeWindow.length - 1)}); break;
+						case "M": duration = moment.duration({"months" : timeWindow.substring(0, timeWindow.length - 1)}); break;
+						case "w": duration = moment.duration({"weeks" : timeWindow.substring(0, timeWindow.length - 1)}); break;
+						case "d": duration = moment.duration({"days" : timeWindow.substring(0, timeWindow.length - 1)}); break;
+						case "h": duration = moment.duration({"hours" : timeWindow.substring(0, timeWindow.length - 1)}); break;
+						case "m": duration = moment.duration({"minutes" : timeWindow.substring(0, timeWindow.length - 1)}); break;
+						case "s": duration = moment.duration({"seconds" : timeWindow.substring(0, timeWindow.length - 1)}); break;
+					}
+					while (currentDate.isBefore(endDate) ) {
+						dateArray.push(currentDate.add(duration).format("x"));
+					}
 				}
 				const minMaxValues = queryTs.map((query, index) => {
 					t6console.debug("initializing minMaxValues index:", index);
@@ -863,6 +879,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 					t6console.debug("ML DATASET inputLabelsEvaluate.shape", inputLabelsEvaluate.shape);
 		
 					t6console.debug("ML READY TO BE TRAINED !!!");
+					t6console.debug("reminder queryTs", queryTs);
 					t6machinelearning.trainModel(tfModel, inputXTrain, inputLabelsTrain, options).then((trained) => {
 						return {trained, evaluateSize, inputXEvaluate, inputLabelsEvaluate};
 					}).then((trainedResult) => {
@@ -985,7 +1002,7 @@ router.post("/:model_id([0-9a-z\-]+)/upload/?", upload.array("files[]", 10), exp
  * @apiUse 401
  * @apiUse 412
  */
-router.get("/:model_id([0-9a-z\-]+)/explain/training?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+router.get("/:model_id([0-9a-z\-]+)/explain/:mode(training|evaluation)?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	let model_id = req.params.model_id;
 	let width = typeof parseInt(req.query.width, 10)!=="undefined"?parseInt(req.query.width, 10):500;
 	let height = typeof parseInt(req.query.height, 10)!=="undefined"?parseInt(req.query.height, 10):200;
@@ -1003,15 +1020,16 @@ router.get("/:model_id([0-9a-z\-]+)/explain/training?", expressJwt({secret: jwts
 			if (t6Model.current_status!=="TRAINED") {
 				res.status(412).send(new ErrorSerializer({"id": 14187, "code": 412, "message": "Model not yet trained: Precondition Failed"}).serialize());
 			} else {
+				const modeData = t6Model.history[req.params.mode];
 				const d3nInstance = new D3Node();
 				let svg = d3nInstance.createSVG(width, height);
-				const epochs = [...t6Model.history.training.accuracy.map((a, i) => { return i; })]; // TODO : should be a simplier way
-				const accuracy = t6Model.history.training.accuracy;
-				const loss = t6Model.history.training.loss;
-				const minAcc = Math.min(...t6Model.history.training.accuracy.map((a) => a));
-				const maxAcc = Math.max(...t6Model.history.training.accuracy.map((a) => a));
-				const minLoss = Math.min(...t6Model.history.training.loss.map((l) => l));
-				const maxLoss = Math.max(...t6Model.history.training.loss.map((l) => l));
+				const epochs = [...modeData.accuracy.map((a, i) => { return i; })]; // TODO : should be a simplier way
+				const accuracy = modeData.accuracy;
+				const loss = modeData.loss;
+				const minAcc = Math.min(...modeData.accuracy.map((a) => a));
+				const maxAcc = Math.max(...modeData.accuracy.map((a) => a));
+				const minLoss = Math.min(...modeData.loss.map((l) => l));
+				const maxLoss = Math.max(...modeData.loss.map((l) => l));
 
 				// Create scales for x and y axes
 				const xScale = d3nInstance.d3.scaleLinear().domain([0, epochs.length - 1]).range([margin, width-margin]);
