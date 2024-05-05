@@ -342,7 +342,7 @@
                     "description": "post datapoint to Flow",
                     "api_calls": [
                         {
-							"it": "can Sanitize according to a Datatype",
+							"it": "can post a datapoint with a string_1 Datatype and sanitize to float",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -375,7 +375,7 @@
         	                }]
                         },
                         {
-							"it": "can Sanitize according to a Datatype",
+							"it": "can post a datapoint with a string_2 Datatype and sanitize to float",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
