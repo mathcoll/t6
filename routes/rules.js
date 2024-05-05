@@ -209,8 +209,8 @@ router.delete("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, 
 		t6events.addAudit("t6Api", "rule delete", req.user.id, rule_id, {error_id: null, status: 200});
 		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: rule_id }); // TODO: missing serializer
 	} else {
-		t6events.addAudit("t6Api", "rule delete", req.user.id, rule_id, {error_id: 532, status: 404});
-		res.status(404).send(new ErrorSerializer({"id": 532, "code": 404, "message": "Not Found"}).serialize());
+		t6events.addAudit("t6Api", "rule delete", req.user.id, rule_id, {error_id: 12274, status: 404});
+		res.status(404).send(new ErrorSerializer({"id": 12274, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 

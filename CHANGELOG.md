@@ -17,6 +17,15 @@ Types of changes
 ------------
 
 ## 2024
+### Milestone 28 - 2024-05
+**Added**
+  - [x] Machine Learning single flow and multiple flows compilation, including training and prediction
+  - [x] New parameters added to customize layers on ML Models : type, mode, units, activation
+
+**Changed**
+  - [x] Machine Learning : Remove splitToArray from models resources
+  - [x] Machine Learning : window_time_frame can be set to fill datapoints according to time_frame
+
 ### Milestone 27 - 2024-03
 **Added**
   - [x] Adding Audit to main resources deletion
