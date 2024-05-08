@@ -734,7 +734,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				let currentDate = startDate.clone();
 				let duration;
 				if(typeof t6Model.window_time_frame==="undefined") {
-					executeAllQueriesResults.allRows[0].map((r) => {
+					executeAllQueriesResults.allRows[0].map((r) => { // TODO: expecting flow index zero to be the one defining times
 						// t6console.debug("r", r);
 						dateArray.push(moment(r.time).format("x"));
 					});

@@ -75,6 +75,13 @@ t6machinelearning.getLayer = async function(l) {
 				l.rate = typeof l.rate!=="undefined"?l.rate:0.2;
 				layer = tf.layers.dropout(l);
 				break;
+			case "lstm":// TODO: lstm not implemented yet
+				// model.add(tf.layers.lstm({
+				// 		units: 64, // Number of LSTM units
+				// 		inputShape: inputShape, // Shape of the input data (time steps, features)
+				// 		returnSequences: true // Set to true if you have multiple time steps
+				// 	}));
+			case "rnn":// TODO: rnn not implemented yet
 			case "dense":
 			default:
 				l.mode = "dense";
@@ -111,46 +118,43 @@ t6machinelearning.addLayersToModel = async function(model, inputShape, outputSha
 t6machinelearning.buildModel = async function(inputShape, outputShape) {
 	return await new Promise(async (resolve) => {
 		const model = tf.sequential();
-		if(t6Model.strategy==="classification") {
-			let mdls = await t6machinelearning.addLayersToModel(model, inputShape, outputShape);
+		let mdls = await t6machinelearning.addLayersToModel(model, inputShape, outputShape);
 
-		} else if(t6Model.strategy==="forecast") {
-			// const input_layer_neurons = 100;
-			// const rnn_input_layer_features = 2; // TODO : if it's the feature it should be dynamic (10)
-			// const rnn_input_layer_timesteps = input_layer_neurons / rnn_input_layer_features;
-			// const n_layers = 5;
-			// const rnn_input_shape = [rnn_input_layer_features, rnn_input_layer_timesteps];
-			// const rnn_output_neurons = 20;
-			// const output_layer_shape = rnn_output_neurons;
-			// const output_layer_neurons = 1;
-			// t6console.debug("buildModel input_layer_neurons", input_layer_neurons);
-			// t6console.debug("buildModel rnn_input_layer_features", rnn_input_layer_features);
-			// t6console.debug("buildModel rnn_input_layer_timesteps", rnn_input_layer_timesteps);
-			// t6console.debug("buildModel n_layers", n_layers);
-			// t6console.debug("buildModel rnn_input_shape", rnn_input_shape);
-			// t6console.debug("buildModel rnn_output_neurons", rnn_output_neurons);
-			// t6console.debug("buildModel output_layer_shape", output_layer_shape);
-			// t6console.debug("buildModel output_layer_neurons", output_layer_neurons);
-			// model.add(tf.layers.dense({units: input_layer_neurons, inputShape: inputShape})); // [50] ????
-			// model.add(tf.layers.reshape({targetShape: rnn_input_shape}));
-			// let lstm_cells = [];
-			// for (let index=0; index<n_layers; index++) {
-			// 	lstm_cells.push(tf.layers.lstmCell({ units: rnn_output_neurons }));
-			// }
-			/*
-			model.add(tf.layers.lstm({
-				units: 64, // Number of LSTM units
-				inputShape: inputShape, // Shape of the input data (time steps, features)
-				returnSequences: true // Set to true if you have multiple time steps
-			}));
-			*/
-			model.add(tf.layers.rnn({
-				cell: lstm_cells,
-				inputShape: rnn_input_shape,
-				returnSequences: false
-			}));
-			model.add(tf.layers.dense({ units: output_layer_neurons, inputShape: [output_layer_shape] }));
-		}
+		// if(t6Model.strategy==="forecast") {
+		// 	const input_layer_neurons = 100;
+		// 	const rnn_input_layer_features = 2; // TODO : if it's the feature it should be dynamic (10)
+		// 	const rnn_input_layer_timesteps = input_layer_neurons / rnn_input_layer_features;
+		// 	const n_layers = 5;
+		// 	const rnn_input_shape = [rnn_input_layer_features, rnn_input_layer_timesteps];
+		// 	const rnn_output_neurons = 20;
+		// 	const output_layer_shape = rnn_output_neurons;
+		// 	const output_layer_neurons = 1;
+		// 	t6console.debug("buildModel input_layer_neurons", input_layer_neurons);
+		// 	t6console.debug("buildModel rnn_input_layer_features", rnn_input_layer_features);
+		// 	t6console.debug("buildModel rnn_input_layer_timesteps", rnn_input_layer_timesteps);
+		// 	t6console.debug("buildModel n_layers", n_layers);
+		// 	t6console.debug("buildModel rnn_input_shape", rnn_input_shape);
+		// 	t6console.debug("buildModel rnn_output_neurons", rnn_output_neurons);
+		// 	t6console.debug("buildModel output_layer_shape", output_layer_shape);
+		// 	t6console.debug("buildModel output_layer_neurons", output_layer_neurons);
+		// 	model.add(tf.layers.dense({units: input_layer_neurons, inputShape: inputShape})); // [50] ????
+		// 	model.add(tf.layers.reshape({targetShape: rnn_input_shape}));
+		// 	let lstm_cells = [];
+		// 	for (let index=0; index<n_layers; index++) {
+		// 		lstm_cells.push(tf.layers.lstmCell({ units: rnn_output_neurons }));
+		// 	}
+		// 	model.add(tf.layers.lstm({
+		// 		units: 64, // Number of LSTM units
+		// 		inputShape: inputShape, // Shape of the input data (time steps, features)
+		// 		returnSequences: true // Set to true if you have multiple time steps
+		// 	}));
+		// 	model.add(tf.layers.rnn({
+		// 		cell: lstm_cells,
+		// 		inputShape: rnn_input_shape,
+		// 		returnSequences: false
+		// 	}));
+		// 	model.add(tf.layers.dense({ units: output_layer_neurons, inputShape: [output_layer_shape] }));
+		// }
 
 		let optimizer;
 		let learningrate = typeof t6Model.compile.learningrate?t6Model.compile.learningrate:0.001;
