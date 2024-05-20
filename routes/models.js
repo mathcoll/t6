@@ -866,6 +866,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 					t6console.debug("ML DATASET batchSize", batchSize);
 					t6console.debug("ML DATASET timeSteps", timeSteps);
 					t6console.debug("ML DATASET numFeatures", numFeatures);
+					t6console.debug("ML DATASET numLabels", labelsTensor.shape[1]);
 					t6console.debug("ML DATASET reshapedInput.shape", reshapedInput?.shape);
 					t6console.debug("ML DATASET reshapedLabels.shape", reshapedLabels?.shape);
 					t6console.debug("ML DATASET inputXTrain.shape", inputXTrain.shape);
@@ -875,6 +876,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 		
 					t6console.debug("ML READY TO BE TRAINED !!!");
 					t6console.debug("reminder queryTs", queryTs);
+					options.batchSize = batchSize;
 					t6machinelearning.trainModel(tfModel, inputXTrain, inputLabelsTrain, options).then((trained) => {
 						return {trained, evaluateSize, inputXEvaluate, inputLabelsEvaluate};
 					}).then((trainedResult) => {
@@ -927,6 +929,8 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 						} else {
 							t6console.debug("Missing Validating data", evaluateSize);
 						}
+					}).catch((error) => {
+						t6console.error("Error during training :", error);
 					});
 				})
 			})

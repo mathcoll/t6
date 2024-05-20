@@ -70,25 +70,36 @@ t6machinelearning.addCategorical = function(featureName, classes) {
 t6machinelearning.getLayer = async function(l) {
 	return await new Promise((resolve) => {
 		let layer;
+		let rnn_output_neurons = 20;
+		let input_layer_neurons = 100;
+		let rnn_input_layer_timesteps = Math.floor(input_layer_neurons / l.inputShape);
 		switch(l.mode) {
 			case "dropout":
 				l.rate = typeof l.rate!=="undefined"?l.rate:0.2;
 				layer = tf.layers.dropout(l);
 				break;
-			case "lstm":// TODO: lstm not implemented yet
-				// model.add(tf.layers.lstm({
-				// 		units: 64, // Number of LSTM units
-				// 		inputShape: inputShape, // Shape of the input data (time steps, features)
-				// 		returnSequences: true // Set to true if you have multiple time steps
-				// 	}));
-			case "rnn":// TODO: rnn not implemented yet
+			case "lstm":
+				l.inputShape = [l.inputShape, rnn_input_layer_timesteps];
+				l.returnSequences = typeof l.returnSequences!=="undefined"?l.returnSequences:true;
+				layer = tf.layers.lstm(l);
+				break;
+			case "rnn":
+				l.inputShape = [l.inputShape, rnn_input_layer_timesteps];
+				l.returnSequences = typeof l.returnSequences!=="undefined"?l.returnSequences:true;
+				l.cellNumber = typeof l.cellNumber!=="undefined"?l.cellNumber:1;
+				l.cell = [];
+				for (let i=0; i<l.cellNumber; i++) {
+					(l.cell).push(tf.layers.lstmCell({units: rnn_output_neurons}));
+				}
+				layer = tf.layers.rnn(l);
+				break;
 			case "dense":
 			default:
 				l.mode = "dense";
 				layer = tf.layers.dense(l);
 				break;
 		}
-		// t6console.debug("buildModel getLayer before RESOLVE", l.mode);
+		// t6console.debug("buildModel getLayer", l);
 		resolve(layer);
 	});
 }
@@ -101,6 +112,7 @@ t6machinelearning.addLayersToModel = async function(model, inputShape, outputSha
 				layer.inputShape = inputShape;
 			}
 			if (layer.type==="hidden") {
+				layer.inputShape = inputShape;
 				layer.units = typeof layer.units!=="undefined"?layer.units:1;
 			}
 			if (layer.type==="output") {
@@ -364,15 +376,15 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 				// 	t6console.debug("loadDataSets_v2 Added values");
 				// }
 				components.push(valuesTensor);
-				t6console.debug("loadDataSets_v2 Added values");
+				t6console.debug("loadDataSets_v2 Added values to concat components");
 			}
 			if (t6Model.continuous_features.indexOf("time") > -1) {
-				components.push(timeTensor);
-				t6console.debug("loadDataSets_v2 Added times");
+				components.push(timeTensor.reshape([timeTensor.size, 1])); // Reshape time
+				t6console.debug("loadDataSets_v2 Added times to concat components");
 			}
 			if (t6Model.continuous_features.indexOf("flow") > -1) { // TODO : Should not be a continuous feature TODO TODO TODO
 				components.push(flowsTensor);
-				t6console.debug("loadDataSets_v2 Added flows");
+				t6console.debug("loadDataSets_v2 Added flows to concat components");
 			}
 			
 			t6console.debug("loadDataSets_v2 concatenating components", components.map((c) => {return c.shape;}));
