@@ -107,7 +107,7 @@ const normalize = (inputData, min, max) => {
 	return typeof inputData!=="undefined"?(parseFloat(inputData) - min)/(max - min):0;
 };
 const oneHotEncode = (classIndex, classes) => {
-	return Array.from(tf.oneHot(classIndex, classes.length).dataSync());
+	return classes.length>=2?Array.from(tf.oneHot(classIndex, classes.length).dataSync()):0; // TODO: 0 ?? oov ??
 };
 const findNearestDatapoints = (timestamp, dataArrays) => {
 	let closestValues		= [];
@@ -848,9 +848,9 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 					// t6console.debug("labelsTensor", labelsTensor);
 		
 					t6console.debug("[batchSize, timeSteps, numFeatures]", [batchSize, timeSteps, numFeatures]);
-					// const reshapedInput							= inputTensor.reshape([batchSize, timeSteps, numFeatures]);
+					const reshapedInput							= inputTensor.reshape([batchSize, timeSteps, numFeatures]);
 					// const reshapedLabels							= labelsTensor.reshape([batchSize, timeSteps, outputShape]);
-					const reshapedInput								= inputTensor.reshape([batchSize, numFeatures]);// the reshape does nothing in fact !!
+					// const reshapedInput								= inputTensor.reshape([batchSize, numFeatures]);// the reshape does nothing in fact !!
 					const reshapedLabels							= labelsTensor.reshape([batchSize, outputShape]);// the reshape does nothing in fact !!
 					const [inputXTrain, inputXEvaluate]				= tf.split(reshapedInput, [trainSize, evaluateSize]);
 					const [inputLabelsTrain, inputLabelsEvaluate]	= tf.split(reshapedLabels, [trainSize, evaluateSize]);
