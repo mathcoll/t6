@@ -128,7 +128,7 @@
     "uuid": "^9.0.1",
     "validator": "^13.11.0",
     "web-push": "^3.6.7",
-    "ws": "^8.17.0"
+    "ws": "^8.17.1"
   },
   "readmeFilename": "README.md",
   "devDependencies": {
