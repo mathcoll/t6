@@ -55,6 +55,8 @@ const challengeOTP = (res, req, rp, defaultUser) => new Promise((resolve, reject
 			dbInfluxDB.query(queryBruteForce).then((data) => {
 				bruteForceCount = typeof data[0]!=="undefined"?data[0].count:0;
 				t6console.debug("OTP challenge test brute force attempt", bruteForceCount);
+			}).catch((error) => {
+				t6console.error(`OTP challenge test brute force attempt error: ${error}`);
 			});
 		}
 		//t6console.debug("REQ", req.path);

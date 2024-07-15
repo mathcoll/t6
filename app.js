@@ -194,19 +194,6 @@ global.t6events.setMeasurement("events");
 global.t6events.setRP(typeof influxSettings.retentionPolicies.events!=="undefined"?influxSettings.retentionPolicies.events:"autogen");
 global.t6mailer.setBcc(bcc);
 global.t6ConnectedObjects = [];
-if( db_type.influxdb === true ) {
-	//var {InfluxDB} = require("@influxdata/influxdb-client"); // Should use "writeApi"
-	var {InfluxDB} = require("influx");
-	var dbStringInfluxDB	= `${influxSettings.influxdb.protocol}://${influxSettings.influxdb.host}:${influxSettings.influxdb.port}/${influxSettings.database}`;
-	//dbInfluxDB		= new InfluxDB(dbStringInfluxDB);
-	dbInfluxDB = new InfluxDB({ database: influxSettings.database, host: influxSettings.influxdb.host, port: influxSettings.influxdb.port, username: influxSettings.username, password: influxSettings.password});
-}
-if( db_type.telegraf === true ) {
-	var dbStringTelegraf	= `${influxSettings.telegraf.protocol}://${influxSettings.telegraf.host}:${influxSettings.telegraf.port}/${influxSettings.database}`;
-	dbTelegraf		= new InfluxDB(dbStringTelegraf);
-}
-moduleLoadEndTime = new Date();
-t6console.log(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`);
 
 /* Logging */
 var error = fs.createWriteStream(logErrorFile, { flags: "a" });
@@ -214,10 +201,32 @@ process.stdout.write = process.stderr.write = error.write.bind(error);
 process.on("uncaughtException", function(err) {
 	t6console.error((err && err.stack) ? err.stack : err);
 });
+
+if( db_type.influxdb === true ) {
+	//var {InfluxDB} = require("@influxdata/influxdb-client"); // Should use "writeApi"
+	var {InfluxDB} = require("influx");
+	var dbStringInfluxDB	= `${influxSettings.influxdb.protocol}://${influxSettings.influxdb.host}:${influxSettings.influxdb.port}/${influxSettings.database}`;
+	//dbInfluxDB		= new InfluxDB(dbStringInfluxDB);
+	try {
+		dbInfluxDB = new InfluxDB({ database: influxSettings.database, host: influxSettings.influxdb.host, port: influxSettings.influxdb.port, username: influxSettings.username, password: influxSettings.password});
+	} catch(error) {
+		t6console.error(`Modules InfluxDB error: ${error}`);
+	}
+}
+if( db_type.telegraf === true ) {
+	var dbStringTelegraf	= `${influxSettings.telegraf.protocol}://${influxSettings.telegraf.host}:${influxSettings.telegraf.port}/${influxSettings.database}`;
+	dbTelegraf		= new InfluxDB(dbStringTelegraf);
+}
+moduleLoadEndTime = new Date();
+
+
+
+
 t6console.log("");
 t6console.log("===========================================================");
 t6console.log(`============================ ${appName} ===========================`);
 t6console.log("===========================================================");
+t6console.log(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`);
 t6console.log(`Starting ${appName} v${VERSION}`);
 t6console.log(`Node: v${process.versions.node}`);
 t6console.log(`Build: v${t6BuildVersion}`);
@@ -240,6 +249,8 @@ if(dbInfluxDB) {
 		t6console.log("-requests:", `${influxSettings.retentionPolicies.requests}`);
 		t6console.log("-events:", `${influxSettings.retentionPolicies.events}`);
 		t6console.log("-data:",  `${influxSettings.retentionPolicies.data}`);
+	}).catch((error) => {
+		t6console.error(`dbInfluxDB.getDatabaseNames error: ${error}`);
 	});
 }
 if(dbTelegraf) {
