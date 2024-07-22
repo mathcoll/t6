@@ -797,15 +797,14 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				// t6console.debug([...dataMap.entries()]);
 				// t6console.debug([...dataMap.keys()]);
 				// t6console.debug([...dataMap.values()]);
-				[...dataMap.entries()].map((row, i) => {
-					let index = i+1;
-					t6console.debug(index, parseInt(row[0], 10)
-					, row[1].values, row[1].flow_ids, row[1].labels);
-				});
+				// [...dataMap.entries()].map((row, i) => {
+				// 	let index = i+1;
+				// 	t6console.debug(index, parseInt(row[0], 10), row[1].values, row[1].flow_ids, row[1].labels);
+				// });
 	
 				t6Model.predictionInProgress = false;
-				// return t6machinelearning.loadDataSets_v2(dataMap, t6Model);
-				return t6machinelearning.loadDataSets_timeseries(dataMap, t6Model);
+				// return t6machinelearning.loadDataSets_v2(dataMap, t6Model);						// DEBUG
+				return t6machinelearning.loadDataSets_timeseries(dataMap, t6Model);					// DEBUG : force LSTM timeseries
 				// TODO : loadDataSets_v2 is using tidy but not a promise ... so we should dispose tensors
 			})
 			.then((dataset) => {
@@ -841,15 +840,15 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 					let labelsTensor	= modelResult.dataset.labelsTensor;
 					let inputTensor		= modelResult.dataset.inputTensor;
 					let featuresTensor	= modelResult.dataset.featuresTensor;
-					const timeSteps		= 1; // TODO
-					const totalSize		= inputTensor.shape[0]; // Get the number of data points
-					const batchSize		= inputTensor.shape[0];
-					const trainSize		= Math.floor(totalSize * (1 - t6Model.validation_split));
-					const evaluateSize	= totalSize - trainSize;
+					const timeSteps		= 1; // TODO												// Bug: already set earlier
+					const totalSize		= inputTensor.shape[0]; // Get the number of data points 	// Bug: already set earlier
+					const batchSize		= inputTensor.shape[0];										// Bug: already set earlier
+					const trainSize		= Math.floor(totalSize * (1 - t6Model.validation_split));	// Bug: already set earlier
+					const evaluateSize	= totalSize - trainSize;									// Bug: already set earlier
 
-					numFeatures		= inputTensor.shape[1]; // Get the number of features
-					inputShape		= numFeatures;
-					outputShape		= labelsTensor.shape[1];
+					numFeatures		= inputTensor.shape[1]; // Get the number of features			// Bug: already set earlier
+					inputShape		= numFeatures;													// Bug: already set earlier
+					outputShape		= labelsTensor.shape[1];										// Bug: already set earlier
 					options.epochs	= t6Model.epochs;
 					options.batchSize = batchSize;
 					tfModel.summary();
@@ -886,7 +885,13 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 
 					t6console.debug("ML IS READY TO BE TRAINED");
 					t6console.debug("reminder queryTs", queryTs);
+					t6console.debug("inputXTrain", inputXTrain.dataSync() );
+					t6console.debug("inputLabelsTrain", inputLabelsTrain.dataSync() );
 					t6machinelearning.trainModel(tfModel, inputXTrain, inputLabelsTrain, options).then((trained) => {
+						/*
+							LSTM Error
+							ValueError: Total size of new array must be unchanged.
+						*/
 						t6console.debug("ML IS TRAINED 1/2");
 						return {trained, evaluateSize, inputXEvaluate, inputLabelsEvaluate};
 					}).then((trainedResult) => {
@@ -1139,11 +1144,11 @@ router.get("/:model_id([0-9a-z\-]+)/explain/:mode(training|evaluation)?", expres
 					.attr('transform', `translate(${margin}, 0)`)
 					.call(d3nInstance.d3.axisLeft(yAccuracyScale))
 					.append('text')
-					.attr('fill', '#000')
 					.attr('transform', 'rotate(-90)')
 					.attr('y', 10)
 					.attr('dy', '0em')
 					.attr('text-anchor', 'end')
+					.attr('fill', 'blue')
 					.text('Accuracy');
 
 				// Add y-axis for Loss
@@ -1151,11 +1156,11 @@ router.get("/:model_id([0-9a-z\-]+)/explain/:mode(training|evaluation)?", expres
 					.attr('transform', `translate(${width - margin}, 0)`)
 					.call(d3nInstance.d3.axisRight(yLossScale))
 					.append('text')
-					.attr('fill', '#000')
 					.attr('transform', 'rotate(-90)')
 					.attr('y', 20)
 					.attr('dy', '0em')
 					.attr('text-anchor', 'end')
+					.attr('fill', 'red')
 					.text('Loss');
 
 				// Add legend for accuracy
@@ -1163,11 +1168,12 @@ router.get("/:model_id([0-9a-z\-]+)/explain/:mode(training|evaluation)?", expres
 					.attr('x', margin)
 					.attr('y',  height-(margin/2))
 					.attr('width', 10)
-					.attr('height',  10)
+					.attr('height', 10)
 					.attr('fill', 'blue');
 				svg.append('text')
 					.attr('x', margin+15)
 					.attr('y', height-15)
+					.style('fill', 'blue')
 					.text('Accuracy');
 
 				// Add legend for loss
@@ -1180,6 +1186,7 @@ router.get("/:model_id([0-9a-z\-]+)/explain/:mode(training|evaluation)?", expres
 				svg.append('text')
 					.attr('x', (width/2) - 30)
 					.attr('y', height-15)
+					.style('fill', 'red')
 					.text('Loss');
 
 				res.setHeader("content-type", "image/svg+xml");
