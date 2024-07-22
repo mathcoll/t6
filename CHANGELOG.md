@@ -17,6 +17,16 @@ Types of changes
 ------------
 
 ## 2024
+### Milestone 29 - 2024-
+**Added**
+  - [x] 
+
+**Changed**
+  - [x] 
+
+**Fixed**
+  - [x] 
+
 ### Milestone 28 - 2024-05
 **Added**
   - [x] Machine Learning single flow and multiple flows compilation, including training and prediction
@@ -40,7 +50,7 @@ Types of changes
   - [x] Adding `dead_notification` POST (Admin role required) api endpoint to send a push notification when sensors are not sending datapoints anymore
   - [x] Adding `admin` routes to customize config on realtime (with non persistent values): smtp and loglevels
   - [x] Adding route to Explain a Trained Model with a graph (svg)
-  
+
 **Fixed**
   - [x] Fix OTA bug: mismatch on version number
   - [x] Fix `goExternal` push notification type
