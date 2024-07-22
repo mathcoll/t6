@@ -79,7 +79,7 @@ t6machinelearning.getLayer = async function(l) {
 				break;
 			case "reshape":
 				l.targetShape = parseInt(l.ndim, 10)>-1?[l.ndim, l.inputShape]:l.inputShape;
-				layer = tf.layers.reshape({targetShape: l.targetShape});
+				layer = tf.layers.reshape({name: l.name, targetShape: l.targetShape});
 				t6console.debug("LAYER reshape inputShape", l.inputShape);
 				t6console.debug("LAYER reshape targetShape", l.targetShape);
 				// l.inputShape = [l.inputShape];
@@ -458,7 +458,7 @@ t6machinelearning.loadDataSets_timeseries = async function(dataMap, t6Model) {
 		return tf.tidy(() => {
 			t6machinelearning.init(t6Model);
 			let batchSize = t6Model.batch_size;
-			const sequenceLength = 10;
+			const sequenceLength = 1;
 
 			// Prepare arrays for the aggregated data
 			const times			= Array.from(dataMap.keys()).map((time) => parseInt(time, 10));
