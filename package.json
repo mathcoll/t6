@@ -63,7 +63,7 @@
     "debug": "^4.3.4",
     "device": "^0.3.12",
     "es7": "^1.0.8-beta.4",
-    "express": "^4.19.2",
+    "express": "^4.20.0",
     "express-http-proxy": "^2.0.0",
     "express-jwt": "^8.4.1",
     "express-session": "^1.18.0",
