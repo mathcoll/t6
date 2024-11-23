@@ -17,15 +17,9 @@ Types of changes
 ------------
 
 ## 2024
-### Milestone 29 - 2024-
+### Milestone 29 - 2024-11
 **Added**
-  - [x] 
-
-**Changed**
-  - [x] 
-
-**Fixed**
-  - [x] 
+  - [x] Added AI-Flex feature using OpenAI: enhance automation workflows by directly integrating OpenAI's powerful language model responses into Rule Engine flows.
 
 ### Milestone 28 - 2024-05
 **Added**
