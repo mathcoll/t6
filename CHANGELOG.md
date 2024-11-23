@@ -17,6 +17,10 @@ Types of changes
 ------------
 
 ## 2024
+### Milestone 29 - 2024-11
+**Added**
+  - [x] Added AI-Flex feature using OpenAI: enhance automation workflows by directly integrating OpenAI's powerful language model responses into Rule Engine flows.
+
 ### Milestone 28 - 2024-05
 **Added**
   - [x] Machine Learning single flow and multiple flows compilation, including training and prediction
@@ -40,7 +44,7 @@ Types of changes
   - [x] Adding `dead_notification` POST (Admin role required) api endpoint to send a push notification when sensors are not sending datapoints anymore
   - [x] Adding `admin` routes to customize config on realtime (with non persistent values): smtp and loglevels
   - [x] Adding route to Explain a Trained Model with a graph (svg)
-  
+
 **Fixed**
   - [x] Fix OTA bug: mismatch on version number
   - [x] Fix `goExternal` push notification type

@@ -107,7 +107,7 @@ const normalize = (inputData, min, max) => {
 	return typeof inputData!=="undefined"?(parseFloat(inputData) - min)/(max - min):0;
 };
 const oneHotEncode = (classIndex, classes) => {
-	return Array.from(tf.oneHot(classIndex, classes.length).dataSync());
+	return classes.length>=2?Array.from(tf.oneHot(classIndex, classes.length).dataSync()):0; // TODO: 0 ?? oov ??
 };
 const findNearestDatapoints = (timestamp, dataArrays) => {
 	let closestValues		= [];
@@ -638,6 +638,9 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 							numFeatures			= inputTensor.shape[1]; // Get the number of features
 							inputShape			= numFeatures;
 
+							// inputTensor = inputTensor.reshape([1, 1, numFeatures]); // BUG : activate this reshape when RNN
+							//const reshapedInput								= inputTensor.reshape([batchSize, numFeatures]);		// BUG : activate this reshape when no RNN
+
 							t6console.debug("ML MODEL BUILDING with inputTensor.shape", inputTensor.shape);
 							t6console.debug("ML MODEL BUILDING with inputShape", inputShape);
 							t6machinelearning.predict(tfModel, inputTensor).then((prediction) => {
@@ -734,7 +737,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				let currentDate = startDate.clone();
 				let duration;
 				if(typeof t6Model.window_time_frame==="undefined") {
-					executeAllQueriesResults.allRows[0].map((r) => {
+					executeAllQueriesResults.allRows[0].map((r) => { // TODO: expecting flow index zero to be the one defining times
 						// t6console.debug("r", r);
 						dateArray.push(moment(r.time).format("x"));
 					});
@@ -779,6 +782,8 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				});
 				t6Model.data_length = [...dataMap.entries()].length;
 				t6Model.training_balance = training_balance;
+				// t6Model.min["time"] = Math.min(...r.map((m) => m.value));
+				// t6Model.max["time"] = Math.max(...r.map((m) => m.value));
 	
 				// t6console.debug("ML defining time window array from:");
 				// t6console.debug("- startDate:", startDate);
@@ -792,13 +797,18 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				// t6console.debug([...dataMap.entries()]);
 				// t6console.debug([...dataMap.keys()]);
 				// t6console.debug([...dataMap.values()]);
+				// [...dataMap.entries()].map((row, i) => {
+				// 	let index = i+1;
+				// 	t6console.debug(index, parseInt(row[0], 10), row[1].values, row[1].flow_ids, row[1].labels);
+				// });
 	
 				t6Model.predictionInProgress = false;
-				return t6machinelearning.loadDataSets_v2(dataMap, t6Model);
+				return t6machinelearning.loadDataSets_v2(dataMap, t6Model);						// DEBUG
+				// return t6machinelearning.loadDataSets_timeseries(dataMap, t6Model);					// DEBUG : force LSTM timeseries
 				// TODO : loadDataSets_v2 is using tidy but not a promise ... so we should dispose tensors
 			})
 			.then((dataset) => {
-				t6console.debug("DEBUG after loadDataSets_v2");
+				t6console.debug("DEBUG after loadDataSets");
 				let numFeatures;
 				let inputShape;
 				let outputShape;
@@ -830,62 +840,70 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 					let labelsTensor	= modelResult.dataset.labelsTensor;
 					let inputTensor		= modelResult.dataset.inputTensor;
 					let featuresTensor	= modelResult.dataset.featuresTensor;
-					const timeSteps		= 1; // TODO
-					const totalSize		= inputTensor.shape[0]; // Get the number of data points
-					const batchSize		= inputTensor.shape[0];
-					const trainSize		= Math.floor(totalSize * (1 - t6Model.validation_split));
-					const evaluateSize	= totalSize - trainSize;
-		
-					numFeatures		= inputTensor.shape[1]; // Get the number of features
-					inputShape		= numFeatures;
-					outputShape		= labelsTensor.shape[1];
+					const timeSteps		= 1; // TODO												// Bug: already set earlier
+					const totalSize		= inputTensor.shape[0]; // Get the number of data points 	// Bug: already set earlier
+					const batchSize		= inputTensor.shape[0];										// Bug: already set earlier
+					const trainSize		= Math.floor(totalSize * (1 - t6Model.validation_split));	// Bug: already set earlier
+					const evaluateSize	= totalSize - trainSize;									// Bug: already set earlier
+
+					numFeatures		= inputTensor.shape[1]; // Get the number of features			// Bug: already set earlier
+					inputShape		= numFeatures;													// Bug: already set earlier
+					outputShape		= labelsTensor.shape[1];										// Bug: already set earlier
 					options.epochs	= t6Model.epochs;
+					options.batchSize = batchSize;
 					tfModel.summary();
-		
+
 					// t6console.debug("inputTensor");
 					// t6console.debug(inputTensor.dataSync());
 					// t6console.debug("inputTensor", inputTensor);
 					// t6console.debug("labelsTensor", labelsTensor);
-		
-					t6console.debug("[batchSize, timeSteps, numFeatures]", [batchSize, timeSteps, numFeatures]);
-					// const reshapedInput							= inputTensor.reshape([batchSize, timeSteps, numFeatures]);
-					// const reshapedLabels							= labelsTensor.reshape([batchSize, timeSteps, outputShape]);
-					const reshapedInput								= inputTensor.reshape([batchSize, numFeatures]);// the reshape does nothing in fact !!
-					const reshapedLabels							= labelsTensor.reshape([batchSize, outputShape]);// the reshape does nothing in fact !!
-					const [inputXTrain, inputXEvaluate]				= tf.split(reshapedInput, [trainSize, evaluateSize]);
-					const [inputLabelsTrain, inputLabelsEvaluate]	= tf.split(reshapedLabels, [trainSize, evaluateSize]);
-		
+
+					// const reshapedInput								= inputTensor.reshape([batchSize, timeSteps, numFeatures]); // BUG : activate this reshape when RNN
+					const reshapedInput								= inputTensor.reshape([batchSize, numFeatures]);		// BUG : activate this reshape when no RNN
+					const reshapedLabels							= labelsTensor.reshape([batchSize, outputShape]);
+					let [inputXTrain, inputXEvaluate]				= tf.split(reshapedInput, [trainSize, evaluateSize]);
+					let [inputLabelsTrain, inputLabelsEvaluate]	= tf.split(reshapedLabels, [trainSize, evaluateSize]);
+
 					// t6console.debug("inputXTrain.dataSync()");
 					// t6console.debug(inputXTrain.dataSync());
 					// t6console.debug("inputLabelsTrain.dataSync()");
 					// t6console.debug(inputLabelsTrain.dataSync());
-		
+
 					t6console.debug("ML DATASET totalSize", totalSize);
 					t6console.debug("ML DATASET evaluateSize", evaluateSize);
 					t6console.debug("ML DATASET trainSize", trainSize);
 					t6console.debug("ML DATASET batchSize", batchSize);
 					t6console.debug("ML DATASET timeSteps", timeSteps);
 					t6console.debug("ML DATASET numFeatures", numFeatures);
+					t6console.debug("ML DATASET numLabels", labelsTensor.shape[1]);
 					t6console.debug("ML DATASET reshapedInput.shape", reshapedInput?.shape);
 					t6console.debug("ML DATASET reshapedLabels.shape", reshapedLabels?.shape);
 					t6console.debug("ML DATASET inputXTrain.shape", inputXTrain.shape);
 					t6console.debug("ML DATASET inputXEvaluate.shape", inputXEvaluate.shape);
 					t6console.debug("ML DATASET inputLabelsTrain.shape", inputLabelsTrain.shape);
 					t6console.debug("ML DATASET inputLabelsEvaluate.shape", inputLabelsEvaluate.shape);
-		
-					t6console.debug("ML READY TO BE TRAINED !!!");
+
+					t6console.debug("ML IS READY TO BE TRAINED");
 					t6console.debug("reminder queryTs", queryTs);
+					t6console.debug("inputXTrain", inputXTrain.dataSync() );
+					t6console.debug("inputLabelsTrain", inputLabelsTrain.dataSync() );
 					t6machinelearning.trainModel(tfModel, inputXTrain, inputLabelsTrain, options).then((trained) => {
+						/*
+							LSTM Error
+							ValueError: Total size of new array must be unchanged.
+						*/
+						t6console.debug("ML IS TRAINED 1/2");
 						return {trained, evaluateSize, inputXEvaluate, inputLabelsEvaluate};
 					}).then((trainedResult) => {
-						t6console.debug("DEBUG after trainModel");
-						t6console.debug("ML TRAINED");
+						t6console.debug("ML IS TRAINED 2/2");
 						let trained				= trainedResult.trained;
 						let inputXEvaluate		= trainedResult.inputXEvaluate;
 						let inputLabelsEvaluate	= trainedResult.inputLabelsEvaluate;
 						t6Model.history.training = { loss: trained.history.loss, accuracy: trained.history.acc };
 						if(trainedResult.evaluateSize>0) {
+							t6console.debug("ML IS READY TO BE EVALUATED");
 							t6machinelearning.evaluateModel(tfModel, inputXEvaluate, inputLabelsEvaluate).then((evaluate) => {
+								t6console.debug("ML IS EVALUATED");
 								t6Model.history.evaluation = {
 									loss	: evaluate.loss,
 									accuracy: evaluate.accuracy
@@ -921,17 +939,94 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 									t6Model.current_status_last_update	= moment().format(logDateFormat);
 									db_models.save(); // saving the status // BUG, what if evaluate size is == 0?
 								});
-								t6console.debug("DEBUG before dispose");
+								// t6console.debug("DEBUG before dispose");
 								return t6machinelearning.dispose(tfModel);
+							}).catch((error) => {
+								t6console.error("Error during evaluating training :", error);
+								let user = users.findOne({"id": user_id });
+								if (user && typeof user.pushSubscription!=="undefined" && typeof user.pushSubscription.endpoint!=="undefined" ) {
+									let payload = `{"type": "message", "title": "Error during evaluating training", "body": "${error}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
+									let result = t6notifications.sendPush(user, payload);
+									result.catch((error) => {
+										t6console.debug("pushSubscription error", error);
+									});
+									if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
+										t6console.debug("pushSubscription", pushSubscription);
+										t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
+										users.chain().find({ "id": user.id }).update(function(u) {
+											u.pushSubscription = {};
+											db_users.save();
+										});
+										t6console.debug("pushSubscription is now disabled on User", error);
+									}
+								}
 							});
 						} else {
+							t6console.debug("ML NOT READY FOR EVALUATION");
 							t6console.debug("Missing Validating data", evaluateSize);
+							let user = users.findOne({"id": user_id });
+							if (user && typeof user.pushSubscription!=="undefined" && typeof user.pushSubscription.endpoint!=="undefined" ) {
+								let payload = `{"type": "message", "title": "Missing Validating data", "body": "evaluateSize: ${evaluateSize}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
+								let result = t6notifications.sendPush(user, payload);
+								result.catch((error) => {
+									t6console.debug("pushSubscription error", error);
+								});
+								if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
+									t6console.debug("pushSubscription", pushSubscription);
+									t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
+									users.chain().find({ "id": user.id }).update(function(u) {
+										u.pushSubscription = {};
+										db_users.save();
+									});
+									t6console.debug("pushSubscription is now disabled on User", error);
+								}
+							}
+						}
+					}).catch((error) => {
+						t6console.error("Error during training :", error);
+						let user = users.findOne({"id": user_id });
+						if (user && typeof user.pushSubscription!=="undefined" && typeof user.pushSubscription.endpoint!=="undefined" ) {
+							let payload = `{"type": "message", "title": "Error during training", "body": "${error}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
+							let result = t6notifications.sendPush(user, payload);
+							result.catch((error) => {
+								t6console.debug("pushSubscription error", error);
+							});
+							if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
+								t6console.debug("pushSubscription", pushSubscription);
+								t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
+								users.chain().find({ "id": user.id }).update(function(u) {
+									u.pushSubscription = {};
+									db_users.save();
+								});
+								t6console.debug("pushSubscription is now disabled on User", error);
+							}
 						}
 					});
 				})
 			})
+			.catch((error) => {
+				t6console.error("Error during loadDataSets:", error);
+				let user = users.findOne({"id": user_id });
+				if (user && typeof user.pushSubscription!=="undefined" && typeof user.pushSubscription.endpoint!=="undefined" ) {
+					let errorStr = error.toString().replace("\n"," ");
+					let payload = `{"type": "message", "title": "Error during loadDataSets", "body": "${errorStr}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
+					let result = t6notifications.sendPush(user, payload);
+					result.catch((error) => {
+						t6console.debug("pushSubscription error", error);
+					});
+					if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
+						t6console.debug("pushSubscription", pushSubscription);
+						t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
+						users.chain().find({ "id": user.id }).update(function(u) {
+							u.pushSubscription = {};
+							db_users.save();
+						});
+						t6console.debug("pushSubscription is now disabled on User", error);
+					}
+				}
+			});
 		}).then(() => {
-			t6console.debug("DEBUG after dispose");
+			// t6console.debug("DEBUG after dispose");
 			t6Model.process			= "asynchroneous";
 			t6Model.notification	= "push-notification";
 			t6Model.history			= {};
@@ -1049,11 +1144,11 @@ router.get("/:model_id([0-9a-z\-]+)/explain/:mode(training|evaluation)?", expres
 					.attr('transform', `translate(${margin}, 0)`)
 					.call(d3nInstance.d3.axisLeft(yAccuracyScale))
 					.append('text')
-					.attr('fill', '#000')
 					.attr('transform', 'rotate(-90)')
 					.attr('y', 10)
 					.attr('dy', '0em')
 					.attr('text-anchor', 'end')
+					.attr('fill', 'blue')
 					.text('Accuracy');
 
 				// Add y-axis for Loss
@@ -1061,11 +1156,11 @@ router.get("/:model_id([0-9a-z\-]+)/explain/:mode(training|evaluation)?", expres
 					.attr('transform', `translate(${width - margin}, 0)`)
 					.call(d3nInstance.d3.axisRight(yLossScale))
 					.append('text')
-					.attr('fill', '#000')
 					.attr('transform', 'rotate(-90)')
 					.attr('y', 20)
 					.attr('dy', '0em')
 					.attr('text-anchor', 'end')
+					.attr('fill', 'red')
 					.text('Loss');
 
 				// Add legend for accuracy
@@ -1073,11 +1168,12 @@ router.get("/:model_id([0-9a-z\-]+)/explain/:mode(training|evaluation)?", expres
 					.attr('x', margin)
 					.attr('y',  height-(margin/2))
 					.attr('width', 10)
-					.attr('height',  10)
+					.attr('height', 10)
 					.attr('fill', 'blue');
 				svg.append('text')
 					.attr('x', margin+15)
 					.attr('y', height-15)
+					.style('fill', 'blue')
 					.text('Accuracy');
 
 				// Add legend for loss
@@ -1090,6 +1186,7 @@ router.get("/:model_id([0-9a-z\-]+)/explain/:mode(training|evaluation)?", expres
 				svg.append('text')
 					.attr('x', (width/2) - 30)
 					.attr('y', height-15)
+					.style('fill', 'red')
 					.text('Loss');
 
 				res.setHeader("content-type", "image/svg+xml");
