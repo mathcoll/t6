@@ -166,6 +166,14 @@ global.multer			= require("multer");
 global.nodeunits		= require("node-units");
 global.uuid				= require("uuid");
 global.nodemailer		= require("nodemailer");
+if (openAISettings.activated === true) {
+	global.OpenAI			= require("openai");
+	if(process.env.NODE_ENV==="development") {
+		const { mockOpenAIResponse: mockRes, stopMocking: mockStop } = require("openai-api-mock");
+		global.mockOpenAIResponse = mockRes;
+		global.stopMocking = mockStop;
+	}
+}
 global.otpGen			= require("otp-generator");
 global.otpTool			= require("otp-without-db"); 
 global.outlier			= require("outlier");

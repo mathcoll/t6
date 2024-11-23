@@ -245,3 +245,9 @@ tts = {
 	activateInDevelopment: false,
 }
 process.env.GOOGLE_APPLICATION_CREDENTIALS = tts.admin.serviceAccountFile;
+
+/* openai */
+openAISettings = {
+	activated: true,
+	apiKey: "",
+};

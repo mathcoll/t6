@@ -803,8 +803,8 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				// });
 	
 				t6Model.predictionInProgress = false;
-				// return t6machinelearning.loadDataSets_v2(dataMap, t6Model);						// DEBUG
-				return t6machinelearning.loadDataSets_timeseries(dataMap, t6Model);					// DEBUG : force LSTM timeseries
+				return t6machinelearning.loadDataSets_v2(dataMap, t6Model);						// DEBUG
+				// return t6machinelearning.loadDataSets_timeseries(dataMap, t6Model);					// DEBUG : force LSTM timeseries
 				// TODO : loadDataSets_v2 is using tidy but not a promise ... so we should dispose tensors
 			})
 			.then((dataset) => {

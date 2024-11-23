@@ -487,6 +487,40 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 					} else {
 						reject(payload);
 					}
+				} else if ( event.type === "openAiChatCompletion" ) {
+					// t6console.debug("openAiChatCompletion BERFORE", payload.value);
+					// (async () => {
+						if(process.env.NODE_ENV==="development") {
+							mockOpenAIResponse();
+						}
+						const openai = new OpenAI({
+							apiKey: typeof event.params.apiKey!=="undefined"?event.params.apiKey:openAISettings.apiKey,
+						});
+						let prompt = typeof event.params.prompt!=="undefined"?{ "role": "system", "content": [ { "type": "text", "text": event.params.prompt }]}:null;
+						const chatCompletion = await openai.chat.completions.create({
+							messages: [
+								prompt,
+								{ role: "user", content: payload.value }
+							],
+							store: false,
+							model:			typeof event.params.model!=="undefined"?event.params.model:"gpt-4o-mini",
+							temperature:	typeof event.params.temperature!=="undefined"?event.params.temperature:0.7,
+							max_tokens:		typeof event.params.max_tokens!=="undefined"?event.params.max_tokens:64,
+							top_p:			typeof event.params.top_p!=="undefined"?event.params.top_p:1,
+						}).then((openaiRes) => {
+							t6console.debug("openAiChatCompletion", openaiRes);
+							if(typeof event.params.substituteValueWithResponse!=="undefined" && event.params.substituteValueWithResponse === true) {
+								payload.value = openaiRes.choices[0].message.content;
+							} else {
+								payload.meta.openAichatCompletion = openaiRes.choices[0].message.content;
+							}
+						}).catch((error) => {
+							t6console.error("openAiChatCompletion ERROR", error);
+							payload.meta.error = error.error.message;
+						});
+					// })();
+					// t6console.debug("openAiChatCompletion AFTER");
+	
 				} else if ( event.type === "httpWebhook" ) {
 					let options = {
 						url: event.params.url,

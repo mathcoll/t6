@@ -99,6 +99,7 @@
     "node-units": "^0.1.7",
     "nodemailer": "^6.9.13",
     "npm": "^10.7.0",
+    "openai": "^4.68.4",
     "otp-generator": "^4.0.1",
     "otp-without-db": "^1.0.6",
     "outlier": "^0.0.1",
@@ -133,6 +134,7 @@
   "readmeFilename": "README.md",
   "devDependencies": {
     "apidoc": "^0.53.1",
+    "openai-api-mock": "^0.1.19",
     "uglify-js": "github:mishoo/UglifyJS2#harmony",
     "uglify-js-es6": "^2.8.9"
   },
