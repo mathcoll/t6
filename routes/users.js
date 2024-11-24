@@ -680,13 +680,95 @@ router.delete("/accessTokens/:key([0-9a-z\-.]+)", expressJwt({secret: jwtsetting
  * @apiUse 429
  */
 router.delete("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	var user_id = req.params.user_id;
-	if ( req.user.id === user_id ) { //Well ... not sure
+	let user_id = req.params.user_id;
+	let dryrun = typeof req.query.dryrun!=="undefined"?str2bool(req.query.dryrun):true;
+	let anonymize = typeof req.query.anonymize!=="undefined"?str2bool(req.query.anonymize):true;
+	if ( req.user.id === user_id || req.user.role === "admin" ) {
 		var u = users.find({"id": { "$eq": user_id }});
 		if (u) {
-			users.remove(u);
+			// List resources
+			let removed_objects		= objects.find({"user_id": { "$eq": user_id }});
+			let removed_dashboards	= dashboards.find({"user_id": { "$eq": user_id }});
+			let removed_snippets	= snippets.find({"user_id": { "$eq": user_id }});
+			let removed_rules		= rules.find({"user_id": { "$eq": user_id }});
+			let removed_flows		= flows.find({"user_id": { "$eq": user_id }});
+			let removed_models		= models.find({"user_id": { "$eq": user_id }});
+			let removed_sources		= sources.find({"user_id": { "$eq": user_id }});
+			let removed_stories		= stories.find({"user_id": { "$eq": user_id }});
+			let removed_uis			= uis.find({"user_id": { "$eq": user_id }});
+			let removed_tokens		= tokens.find({"user_id": { "$eq": user_id }});
+			let removed_access_tokens= access_tokens.find({"user_id": { "$eq": user_id }});
+
+			let removed = {};
+			removed.removed_objects		= removed_objects;
+			removed.removed_dashboards	= removed_dashboards;
+			removed.removed_snippets	= removed_snippets;
+			removed.removed_rules		= removed_rules;
+			removed.removed_flows		= removed_flows;
+			removed.removed_models		= removed_models;
+			removed.removed_sources		= removed_sources;
+			removed.removed_stories		= removed_stories;
+			removed.removed_uis			= removed_uis;
+			removed.removed_tokens		= removed_tokens;
+			removed.removed_access_tokens= removed_access_tokens;
+			removed.user_id				 = user_id;
+
+			if( dryrun===false || typeof dryrun==="undefined" ) {
+				objects.remove( removed_objects );
+				dashboards.remove( removed_dashboards );
+				snippets.remove( removed_snippets );
+				rules.remove(  removed_rules );
+				flows.remove( removed_flows );
+				models.remove( removed_models );
+				sources.remove( removed_sources );
+				stories.remove( removed_stories );
+				uis.remove( removed_uis );
+				tokens.remove( removed_tokens );
+				access_tokens.remove( removed_access_tokens );
+
+				t6events.addAudit("t6Api", "all objects delete", req.user.id, "ALL", {error_id: null, status: 200});
+				t6events.addAudit("t6Api", "all dashboarsd delete", req.user.id, "ALL", {error_id: null, status: 200});
+				t6events.addAudit("t6Api", "all snippets delete", req.user.id, "ALL", {error_id: null, status: 200});
+				t6events.addAudit("t6Api", "all rules delete", req.user.id, "ALL", {error_id: null, status: 200});
+				t6events.addAudit("t6Api", "all flows delete", req.user.id, "ALL", {error_id: null, status: 200});
+				t6events.addAudit("t6Api", "all models delete", req.user.id, "ALL", {error_id: null, status: 200});
+				t6events.addAudit("t6Api", "all stories delete", req.user.id, "ALL", {error_id: null, status: 200});
+				t6events.addAudit("t6Api", "all uis delete", req.user.id, "ALL", {error_id: null, status: 200});
+				if ( anonymize===true ) {
+					let ts = moment().format("x");
+					users.findAndUpdate(
+						function(i){return i.id===user_id;},
+						function(item){
+							item.email					= bcrypt.hashSync(item.email, 10);
+							item.firstName				= bcrypt.hashSync(item.firstName, 10);
+							item.lastName				= bcrypt.hashSync(item.lastName, 10);
+							item.password				= bcrypt.hashSync(passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 10);
+							item.unsubscription_token	= passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+							item.update_date			= ts;
+							item.subscription_date		= ts;
+							item.subscription		= null;
+							item.pushSubscription	= null;
+							item.unsubscription		= {
+								"newsletter": ts,
+								"changePassword": ts,
+								"reminder": ts,
+								"changePassword": ts,
+								"newsletter": ts,
+								"monthlyreport": ts,
+								"reminder": ts
+							};
+							result = item;
+						}
+					);
+					db_users.save();
+				} else {
+					users.remove(u);
+				}
+			} else {
+				removed.dryrun = dryrun;
+			}
 			t6events.addAudit("t6Api", "user delete", req.user.id, user_id, {error_id: null, status: 200});
-			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: user_id }); // TODO: missing serializer
+			res.status(200).send({ "code": 200, message: "Successfully deleted", removed }); // TODO: missing serializer
 		} else {
 			t6events.addAudit("t6Api", "user delete", req.user.id, user_id, {error_id: 6, status: 200});
 			res.status(404).send(new ErrorSerializer({"id": 6,"code": 404, "message": "Not Found"}).serialize());
