@@ -354,26 +354,54 @@
                     ]
                 },
                 {
-                	"name": "can delete a User",
-                    "description": "delete a User",
+                	"name": "can dryrun delete a User",
+                    "description": "delete dryrun a User",
                     "api_calls": [
                         {
-                        	"request": "DELETE /{{app_version}}/users/{{saved.user_id}}",
+                        	"request": "DELETE /{{app_version}}/users/{{saved.user_id}}?dryrun=true",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": 200
+                        }
+                    ]
+                },
+                {
+                	"name": "can verify a User has not been actually deleted",
+                    "description": "verify a User has not been actually deleted",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/users/{{saved.user_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": 200
+                        }
+                    ]
+                },
+                {
+                	"name": "can delete a User without dryrun nor anonymize",
+                    "description": "delete a User without dryrun nor anonymize",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /{{app_version}}/users/{{saved.user_id}}?dryrun=false&anonymize=false",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "save": {},
                             "status": 200,
                             "assert": {
-        	                    "select": "body.removed_id",
+        	                    "select": "body.removed.user_id",
         	                    "equal": "{{saved.user_id}}"
         	                }
                         }
                     ]
                 },
                 {
-                	"name": "can verify a User has been deleted",
-                    "description": "verify a User has been deleted",
+                	"name": "can verify a User has been actually deleted",
+                    "description": "verify a User has been actually deleted",
                     "api_calls": [
                         {
                         	"request": "GET /{{app_version}}/users/{{saved.user_id}}",

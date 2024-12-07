@@ -123,10 +123,10 @@ ignore:
   SNYK-JS-USERAGENT-174737:
     - useragent:
         reason: None given
-        expires: '2024-06-04T14:29:17.861Z'
+        expires: '2024-12-30T14:36:04.526Z'
     - device > useragent:
         reason: None given
-        expires: '2024-06-04T14:29:17.861Z'
+        expires: '2024-12-30T14:36:04.526Z'
   SNYK-JS-LODASH-567746:
     - geoip-lite > ip-address > lodash:
         reason: None given
@@ -166,11 +166,11 @@ ignore:
   SNYK-JS-MATHJS-1016401:
     - loess > mathjs:
         reason: None given
-        expires: '2024-06-04T14:29:17.860Z'
+        expires: '2024-12-30T14:36:04.525Z'
   SNYK-JS-SVG2PNG-567041:
     - d3node-barchart > d3node-output > svg2png:
         reason: None given
-        expires: '2024-06-04T14:29:17.861Z'
+        expires: '2024-12-30T14:36:04.526Z'
     - d3node-barchart > d3node-output > svg2png:
         reason: None given
         expires: '2022-11-28T08:59:35.638Z'
@@ -201,7 +201,7 @@ ignore:
   SNYK-JS-YARGSPARSER-560381:
     - d3node-barchart > d3node-output > svg2png > yargs > yargs-parser:
         reason: None given
-        expires: '2024-06-04T14:29:17.861Z'
+        expires: '2024-12-30T14:36:04.526Z'
     - nsp > yargs > yargs-parser:
         reason: None given
         expires: '2021-09-09T18:20:24.706Z'
@@ -365,6 +365,18 @@ ignore:
     - d3node-voronoi > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2024-06-04T14:29:17.861Z'
+    - d3node-barchart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2024-12-30T14:36:04.526Z'
+    - d3node-linechart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2024-12-30T14:36:04.526Z'
+    - d3node-piechart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2024-12-30T14:36:04.526Z'
+    - d3node-voronoi > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2024-12-30T14:36:04.526Z'
   SNYK-JS-Y18N-1021887:
     - d3node-barchart > d3node-output > svg2png > yargs > y18n:
         reason: None given
@@ -577,187 +589,187 @@ ignore:
   SNYK-JS-D3COLOR-1076592:
     - d3-node > d3 > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.522Z'
     - d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.522Z'
     - d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.522Z'
     - d3-node > d3 > d3-scale-chromatic > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.522Z'
     - d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.522Z'
     - d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.522Z'
     - d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.522Z'
     - d3-node > d3 > d3-scale-chromatic > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.522Z'
     - d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.522Z'
     - d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.522Z'
     - d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.522Z'
     - d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.522Z'
     - d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.522Z'
     - d3node-barchart > d3-node > d3 > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.522Z'
     - d3node-linechart > d3-node > d3 > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.522Z'
     - d3node-piechart > d3-node > d3 > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.522Z'
     - d3node-voronoi > d3-node > d3 > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.522Z'
     - d3node-barchart > d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-linechart > d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-piechart > d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-voronoi > d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-barchart > d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.857Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-linechart > d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-piechart > d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-voronoi > d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-barchart > d3-node > d3 > d3-scale > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-linechart > d3-node > d3 > d3-scale > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-piechart > d3-node > d3 > d3-scale > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-voronoi > d3-node > d3 > d3-scale > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-barchart > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-linechart > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-piechart > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-voronoi > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-barchart > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-linechart > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-piechart > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-voronoi > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-barchart > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-linechart > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-piechart > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-voronoi > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.523Z'
     - d3node-barchart > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.524Z'
     - d3node-linechart > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.524Z'
     - d3node-piechart > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.524Z'
     - d3node-voronoi > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.524Z'
     - d3node-barchart > d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.524Z'
     - d3node-linechart > d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.524Z'
     - d3node-piechart > d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.524Z'
     - d3node-voronoi > d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.858Z'
+        expires: '2024-12-30T14:36:04.524Z'
     - d3node-barchart > d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.859Z'
+        expires: '2024-12-30T14:36:04.524Z'
     - d3node-linechart > d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.859Z'
+        expires: '2024-12-30T14:36:04.524Z'
     - d3node-piechart > d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.859Z'
+        expires: '2024-12-30T14:36:04.524Z'
     - d3node-voronoi > d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.859Z'
+        expires: '2024-12-30T14:36:04.524Z'
     - d3node-barchart > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.859Z'
+        expires: '2024-12-30T14:36:04.524Z'
     - d3node-linechart > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.859Z'
+        expires: '2024-12-30T14:36:04.524Z'
     - d3node-piechart > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.860Z'
+        expires: '2024-12-30T14:36:04.525Z'
     - d3node-voronoi > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.860Z'
+        expires: '2024-12-30T14:36:04.525Z'
     - d3node-barchart > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.860Z'
+        expires: '2024-12-30T14:36:04.525Z'
     - d3node-linechart > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.860Z'
+        expires: '2024-12-30T14:36:04.525Z'
     - d3node-piechart > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.860Z'
+        expires: '2024-12-30T14:36:04.525Z'
     - d3node-voronoi > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2024-06-04T14:29:17.860Z'
+        expires: '2024-12-30T14:36:04.525Z'
   SNYK-JS-LOCUTUS-1090597:
     - cidr-js > locutus:
         reason: None given
@@ -793,7 +805,7 @@ ignore:
   SNYK-JS-NETMASK-1089716:
     - libnmap > netmask:
         reason: None given
-        expires: '2024-06-04T14:29:17.860Z'
+        expires: '2024-12-30T14:36:04.525Z'
   SNYK-JS-TAR-1536528:
     - npm > libnpmpack > pacote > tar:
         reason: None given
@@ -1584,10 +1596,34 @@ ignore:
     - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2024-06-04T14:29:17.857Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2024-12-30T14:36:04.510Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2024-12-30T14:36:04.510Z'
+    - '@tensorflow/tfjs-node > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex':
+        reason: None given
+        expires: '2024-12-30T14:36:04.510Z'
+    - canvas > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2024-12-30T14:36:04.510Z'
+    - bcrypt > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2024-12-30T14:36:04.510Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2024-12-30T14:36:04.510Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2024-12-30T14:36:04.510Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2024-12-30T14:36:04.510Z'
   SNYK-JS-RAMDA-1582370:
     - arduino-cli > ramda:
         reason: None given
-        expires: '2024-06-04T14:29:17.860Z'
+        expires: '2024-12-30T14:36:04.526Z'
   SNYK-JS-ASYNC-2441827:
     - geoip-lite > async:
         reason: None given
@@ -1797,22 +1833,22 @@ ignore:
   SNYK-JS-REQUEST-3361831:
     - request:
         reason: None given
-        expires: '2024-06-04T14:29:17.860Z'
+        expires: '2024-12-30T14:36:04.526Z'
     - d3node-barchart > d3-node > jsdom > request:
         reason: None given
-        expires: '2024-06-04T14:29:17.860Z'
+        expires: '2024-12-30T14:36:04.526Z'
     - d3node-linechart > d3-node > jsdom > request:
         reason: None given
-        expires: '2024-06-04T14:29:17.860Z'
+        expires: '2024-12-30T14:36:04.526Z'
     - d3node-piechart > d3-node > jsdom > request:
         reason: None given
-        expires: '2024-06-04T14:29:17.860Z'
+        expires: '2024-12-30T14:36:04.526Z'
     - d3node-voronoi > d3-node > jsdom > request:
         reason: None given
-        expires: '2024-06-04T14:29:17.860Z'
+        expires: '2024-12-30T14:36:04.526Z'
     - d3node-barchart > d3node-output > svg2png > phantomjs-prebuilt > request:
         reason: None given
-        expires: '2024-06-04T14:29:17.860Z'
+        expires: '2024-12-30T14:36:04.526Z'
   SNYK-JS-WORDWRAP-3149973:
     - jsdom > escodegen > optionator > word-wrap:
         reason: None given
@@ -1841,14 +1877,14 @@ ignore:
   SNYK-JS-XML2JS-5414874:
     - libnmap > xml2js:
         reason: None given
-        expires: '2024-06-04T14:29:17.861Z'
+        expires: '2024-12-30T14:36:04.526Z'
   SNYK-JS-INFLIGHT-6095116:
     - arduino-cli > yamljs > glob > inflight:
         reason: None given
         expires: '2024-06-04T14:29:17.860Z'
     - geoip-lite > rimraf > glob > inflight:
         reason: None given
-        expires: '2024-06-04T14:29:17.860Z'
+        expires: '2024-12-30T14:36:04.525Z'
     - bcrypt > @mapbox/node-pre-gyp > rimraf > glob > inflight:
         reason: None given
         expires: '2024-06-04T14:29:17.860Z'
@@ -1867,45 +1903,657 @@ ignore:
     - '@tensorflow/tfjs-node > @mapbox/node-pre-gyp > rimraf > glob > inflight':
         reason: None given
         expires: '2024-06-04T14:39:23.003Z'
+    - '@tensorflow/tfjs-node > rimraf > glob > inflight':
+        reason: None given
+        expires: '2024-12-30T14:36:04.525Z'
+    - arduino-cli > yamljs > glob > inflight:
+        reason: None given
+        expires: '2024-12-30T14:36:04.525Z'
+    - '@tensorflow/tfjs-node > @mapbox/node-pre-gyp > rimraf > glob > inflight':
+        reason: None given
+        expires: '2024-12-30T14:36:04.525Z'
+    - canvas > @mapbox/node-pre-gyp > rimraf > glob > inflight:
+        reason: None given
+        expires: '2024-12-30T14:36:04.525Z'
+    - bcrypt > @mapbox/node-pre-gyp > rimraf > glob > inflight:
+        reason: None given
+        expires: '2024-12-30T14:36:04.525Z'
+    - d3node-output > puppeteer > rimraf > glob > inflight:
+        reason: None given
+        expires: '2024-12-30T14:36:04.525Z'
+    - d3node-linechart > d3node-output > puppeteer > rimraf > glob > inflight:
+        reason: None given
+        expires: '2024-12-30T14:36:04.525Z'
   SNYK-JS-NETMASK-6056519:
     - libnmap > netmask:
         reason: None given
-        expires: '2024-06-04T14:29:17.860Z'
+        expires: '2024-12-30T14:36:04.526Z'
   SNYK-JS-TOUGHCOOKIE-5672873:
     - request > tough-cookie:
         reason: None given
-        expires: '2024-06-04T14:29:17.861Z'
+        expires: '2024-12-30T14:36:04.526Z'
     - d3node-barchart > d3-node > jsdom > tough-cookie:
         reason: None given
-        expires: '2024-06-04T14:29:17.861Z'
+        expires: '2024-12-30T14:36:04.526Z'
     - d3node-linechart > d3-node > jsdom > tough-cookie:
         reason: None given
-        expires: '2024-06-04T14:29:17.861Z'
+        expires: '2024-12-30T14:36:04.526Z'
     - d3node-piechart > d3-node > jsdom > tough-cookie:
         reason: None given
-        expires: '2024-06-04T14:29:17.861Z'
+        expires: '2024-12-30T14:36:04.526Z'
     - d3node-voronoi > d3-node > jsdom > tough-cookie:
         reason: None given
-        expires: '2024-06-04T14:29:17.861Z'
+        expires: '2024-12-30T14:36:04.526Z'
     - d3node-barchart > d3-node > jsdom > request > tough-cookie:
         reason: None given
-        expires: '2024-06-04T14:29:17.861Z'
+        expires: '2024-12-30T14:36:04.526Z'
     - d3node-linechart > d3-node > jsdom > request > tough-cookie:
         reason: None given
-        expires: '2024-06-04T14:29:17.861Z'
+        expires: '2024-12-30T14:36:04.526Z'
     - d3node-piechart > d3-node > jsdom > request > tough-cookie:
         reason: None given
-        expires: '2024-06-04T14:29:17.861Z'
+        expires: '2024-12-30T14:36:04.526Z'
     - d3node-voronoi > d3-node > jsdom > request > tough-cookie:
         reason: None given
-        expires: '2024-06-04T14:29:17.861Z'
+        expires: '2024-12-30T14:36:04.526Z'
     - d3node-barchart > d3node-output > svg2png > phantomjs-prebuilt > request > tough-cookie:
         reason: None given
-        expires: '2024-06-04T14:29:17.861Z'
+        expires: '2024-12-30T14:36:04.526Z'
   SNYK-JS-TAR-6476909:
     - '@tensorflow/tfjs-node > tar':
         reason: None given
         expires: '2024-06-04T14:39:23.003Z'
+  SNYK-JS-AXIOS-6671926:
+    - twilio > axios:
+        reason: None given
+        expires: '2024-12-30T14:36:04.510Z'
+  SNYK-JS-COOKIE-8163060:
+    - lighthouse > @sentry/node > cookie:
+        reason: None given
+        expires: '2024-12-30T14:36:04.510Z'
+    - snyk > @sentry/node > cookie:
+        reason: None given
+        expires: '2024-12-30T14:36:04.510Z'
+  SNYK-JS-CROSSSPAWN-8303230:
+    - arduino-cli > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.510Z'
+    - npm > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.510Z'
+    - npm > @npmcli/map-workspaces > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.510Z'
+    - npm > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.511Z'
+    - npm > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.511Z'
+    - npm > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.511Z'
+    - npm > @npmcli/arborist > @npmcli/map-workspaces > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.511Z'
+    - npm > @npmcli/config > @npmcli/map-workspaces > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.511Z'
+    - npm > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.511Z'
+    - npm > pacote > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.511Z'
+    - npm > @npmcli/arborist > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.511Z'
+    - npm > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.511Z'
+    - npm > pacote > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.511Z'
+    - npm > @npmcli/arborist > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.511Z'
+    - npm > init-package-json > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.511Z'
+    - npm > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.511Z'
+    - npm > libnpmdiff > @npmcli/arborist > @npmcli/map-workspaces > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.511Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/map-workspaces > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.511Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/map-workspaces > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > libnpmpack > @npmcli/arborist > @npmcli/map-workspaces > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > @npmcli/arborist > pacote > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > libnpmdiff > pacote > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > libnpmexec > pacote > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > libnpmpack > pacote > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > @npmcli/arborist > @npmcli/metavuln-calculator > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > libnpmdiff > @npmcli/arborist > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > libnpmexec > @npmcli/arborist > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > libnpmfund > @npmcli/arborist > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > libnpmpack > @npmcli/arborist > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > pacote > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > @npmcli/arborist > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > libnpmexec > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > libnpmpack > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > libnpmversion > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > @npmcli/arborist > pacote > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.512Z'
+    - npm > libnpmdiff > pacote > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > libnpmexec > pacote > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > libnpmpack > pacote > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > libnpmdiff > @npmcli/arborist > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > libnpmpack > @npmcli/arborist > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > pacote > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > @npmcli/arborist > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > libnpmexec > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > libnpmpack > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > libnpmversion > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > pacote > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > @npmcli/arborist > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > libnpmaccess > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > libnpmhook > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > libnpmorg > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > libnpmpublish > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > libnpmsearch > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.513Z'
+    - npm > libnpmteam > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > npm-profile > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > @sigstore/tuf > tuf-js > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > libnpmdiff > @npmcli/arborist > pacote > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > libnpmfund > @npmcli/arborist > pacote > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > libnpmpack > @npmcli/arborist > pacote > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > libnpmdiff > @npmcli/arborist > @npmcli/metavuln-calculator > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/metavuln-calculator > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > libnpmpack > @npmcli/arborist > @npmcli/metavuln-calculator > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > @npmcli/arborist > pacote > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > libnpmdiff > pacote > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > libnpmexec > pacote > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > libnpmpack > pacote > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > libnpmdiff > @npmcli/arborist > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.514Z'
+    - npm > libnpmpack > @npmcli/arborist > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > libnpmdiff > @npmcli/arborist > pacote > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > libnpmfund > @npmcli/arborist > pacote > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > libnpmpack > @npmcli/arborist > pacote > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > libnpmdiff > pacote > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > libnpmexec > pacote > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > libnpmpack > pacote > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > libnpmdiff > @npmcli/arborist > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > libnpmpack > @npmcli/arborist > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > @npmcli/arborist > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > libnpmexec > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > libnpmpack > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > libnpmversion > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.515Z'
+    - npm > @npmcli/arborist > pacote > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmdiff > pacote > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmexec > pacote > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmpack > pacote > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmdiff > @npmcli/arborist > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmexec > @npmcli/arborist > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmfund > @npmcli/arborist > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmpack > @npmcli/arborist > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > pacote > sigstore > @sigstore/sign > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmpublish > sigstore > @sigstore/sign > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmdiff > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmpack > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmdiff > @npmcli/arborist > pacote > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmfund > @npmcli/arborist > pacote > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmpack > @npmcli/arborist > pacote > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmdiff > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.516Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > libnpmpack > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > libnpmdiff > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > libnpmfund > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > libnpmpack > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > libnpmdiff > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > libnpmexec > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > libnpmpack > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > libnpmdiff > @npmcli/arborist > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > libnpmpack > @npmcli/arborist > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > libnpmdiff > @npmcli/arborist > pacote > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.517Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.518Z'
+    - npm > libnpmfund > @npmcli/arborist > pacote > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.518Z'
+    - npm > libnpmpack > @npmcli/arborist > pacote > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.518Z'
+    - npm > @npmcli/arborist > pacote > sigstore > @sigstore/sign > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.518Z'
+    - npm > libnpmdiff > pacote > sigstore > @sigstore/sign > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.518Z'
+    - npm > libnpmexec > pacote > sigstore > @sigstore/sign > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.518Z'
+    - npm > libnpmpack > pacote > sigstore > @sigstore/sign > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.518Z'
+    - npm > pacote > sigstore > @sigstore/tuf > tuf-js > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.518Z'
+    - npm > libnpmpublish > sigstore > @sigstore/tuf > tuf-js > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.518Z'
+    - npm > libnpmdiff > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.518Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.518Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.518Z'
+    - npm > libnpmpack > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > @npmcli/package-json > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.518Z'
+    - npm > libnpmdiff > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.518Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.518Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.518Z'
+    - npm > libnpmpack > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.518Z'
+    - npm > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.519Z'
+    - npm > libnpmdiff > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.519Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.519Z'
+    - npm > libnpmfund > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.519Z'
+    - npm > libnpmpack > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.519Z'
+    - npm > libnpmdiff > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.519Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.519Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.519Z'
+    - npm > libnpmpack > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > npm-registry-fetch > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.519Z'
+    - npm > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > sigstore > @sigstore/sign > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.519Z'
+    - npm > libnpmdiff > @npmcli/arborist > pacote > sigstore > @sigstore/sign > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.519Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > sigstore > @sigstore/sign > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.519Z'
+    - npm > libnpmfund > @npmcli/arborist > pacote > sigstore > @sigstore/sign > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.519Z'
+    - npm > libnpmpack > @npmcli/arborist > pacote > sigstore > @sigstore/sign > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.519Z'
+    - npm > @npmcli/arborist > pacote > sigstore > @sigstore/tuf > tuf-js > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.519Z'
+    - npm > libnpmdiff > pacote > sigstore > @sigstore/tuf > tuf-js > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.519Z'
+    - npm > libnpmexec > pacote > sigstore > @sigstore/tuf > tuf-js > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.520Z'
+    - npm > libnpmpack > pacote > sigstore > @sigstore/tuf > tuf-js > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.520Z'
+    - npm > libnpmdiff > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.520Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.520Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.520Z'
+    - npm > libnpmpack > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.520Z'
+    - npm > libnpmdiff > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > sigstore > @sigstore/sign > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.520Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > sigstore > @sigstore/sign > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.520Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > sigstore > @sigstore/sign > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.521Z'
+    - npm > libnpmpack > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > sigstore > @sigstore/sign > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.521Z'
+    - npm > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > sigstore > @sigstore/tuf > tuf-js > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.521Z'
+    - npm > libnpmdiff > @npmcli/arborist > pacote > sigstore > @sigstore/tuf > tuf-js > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.521Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > sigstore > @sigstore/tuf > tuf-js > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.521Z'
+    - npm > libnpmfund > @npmcli/arborist > pacote > sigstore > @sigstore/tuf > tuf-js > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.521Z'
+    - npm > libnpmpack > @npmcli/arborist > pacote > sigstore > @sigstore/tuf > tuf-js > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.521Z'
+    - npm > libnpmdiff > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > sigstore > @sigstore/tuf > tuf-js > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.521Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > sigstore > @sigstore/tuf > tuf-js > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.521Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > sigstore > @sigstore/tuf > tuf-js > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.522Z'
+    - npm > libnpmpack > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > sigstore > @sigstore/tuf > tuf-js > make-fetch-happen > cacache > glob > foreground-child > cross-spawn:
+        reason: None given
+        expires: '2024-12-30T14:36:04.522Z'
+  SNYK-JS-GRPCGRPCJS-7242922:
+    - '@google-cloud/text-to-speech > google-gax > @grpc/grpc-js':
+        reason: None given
+        expires: '2024-12-30T14:36:04.525Z'
+  SNYK-JS-USERAGENT-8309369:
+    - useragent:
+        reason: None given
+        expires: '2024-12-30T14:36:04.526Z'
+    - device > useragent:
+        reason: None given
+        expires: '2024-12-30T14:36:04.526Z'
+  SNYK-JS-WS-7266574:
+    - lighthouse > ws:
+        reason: None given
+        expires: '2024-12-30T14:36:04.526Z'
+    - d3-node > jsdom > ws:
+        reason: None given
+        expires: '2024-12-30T14:36:04.526Z'
+    - d3node-output > puppeteer > ws:
+        reason: None given
+        expires: '2024-12-30T14:36:04.526Z'
+    - d3node-linechart > d3node-output > puppeteer > ws:
+        reason: None given
+        expires: '2024-12-30T14:36:04.526Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':

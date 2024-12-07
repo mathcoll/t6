@@ -673,6 +673,8 @@ router.delete("/accessTokens/:key([0-9a-z\-.]+)", expressJwt({secret: jwtsetting
  * 
  * @apiUse Auth
  * @apiParam {uuid-v4} user_id User ID
+ * @apiParam {Boolean} [dryrun=true] actually force deletion process
+ * @apiParam {Boolean} [anonymize=true] Anonymize user data, the anonimize must be active when you actually wants the users to be fully deleted
  * 
  * @apiUse 200
  * @apiUse 403

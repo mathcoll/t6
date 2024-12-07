@@ -166,7 +166,7 @@ router.get("/(:object_id([0-9a-z\-]+))/show", expressJwt({secret: jwtsettings.se
  * @apiUse 405
  * @apiUse 429
  */
-router.get("/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlevel)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+router.get("/(:object_id([0-9a-z\-]+))/qrcode/:typenumber/:errorcorrectionlevel", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var object_id = req.params.object_id;
 	var typenumber = req.params.typenumber;
 	var errorcorrectionlevel = typeof req.params.errorcorrectionlevel!=="undefined"?req.params.errorcorrectionlevel:"M";
