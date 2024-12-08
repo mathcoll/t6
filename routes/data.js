@@ -300,126 +300,132 @@ let verifyPrerequisites = async function(resolve, reject) {
 	let object = this.object;
 	let chainOrder = this.chainOrder;
 	payload.prerequisite = 0;
-	if ( (!payload.value || payload.value==="" || payload.value===null || typeof payload.value==="undefined") && payload.value!==0 ) {
-		t6console.warning("chain 5", "Error: verifyPrerequisites : no value.", payload.value);
-		payload.datapoint_logs.verifyPrerequisites = "err";
-		chainOrder.push("verifyPrerequisites");
-		//resolve("Error: verifyPrerequisites : no value.", payload, object, null, chainOrder);
-		reject({payload, object, chainOrder});
-	}
-	if ( !payload.flow_id || typeof payload.flow_id==="undefined" || payload.flow_id===null ) {
-		t6console.warning("chain 5", "Error: verifyPrerequisites : no flow_id.");
-		payload.datapoint_logs.verifyPrerequisites = "err";
-		chainOrder.push("verifyPrerequisites");
-		//resolve("Error: verifyPrerequisites : no flow_id.", payload, object, null, chainOrder);
-		reject({payload, object, chainOrder});
-	} else {
-		payload.datapoint_logs.verifyPrerequisites = true;
-		let fDatatypes = flows.chain().find({id: ""+payload.flow_id, user_id: payload.user_id,}).limit(1);
-		let fUnits = flows.chain().find({id: ""+payload.flow_id, user_id: payload.user_id,}).limit(1);
-		let current_flow = (fDatatypes.data())[0]; // Warning TODO, current_flow can be unset when user posting to fake flow_id, in such case we should take the data_type from payload
-		let joinDatatypes, joinUnits;
-
-		if(typeof payload.datatype_id!=="undefined" && payload.datatype_id!=="") {
-			let dt = (datatypes.chain().find({id: ""+payload.datatype_id,}).limit(1)).data()[0];
-			payload.datatype = (typeof payload.datatype_id!=="undefined" && typeof dt!=="undefined")?dt.name:"string";
-			t6console.debug("chain 5", `Getting datatype "${payload.datatype}" from payload`);
-		} else if (typeof current_flow!=="undefined") {
-			joinDatatypes = fDatatypes.eqJoin(datatypes.chain(), "data_type", "id"); // TODO : in Flow collection, the data_type should be renamed to datatype_id
-			payload.datatype = typeof (joinDatatypes.data())[0]!=="undefined"?(joinDatatypes.data())[0].right.name:"string";
-			payload.datatype_id = typeof (joinDatatypes.data())[0]!=="undefined"?(joinDatatypes.data())[0].right.id:undefined;
-			t6console.debug("chain 5", `Getting datatype "${payload.datatype}" from Flow`);
-		} else {
-			payload.datatype = "string";
-			t6console.debug("chain 5", `Getting datatype "${payload.datatype}" from default value`);
+	// return new Promise((resolve, reject) => {
+		if ( (!payload.value || payload.value==="" || payload.value===null || typeof payload.value==="undefined") && payload.value!==0 ) {
+			t6console.warning("chain 5", "Error: verifyPrerequisites : no value.", payload.value);
+			payload.datapoint_logs.verifyPrerequisites = "err";
+			chainOrder.push("verifyPrerequisites");
+			//resolve("Error: verifyPrerequisites : no value.", payload, object, null, chainOrder);
+			reject({payload, object, chainOrder});
 		}
+		if ( !payload.flow_id || typeof payload.flow_id==="undefined" || payload.flow_id===null ) {
+			t6console.warning("chain 5", "Error: verifyPrerequisites : no flow_id.");
+			payload.datapoint_logs.verifyPrerequisites = "err";
+			chainOrder.push("verifyPrerequisites");
+			//resolve("Error: verifyPrerequisites : no flow_id.", payload, object, null, chainOrder);
+			reject({payload, object, chainOrder});
+		} else {
+			payload.datapoint_logs.verifyPrerequisites = true;
+			let fDatatypes = flows.chain().find({id: ""+payload.flow_id, user_id: payload.user_id,}).limit(1);
+			let fUnits = flows.chain().find({id: ""+payload.flow_id, user_id: payload.user_id,}).limit(1);
+			let current_flow = (fDatatypes.data())[0]; // Warning TODO, current_flow can be unset when user posting to fake flow_id, in such case we should take the data_type from payload
+			let joinDatatypes, joinUnits;
 
-		let imT = payload.value!==null?imageType(new Buffer.from(payload.value.toString(), "base64")):payload.value;
-		if((validator.isBase64(payload.value.toString())===true && imT!==null && imT.mime.includes("image")) || payload.datatype==="image") {
-			const img = new Image();
-			try {
-				img.src = new Buffer.from(payload.value, "base64");
-				payload.img = img;
-				if(payload.save===true) { // it means the image is not stored when the "save" value is overwritten on the preprocessor later :-)
-					let imgDir = `${ip.image_dir}/${payload.user_id}`;
-					if (!fs.existsSync(imgDir)) { fs.mkdirSync(imgDir); }
-					let flowDir = `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`;
-					if (!fs.existsSync(flowDir)) { fs.mkdirSync(flowDir); }
-					fs.writeFile(`${flowDir}/${payload.timestamp*1e6}.png`, payload.value, "base64", function(err) {
-						if(err) {
-							t6console.error("chain 5", "Can't save image to storage:'", err);
-						} else {
-							t6console.debug("chain 5", "Successfully wrote image file to storage.");
-						}
-					});
-				}
-				t6console.debug("chain 5", "We have a image (base64) on the payload value.");
-			} catch (err) {
-				t6console.debug("chain 5", "We don't have an image on the payload value.");
+			if(typeof payload.datatype_id!=="undefined" && payload.datatype_id!=="") {
+				let dt = (datatypes.chain().find({id: ""+payload.datatype_id,}).limit(1)).data()[0];
+				payload.datatype = (typeof payload.datatype_id!=="undefined" && typeof dt!=="undefined")?dt.name:"string";
+				t6console.debug("chain 5", `Getting datatype "${payload.datatype}" from payload`);
+			} else if (typeof current_flow!=="undefined") {
+				joinDatatypes = fDatatypes.eqJoin(datatypes.chain(), "data_type", "id"); // TODO : in Flow collection, the data_type should be renamed to datatype_id
+				payload.datatype = typeof (joinDatatypes.data())[0]!=="undefined"?(joinDatatypes.data())[0].right.name:"string";
+				payload.datatype_id = typeof (joinDatatypes.data())[0]!=="undefined"?(joinDatatypes.data())[0].right.id:undefined;
+				t6console.debug("chain 5", `Getting datatype "${payload.datatype}" from Flow`);
+			} else {
+				payload.datatype = "string";
+				t6console.debug("chain 5", `Getting datatype "${payload.datatype}" from default value`);
 			}
-		}
-		if ( !payload.mqtt_topic && typeof joinDatatypes!=="undefined" && (joinDatatypes.data())[0] && ((joinDatatypes.data())[0].left) && ((joinDatatypes.data())[0].left).mqtt_topic ) {
-			payload.mqtt_topic = ((joinDatatypes.data())[0].left).mqtt_topic;
-		}
-		if(typeof payload.unit_id!=="undefined" && payload.unit_id!=="") { 
-			let u = (units.chain().find({id: ""+payload.unit_id,}).limit(1)).data()[0];
-			payload.unit = (typeof payload.unit_id!=="undefined" && typeof u!=="undefined")?u.name:"No unit";
-			t6console.debug("chain 5", `Getting unit "${payload.unit}" from payload`);
-		} else if (typeof current_flow!=="undefined") {
-			joinUnits = fUnits.eqJoin(units.chain(), "unit", "id"); // TODO : in Flow collection, the unit should be renamed to unit_id
-			payload.unit = typeof (joinUnits.data())[0]!=="undefined"?(joinUnits.data())[0].right.name:"No unit";
-			payload.unit_id = typeof (joinUnits.data())[0]!=="undefined"?(joinUnits.data())[0].right.id:undefined;
-			t6console.debug("chain 5", `Getting unit "${payload.unit}" from Flow`);
-		} else {
-			payload.unit = "No unit";
-			t6console.debug("chain 5", `Getting unit "${payload.unit}" from default value`);
-		}
 
-		if ( typeof current_flow!=="undefined" && current_flow.require_encrypted && !payload.isEncrypted ) {
-			payload.prerequisite += 1;
-			payload.errorMessage = typeof payload.errorMessage!=="undefined"?payload.errorMessage:[];
-			payload.errorMessage.push("chain 5", "==> Flow require encrypted payload.");
-			t6console.debug("chain 5", "Flow require isEncrypted -", current_flow.require_encrypted);
-			t6console.debug("chain 5", ".. & Payload isEncrypted", payload.isEncrypted);
-			//resolve("Error: verifyPrerequisites :", payload, object, null);
-		}
+			let imT = payload.value!==null?imageType(new Buffer.from(payload.value.toString(), "base64")):payload.value;
+			if((validator.isBase64(payload.value.toString())===true && imT!==null && imT.mime.includes("image")) || payload.datatype==="image") {
+				const img = new Image();
+				try {
+					img.src = new Buffer.from(payload.value, "base64");
+					payload.img = img;
+					if(payload.save===true) { // it means the image is not stored when the "save" value is overwritten on the preprocessor later :-)
+						let imgDir = `${ip.image_dir}/${payload.user_id}`;
+						if (!fs.existsSync(imgDir)) { fs.mkdirSync(imgDir); }
+						let flowDir = `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`;
+						if (!fs.existsSync(flowDir)) { fs.mkdirSync(flowDir); }
+						fs.writeFile(`${flowDir}/${payload.timestamp*1e6}.png`, payload.value, "base64", function(err) {
+							if(err) {
+								t6console.error("chain 5", "Can't save image to storage:'", err);
+							} else {
+								t6console.debug("chain 5", "Successfully wrote image file to storage.");
+							}
+						});
+					}
+					t6console.debug("chain 5", "We have a image (base64) on the payload value.");
+				} catch (err) {
+					t6console.debug("chain 5", "We don't have an image on the payload value.");
+				}
+			}
+			if ( !payload.mqtt_topic && typeof joinDatatypes!=="undefined" && (joinDatatypes.data())[0] && ((joinDatatypes.data())[0].left) && ((joinDatatypes.data())[0].left).mqtt_topic ) {
+				payload.mqtt_topic = ((joinDatatypes.data())[0].left).mqtt_topic;
+			}
+			if(typeof payload.unit_id!=="undefined" && payload.unit_id!=="") { 
+				let u = (units.chain().find({id: ""+payload.unit_id,}).limit(1)).data()[0];
+				payload.unit = (typeof payload.unit_id!=="undefined" && typeof u!=="undefined")?u.name:"No unit";
+				t6console.debug("chain 5", `Getting unit "${payload.unit}" from payload`);
+			} else if (typeof current_flow!=="undefined") {
+				joinUnits = fUnits.eqJoin(units.chain(), "unit", "id"); // TODO : in Flow collection, the unit should be renamed to unit_id
+				payload.unit = typeof (joinUnits.data())[0]!=="undefined"?(joinUnits.data())[0].right.name:"No unit";
+				payload.unit_id = typeof (joinUnits.data())[0]!=="undefined"?(joinUnits.data())[0].right.id:undefined;
+				t6console.debug("chain 5", `Getting unit "${payload.unit}" from Flow`);
+			} else {
+				payload.unit = "No unit";
+				t6console.debug("chain 5", `Getting unit "${payload.unit}" from default value`);
+			}
 
-		if ( typeof current_flow!=="undefined" && current_flow.require_signed && !payload.isSigned ) {
-			payload.prerequisite += 1;
-			payload.errorMessage = typeof payload.errorMessage!=="undefined"?payload.errorMessage:[];
-			payload.errorMessage.push("chain 5", "==> Flow require signed payload.");
-			t6console.debug("chain 5", "Flow require isSigned -", current_flow.require_signed);
-			t6console.debug("chain 5", ".. & Payload isSigned", payload.isSigned);
-			//resolve("Error: verifyPrerequisites :", payload, object, null);
-		}
+			if ( typeof current_flow!=="undefined" && current_flow.require_encrypted && !payload.isEncrypted ) {
+				payload.prerequisite += 1;
+				payload.errorMessage = typeof payload.errorMessage!=="undefined"?payload.errorMessage:[];
+				payload.errorMessage.push("chain 5", "==> Flow require encrypted payload.");
+				t6console.debug("chain 5", "Flow require isEncrypted -", current_flow.require_encrypted);
+				t6console.debug("chain 5", ".. & Payload isEncrypted", payload.isEncrypted);
+				//resolve("Error: verifyPrerequisites :", payload, object, null);
+			}
 
-		if( typeof payload.retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(payload.retention)===-1 ) {
-			if ( typeof current_flow!=="undefined" && current_flow.retention ) {
-				if ( (influxSettings.retentionPolicies.data).indexOf(current_flow.retention)>-1 ) {
-					payload.retention = current_flow.retention;
+			if ( typeof current_flow!=="undefined" && current_flow.require_signed && !payload.isSigned ) {
+				payload.prerequisite += 1;
+				payload.errorMessage = typeof payload.errorMessage!=="undefined"?payload.errorMessage:[];
+				payload.errorMessage.push("chain 5", "==> Flow require signed payload.");
+				t6console.debug("chain 5", "Flow require isSigned -", current_flow.require_signed);
+				t6console.debug("chain 5", ".. & Payload isSigned", payload.isSigned);
+				//resolve("Error: verifyPrerequisites :", payload, object, null);
+			}
+
+			if( typeof payload.retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(payload.retention)===-1 ) {
+				if ( typeof current_flow!=="undefined" && current_flow.retention ) {
+					if ( (influxSettings.retentionPolicies.data).indexOf(current_flow.retention)>-1 ) {
+						payload.retention = current_flow.retention;
+					} else {
+						payload.retention = influxSettings.retentionPolicies.data[0];
+					}
 				} else {
 					payload.retention = influxSettings.retentionPolicies.data[0];
 				}
+			}
+			t6console.debug("chain 5", "Retention", payload.retention);
+			//t6console.debug("chain 5", "current_flow", current_flow);
+			t6console.debug("chain 5", "Prerequisite Index=", payload.prerequisite, payload.prerequisite>0?"Something is required.":"All good.");
+			// t6console.debug("chain 5", "payload", payload);
+			if (payload.prerequisite <= 0) {
+				payload.datapoint_logs.verifyPrerequisites = true;
+				chainOrder.push("verifyPrerequisites");
+				resolve({payload, object, current_flow, chainOrder});
+				// t6console.debug("chain 5 -------> DEBUG", {payload, object, current_flow, chainOrder});
 			} else {
-				payload.retention = influxSettings.retentionPolicies.data[0];
+				payload.errorMessage = typeof payload.errorMessage!=="undefined"?payload.errorMessage:[];
+				payload.errorMessage.push("Payload is requiring either signature and/or encryption.");
+				payload.datapoint_logs.verifyPrerequisites = true;
+				chainOrder.push("verifyPrerequisites");
+				reject({payload, object, chainOrder});
 			}
 		}
-		t6console.debug("chain 5", "Retention", payload.retention);
-		//t6console.debug("chain 5", "current_flow", current_flow);
-		t6console.debug("chain 5", "Prerequisite Index=", payload.prerequisite, payload.prerequisite>0?"Something is required.":"All good.");
-		// t6console.debug("chain 5", "payload", payload);
-		if (payload.prerequisite <= 0) {
-			payload.datapoint_logs.verifyPrerequisites = true;
-			chainOrder.push("verifyPrerequisites");
-			resolve({payload, object, current_flow, chainOrder});
-		} else {
-			payload.errorMessage = typeof payload.errorMessage!=="undefined"?payload.errorMessage:[];
-			payload.errorMessage.push("Payload is requiring either signature and/or encryption.");
-			payload.datapoint_logs.verifyPrerequisites = true;
-			chainOrder.push("verifyPrerequisites");
-			reject({payload, object, chainOrder});
-		}
-	}
+	// }).catch((err) => {
+	// 	t6console.warn("verifyPrerequisites err", err);
+	// 	reject({payload, object, chainOrder});
+	// });
 }
 let preprocessor = async function(resolve, reject) {
 	t6console.debug("chain 6", "preprocessor");
