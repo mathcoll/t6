@@ -16,7 +16,19 @@ Types of changes
 
 ------------
 
-## 2024
+## 2025
+### Milestone 30 - 
+**Added**
+  - [x] 
+
+**Changed**
+  - [x] Allows user deletion from the Admin role with anonymisation and dryrun process, so that t6 ease the gdpr process
+  - [x] Admin Api to delete all resources for a specific user according to oblivion rights - gdpr
+  - [x] Admin deadsensor is now able to fallback to email when push notification is failing for a user
+
+**Fixed**
+  - [x] 
+
 ### Milestone 29 - 2024-11
 **Added**
   - [x] Added AI-Flex feature using OpenAI: enhance automation workflows by directly integrating OpenAI's powerful language model responses into Rule Engine flows.

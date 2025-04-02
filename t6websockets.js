@@ -623,11 +623,11 @@ t6websockets.init = async function() {
 		t6console.error(`${appName} wsError.`);
 	};
 
-	t6console.log("-audioEncoding", `${tts.audioEncoding}.`);
-	t6console.log("-ssmlVoiceGender", `${tts.ssmlVoiceGender}.`);
+	t6console.log(`-audioEncoding ${tts.audioEncoding}.`.padEnd(59));
+	t6console.log(`-ssmlVoiceGender ${tts.ssmlVoiceGender}.`.padEnd(59));
 	t6console.log("-audioFolder", smartTrim(tts.audioFolder, 40));
 	t6console.log("-outputFolder", smartTrim(tts.outputFolder, 40));
-	t6console.log(`${appName} ws(s) listening to ${socketsScheme}${socketsHost}:${socketsPort}.`);
+	t6console.log(`${appName} ws(s) listening to ${socketsScheme}${socketsHost}:${socketsPort}.`.padEnd(59));
 };
 
 module.exports = t6websockets;

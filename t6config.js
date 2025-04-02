@@ -39,7 +39,7 @@ t6config.set_smtp = function(smtp) {
 				}
 			});
 		}
-		t6console.log(`mailDKIMCertificate ${err ? "is not found. Transporter is not using DKIM" : "found. Transporter is using DKIM certificate."}`);
+		t6console.log(err ? "Transporter not using DKIM certificate.".padEnd(59) : "Transporter using DKIM certificate.".padEnd(59));
 	});
 };
 

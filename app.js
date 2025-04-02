@@ -135,6 +135,7 @@ global.t6websockets		= require("./t6websockets");
 global.t6databases		= require("./t6databases");
 global.monitor			= require("./t6monitor");
 
+global.XMLHttpRequest	= require("xhr2");
 global.url				= require("node:url");
 global.express			= require("express");
 global.timeout			= require("connect-timeout");
@@ -158,14 +159,19 @@ global.jsonwebtoken		= require("jsonwebtoken");
 global.nmap				= require("libnmap");
 global.Loess			= require("loess");
 global.loki				= require("lokijs");
-global.passgen			= require("passgen");
 global.md5				= require("md5");
 global.moment			= require("moment");
 global.mqtt				= require("mqtt");
 global.multer			= require("multer");
 global.nodeunits		= require("node-units");
-global.uuid				= require("uuid");
 global.nodemailer		= require("nodemailer");
+global.otpGen			= require("otp-generator");
+global.otpTool			= require("otp-without-db");
+if (ollamaSettings.activated === true) {
+	const { default: ollama, Ollama: Ollama } = require("ollama");
+	global.Ollama = new Ollama({ host: ollamaSettings.host })
+	// global.Ollama			= ollama;
+}
 if (openAISettings.activated === true) {
 	global.OpenAI			= require("openai");
 	if(process.env.NODE_ENV==="development") {
@@ -174,9 +180,8 @@ if (openAISettings.activated === true) {
 		global.stopMocking = mockStop;
 	}
 }
-global.otpGen			= require("otp-generator");
-global.otpTool			= require("otp-without-db"); 
 global.outlier			= require("outlier");
+global.passgen			= require("passgen");
 global.qrCode			= require("qrcode-npm");
 global.request			= require("request");
 global.Sentiment		= require("sentiment");
@@ -191,12 +196,14 @@ global.tf				= require("@tensorflow/tfjs-node"); // Load the binding (CPU comput
 // tf.disableDeprecationWarnings();
 global.SunCalc			= require("suncalc");
 global.twilio			= require("twilio");
+global.uuid				= require("uuid");
 global.textToSpeech		= require("@google-cloud/text-to-speech");
 global.util				= require("util");
 global.useragent		= require("useragent");
 global.validator		= require("validator");
 global.webpush			= require("web-push");
 global.WebSocketServer	= require("ws").WebSocketServer;
+
 global.algorithm		= "aes-256-cbc";
 global.t6events.setMeasurement("events");
 global.t6events.setRP(typeof influxSettings.retentionPolicies.events!=="undefined"?influxSettings.retentionPolicies.events:"autogen");
@@ -218,7 +225,7 @@ if( db_type.influxdb === true ) {
 	try {
 		dbInfluxDB = new InfluxDB({ database: influxSettings.database, host: influxSettings.influxdb.host, port: influxSettings.influxdb.port, username: influxSettings.username, password: influxSettings.password});
 	} catch(error) {
-		t6console.error(`Modules InfluxDB error: ${error}`);
+		t6console.error(`Modules InfluxDB error: ${error}`.padEnd(59));
 	}
 }
 if( db_type.telegraf === true ) {
@@ -234,14 +241,14 @@ t6console.log("");
 t6console.log("===========================================================");
 t6console.log(`============================ ${appName} ===========================`);
 t6console.log("===========================================================");
-t6console.log(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`);
-t6console.log(`Starting ${appName} v${VERSION}`);
-t6console.log(`Node: v${process.versions.node}`);
-t6console.log(`Build: v${t6BuildVersion}`);
-t6console.log(`Access Logs: ${logAccessFile}`);
-t6console.log(`Error Logs: ${logErrorFile}`);
-t6console.log(`Log level: ${logLevel}`);
-t6console.log(`Environment: ${process.env.NODE_ENV}`);
+t6console.log(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`.padEnd(59));
+t6console.log(`Starting ${appName} v${VERSION}`.padEnd(59));
+t6console.log(`Node: v${process.versions.node}`.padEnd(59));
+t6console.log(`Build: v${t6BuildVersion}`.padEnd(59));
+t6console.log(`Access Logs: ${logAccessFile}`.padEnd(59));
+t6console.log(`Error Logs: ${logErrorFile}`.padEnd(59));
+t6console.log(`Log level: ${logLevel}`.padEnd(59));
+t6console.log(`Environment: ${process.env.NODE_ENV}`.padEnd(59));
 
 t6databases.init();
 
@@ -251,18 +258,22 @@ if(dbInfluxDB) {
 		t6console.log("===========================================================");
 		t6console.log("========================== influxdb =======================");
 		t6console.log("===========================================================");
-		t6console.log(`Activated influxdb for reading: ${dbStringInfluxDB}`);
-		t6console.log("influxdb Databases: ", name);
-		t6console.log("influxdb Retention Policies :");
-		t6console.log("-requests:", `${influxSettings.retentionPolicies.requests}`);
-		t6console.log("-events:", `${influxSettings.retentionPolicies.events}`);
-		t6console.log("-data:",  `${influxSettings.retentionPolicies.data}`);
+		t6console.log(`Activated influxdb for reading: ${dbStringInfluxDB}`.padEnd(59));
+		t6console.log(`influxdb Databases: ${name}`.padEnd(59));
+		t6console.log("influxdb Retention Policies :".padEnd(59));
+		t6console.log(`-requests: ${influxSettings.retentionPolicies.requests}`.padEnd(59));
+		t6console.log(`-events: ${influxSettings.retentionPolicies.events}`.padEnd(59));
+		t6console.log(`-data: ${influxSettings.retentionPolicies.data}`.padEnd(59));
+		if(dbTelegraf) {
+			t6console.log("");
+			t6console.log("===========================================================");
+			t6console.log("========================== Telegraf =======================");
+			t6console.log("===========================================================");
+			t6console.log(`Activated Telegraf: ${dbStringTelegraf}`.padEnd(59));
+		}
 	}).catch((error) => {
-		t6console.error(`dbInfluxDB.getDatabaseNames error: ${error}`);
+		t6console.error(`dbInfluxDB.getDatabaseNames error: ${error}`.padEnd(59));
 	});
-}
-if(dbTelegraf) {
-	t6console.log(`Activated telegraf for writing: ${dbStringTelegraf}`);
 }
 
 routesLoadTime = new Date();
@@ -303,30 +314,33 @@ if(enableMonitoring) {
 	t6console.log("===========================================================");
 	t6console.log("================== Initialize monitoring... ===============");
 	t6console.log("===========================================================");
-	t6console.log(`${appName} is being monitored.`);
+	t6console.log(`${appName} is being monitored.`.padEnd(59));
 }
 app.set("port", process.env.PORT);
 app.listen(process.env.PORT, () => {
 	t6events.addStat("t6App", "start", "self", t6BuildVersion);
-	t6console.log("App is instanciated.");
-	t6console.log(`${appName} http(s) listening to ${baseUrl_https}.`);
+	t6console.log("App is instanciated.".padEnd(59));
+	t6console.log(`${appName} http(s) listening to ${baseUrl_https}.`.padEnd(59));
 });
 
 routesLoadEndTime = new Date();
-t6console.log(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`);
-t6console.log(`Routes loaded in ${routesLoadEndTime-routesLoadTime}ms.`);
+t6console.log(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`.padEnd(59));
+t6console.log(`Routes loaded in ${routesLoadEndTime-routesLoadTime}ms.`.padEnd(59));
 
 var CrossDomain = function(req, res, next) {
 	if (req.method === "OPTIONS") {
 		res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
 		res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization, Content-Length, X-Requested-With");
+		// res.header("Access-Control-Allow-Origin", "*");
 		res.status(200).send("");
 	} else {
 		res.header("Set-Cookie", "HttpOnly;Secure;SameSite=Strict");
 		res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization, Content-Length, X-Requested-With");
 		res.header("Feature-Policy", "accelerometer: 'none'; unsized-media: 'none'; ambient-light-sensor: 'self'; camera: 'none'; encrypted-media: 'none'; fullscreen: 'self'; geolocation: 'self'; gyroscope: 'none'; magnetometer: 'none'; picture-in-picture: 'self'; microphone: 'none'; sync-xhr: 'self'; usb: 'none'; vr: 'none'");
 		res.header("Referrer-Policy", "origin-when-cross-origin");
+		// res.header("Access-Control-Allow-Origin", "*");
 		res.header("Strict-Transport-Security", "max-age=5184000; includeSubDomains");
+		res.header("Content-Security-Policy", "frame-ancestors 'none'");
 		res.header("X-Frame-Options", "SAMEORIGIN");
 		res.header("X-Content-Type-Options", "nosniff");
 		if (req.url.match(/^\/(css|js|img|font|woff2|ttf|ico|map|txt|gz|svg|webp)\/.+/)) {
@@ -435,5 +449,5 @@ global.t6mqtt.init();
 global.t6websockets.init();
 global.startProcessTime = new Date()-start;
 
-t6console.log(`Start process duration: ${(startProcessTime)/1000}s.`);
+t6console.log(`Start process duration: ${(startProcessTime)/1000}s.`.padEnd(59));
 module.exports = app;
